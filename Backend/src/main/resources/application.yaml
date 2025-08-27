@@ -3,9 +3,9 @@ spring:
     name: SmartBet
 
   datasource:
-    url: jdbc:postgresql://aws-0-ap-southeast-2.pooler.supabase.com:5432/postgres?sslmode=require
+    url: jdbc:postgresql://aws-0-ap-southeast-2.pooler.supabase.com:6543/postgres
     username: postgres.kckimbkobioqyudqnzvg
-    password: TheInvinciblesProject@35
+    password: TheInvincibles@35
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 5
@@ -45,10 +45,20 @@ spring:
             client-secret: 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
             scope: openid,profile,email
 
+
+  web:
+    resources:
+      static-locations: classpath:/static/
+    servlet:
+      multipart:
+        max-file-size: 10MB
+        max-request-size: 10MB
+
 server:
   port: ${PORT:10000}
+  servlet:
+    context-path: /
 
-# Logging configuration to reduce startup noise
 logging:
   level:
     org.hibernate: WARN
@@ -56,3 +66,59 @@ logging:
     org.springframework.security: INFO
     com.smartbet: INFO
     org.apache.http: WARN
+    com.smartbet.controller: DEBUG
+    com.smartbet.service: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/smartbet-api.log
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,env
+  endpoint:
+    health:
+      show-details: always
+  info:
+    env:
+      enabled: true
+
+app:
+  thesportsdb:
+    base-url: https://www.thesportsdb.com/api/v1/json/3
+    psl-league-id: 4802
+    timeout: 30000
+    connection-timeout: 10000
+    read-timeout: 30000
+
+  football:
+    leagues:
+      psl:
+        id: 4802
+        name: "South African Premier Soccer League"
+        country: "South Africa"
+      epl:
+        id: 4328
+        name: "English Premier League"
+        country: "England"
+
+  rate-limit:
+    enabled: true
+    requests-per-minute: 60
+
+cors:
+  allowed-origins:
+    - "http://localhost:3000"
+    - "http://localhost:3001"
+    - "https://smartbet.vercel.app"
+  allowed-methods:
+    - GET
+    - POST
+    - PUT
+    - DELETE
+    - OPTIONS
+  allowed-headers: "*"
+  allow-credentials: true
