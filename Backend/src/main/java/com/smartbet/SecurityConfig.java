@@ -23,7 +23,7 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests(authorizeRequests -> authorizeRequests.anyRequest().authenticated())
                 .oauth2Login(oauth2 -> oauth2.userInfoEndpoint(userInfo -> userInfo
                         .userService(customOAuth2UserService)
-                ).defaultSuccessUrl("http://localhost:3002/profile",true));
+                ).defaultSuccessUrl("https://the-invincibles-projects.vercel.app/profile",true));
         return http.build();
     }
 

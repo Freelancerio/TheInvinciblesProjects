@@ -1,35 +1,22 @@
 spring:
   application:
     name: SmartBet
-
   datasource:
-    url: jdbc:postgresql://aws-0-ap-southeast-2.pooler.supabase.com:5432/postgres?sslmode=require
+    url: jdbc:postgresql://aws-0-ap-southeast-2.pooler.supabase.com:6543/postgres
     username: postgres.kckimbkobioqyudqnzvg
-    password: TheInvinciblesProject@35
+    password: TheInvincibles@35
     driver-class-name: org.postgresql.Driver
+
     hikari:
-      maximum-pool-size: 5
-      minimum-idle: 1
-      connection-timeout: 30000
-      idle-timeout: 300000
-      max-lifetime: 600000
-
+      maximum-pool-size: 2
+      minimum-idle: 0
+      idle-timeout: 60000
+      max-lifetime: 300000
+      connection-timeout: 10000
+      leak-detection-threshold: 60000
   jpa:
-    database: POSTGRESQL
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: update
-    show-sql: false
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-        format_sql: false
-        jdbc:
-          time_zone: UTC
-
-  # Optimize startup performance
-  main:
-    lazy-initialization: true
+      ddl-auto: none                 # CRITICAL: Disable DDL auto
 
   security:
     oauth2:
@@ -44,15 +31,3 @@ spring:
             client-id: 462297550542-jlh81q4c3uho2afpl42kejgml7gkv7u3.apps.googleusercontent.com
             client-secret: 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
             scope: openid,profile,email
-
-server:
-  port: ${PORT:10000}
-
-# Logging configuration to reduce startup noise
-logging:
-  level:
-    org.hibernate: WARN
-    org.springframework.web: INFO
-    org.springframework.security: INFO
-    com.smartbet: INFO
-    org.apache.http: WARN
