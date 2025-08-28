@@ -7,6 +7,7 @@ import {
 } from "../firebase";
 import { useNavigate } from "react-router-dom";
 import "./loginpage.css"; // Ensure this file exists
+import {baseUrl} from "../baseURL.js";
 
 function Loginfunction() {
   const [email, setEmail] = useState("");
@@ -23,15 +24,11 @@ function Loginfunction() {
   // };
 
   const handleGoogleLogin = () => {
-    if (window.location.hostname === 'localhost'){
-      window.location = "http://localhost:8080/oauth2/authorization/google";
-    }
+    window.location = `${baseUrl}/oauth2/authorization/google`;
   } 
 
   const handleGithubLogin = () => {
-    if (window.location.hostname === 'localhost'){
-      window.location = "http://localhost:8080/oauth2/authorization/github";
-    }
+    window.location = `${baseUrl}/oauth2/authorization/github`;
   };
 
   const handleEmailLogin = async (e) => { // runs when user entes email/password
