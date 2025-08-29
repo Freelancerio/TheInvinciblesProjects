@@ -25,10 +25,21 @@ public class CustomOidcUserService extends OidcUserService {
         System.out.println("Google OIDC User - Subject: " + externalId);
         System.out.println("Google OIDC User attributes: " + oidcUser.getAttributes());
 
-        userService.findById(externalId).orElseGet(() -> {
-            User newUser = new User(externalId);
-            return userService.createUser(newUser);
-        });
+        Optional<User> possibleUser = userService.findById(externalId);
+        User systemUser;
+
+        if (possibleUser.isPresent()){
+            systemUser = possibleUser.get();
+        }
+        else{
+            systemUser = new User(externalId);
+            userService.createUser(systemUser);
+        }
+
+        // userService.findById(externalId).orElseGet(() -> {
+        //     User newUser = new User(externalId);
+        //     return userService.createUser(newUser);
+        // });
 
         return oidcUser;
     }

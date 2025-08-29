@@ -31,10 +31,21 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         System.out.println("GitHub User ID: " + externalId);
         System.out.println("GitHub OAuth2User attributes: " + oAuth2User.getAttributes());
 
-        userService.findById(externalId).orElseGet(() -> {
-            User newUser = new User(externalId);
-            return userService.createUser(newUser);
-        });
+        Optional<User> possibleUser = userService.findById(externalId);
+        User systemUser;
+
+        if (possibleUser.isPresent()){
+            systemUser = possibleUser.get();
+        }
+        else{
+            systemUser = new User(externalId);
+            userService.createUser(systemUser);
+        }
+
+        // userService.findById(externalId).orElseGet(() -> {
+        //     User newUser = new User(externalId);
+        //     return userService.createUser(newUser);
+        // });
 
         return oAuth2User;
     }
