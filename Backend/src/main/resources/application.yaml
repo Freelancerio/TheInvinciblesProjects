@@ -2,7 +2,7 @@ spring:
   application:
     name: SmartBet
   datasource:
-    url: jdbc:postgresql://aws-0-ap-southeast-2.pooler.supabase.com:6543/postgres
+    url: jdbc:postgresql://aws-0-ap-southeast-2.pooler.supabase.com:6543/postgres?sslmode=require&preferQueryMode=simple
     username: postgres.kckimbkobioqyudqnzvg
     password: TheInvincibles@35
     driver-class-name: org.postgresql.Driver
@@ -14,9 +14,9 @@ spring:
       max-lifetime: 300000
       connection-timeout: 10000
       leak-detection-threshold: 60000
-  jpa:
-    hibernate:
-      ddl-auto: none                 # CRITICAL: Disable DDL auto
+  #jpa:
+   # hibernate:
+      #ddl-auto: none                 # CRITICAL: Disable DDL auto
 
   security:
     oauth2:
@@ -31,3 +31,11 @@ spring:
             client-id: 462297550542-jlh81q4c3uho2afpl42kejgml7gkv7u3.apps.googleusercontent.com
             client-secret: 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
             scope: openid,profile,email
+
+  app:
+  thesportsdb:
+    base-url: ${THESPORTSDB_BASE_URL:https://www.thesportsdb.com/api/v1/json/3}
+    psl-league-id: ${PSL_LEAGUE_ID:4328}
+    timeout: ${HTTP_TIMEOUT:5000}
+    connection-timeout: ${HTTP_CONNECT_TIMEOUT:5000}
+    read-timeout: ${HTTP_READ_TIMEOUT:5000}

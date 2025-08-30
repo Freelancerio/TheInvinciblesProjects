@@ -16,7 +16,7 @@ public class SmartBetApplication {
     public static void main(String[] args) {
         SpringApplication.run(SmartBetApplication.class, args);
     }
-    
+/*   
     @Bean
     public CommandLineRunner displayStandings(PslFootballService pslFootballService) {
         return args -> {
@@ -26,5 +26,5 @@ public class SmartBetApplication {
                 System.out.println(standings.getTable().get(i));
             }
         };
-    }
+    }*/
 }
