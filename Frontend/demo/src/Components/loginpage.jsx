@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   auth,
   googleProvider,
@@ -7,48 +7,110 @@ import {
 } from "../firebase";
 import { useNavigate } from "react-router-dom";
 import "./loginpage.css"; // Ensure this file exists
-import {baseUrl} from "../baseURL.js";
+import { baseUrl } from "../baseURL.js";
 
 function Loginfunction() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate(); // allows to go toanother page like /home
+  const [showError, setShowError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const navigate = useNavigate();
 
-  // const handleGoogleLogin = async () => {  // runs when :Continue with Google" is clicked
-  //   try {
-  //     await signInWithPopup(auth, googleProvider); // opens pop-up to sign in with google
-  //     navigate("/profile"); //redirects to home is succesful
-  //   } catch (error) {
-  //     alert("Google login failed: " + error.message);
-  //   }
-  // };
+  useEffect(() => {
+    // Check for error parameters in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const error = urlParams.get('error');
+    
+    if (error) {
+      setShowError(true);
+      
+      // Set appropriate error message based on error type
+      switch (error) {
+        case 'auth_failed':
+          setErrorMessage('Authentication failed. Please try again.');
+          break;
+        case 'database_error':
+          setErrorMessage('There was an issue setting up your account. You can still continue, but some features may not work properly.');
+          break;
+        case 'session_expired':
+          setErrorMessage('Your session has expired. Please log in again.');
+          break;
+        default:
+          setErrorMessage('An unexpected error occurred. Please try again.');
+      }
+      
+      // Clean up URL by removing error parameter
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, document.title, newUrl);
+    }
+  }, []);
+
+  const handleCloseError = () => {
+    setShowError(false);
+  };
 
   const handleGoogleLogin = () => {
     window.location = `${baseUrl}/oauth2/authorization/google`;
-  } 
+  };
 
   const handleGithubLogin = () => {
     window.location = `${baseUrl}/oauth2/authorization/github`;
   };
 
-  const handleEmailLogin = async (e) => { // runs when user entes email/password
+  const handleEmailLogin = async (e) => {
     e.preventDefault();
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      navigate("/profile");
+      navigate("/userDashboard");
     } catch (error) {
-      alert("Email login failed: " + error.message);
+      setShowError(true);
+      setErrorMessage("Email login failed: " + error.message);
     }
   };
 
   return (
     <>
+      {/* Error Popup */}
+      {showError && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md mx-4 shadow-xl">
+            <div className="flex items-center mb-4">
+              <div className="w-6 h-6 text-red-500 mr-3">
+                <svg fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-medium text-gray-900">Authentication Error</h3>
+            </div>
+            <p className="text-gray-600 mb-6">{errorMessage}</p>
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={handleCloseError}
+                className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors"
+              >
+                Continue
+              </button>
+              <button
+                onClick={() => {
+                  handleCloseError();
+                  // Retry the last attempted action
+                }}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Try Again
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Navbar */}
       <nav className="navbar">
         <div className="navbar-left">
           <img
             src="https://img.icons8.com/ios-filled/50/000000/chips.png"
             className="logo"
+            alt="SmartBet Logo"
           />
           <span className="brand">SmartBet</span>
         </div>
@@ -104,15 +166,14 @@ function Loginfunction() {
         <p className="or-divider">Or log in with</p>
 
         <div className="social-buttons">
-          <button className="github-button" onClick = {handleGithubLogin}>
+          <button className="github-button" onClick={handleGithubLogin}>
             <img
-              src = "https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png"
-              alt = "Github logo"
+              src="https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png"
+              alt="Github logo"
               className="github-logo"
             />
             Continue with Github
           </button>
-
 
           <button className="google-button" onClick={handleGoogleLogin}>
             <img
@@ -123,9 +184,15 @@ function Loginfunction() {
             Continue with Google
           </button>
         </div>
+
+        <div className="terms-section">
+          <p className="terms-text">
+            By signing in, you agree to our Terms of Service and Privacy Policy
+          </p>
+        </div>
       </div>
     </>
   );
 }
 
-export default Loginfunction;  //makes component usable in other files
+export default Loginfunction;

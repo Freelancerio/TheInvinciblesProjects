@@ -7,27 +7,87 @@ function UserDashboard() {
     const [stats, setStats] = useState(null);
     const [matches, setMatches] = useState([]);
     const [standings, setStandings] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
-        fetch("http://localhost:3000/user-info")
-            .then(res => res.json())
-            .then(setUser);
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                
+                // Fetch user info
+                const userResponse = await fetch("http://localhost:8080/user-info", {
+                    credentials: 'include' // Important for session-based auth
+                });
+                
+                if (!userResponse.ok) {
+                    throw new Error(`Failed to fetch user info: ${userResponse.status}`);
+                }
+                
+                const userData = await userResponse.json();
+                setUser(userData);
 
-        fetch("http://localhost:3000/api/psl/stats")
-            .then(res => res.json())
-            .then(setStats);
+                // Fetch user stats
+                const statsResponse = await fetch("http://localhost:8080/api/user/stats", {
+                    credentials: 'include'
+                });
+                
+                if (!statsResponse.ok) {
+                    throw new Error(`Failed to fetch stats: ${statsResponse.status}`);
+                }
+                
+                const statsData = await statsResponse.json();
+                setStats(statsData);
 
-        fetch("http://localhost:3000/api/psl/matches")
-            .then(res => res.json())
-            .then(setMatches);
+                // Fetch other data (assuming these endpoints work)
+                const matchesResponse = await fetch("http://localhost:8080/api/psl/matches");
+                if (matchesResponse.ok) {
+                    const matchesData = await matchesResponse.json();
+                    setMatches(matchesData);
+                }
 
-        fetch("http://localhost:3000/api/psl/standings")
-            .then(res => res.json())
-            .then(setStandings);
+                const standingsResponse = await fetch("http://localhost:8080/api/psl/standings");
+                if (standingsResponse.ok) {
+                    const standingsData = await standingsResponse.json();
+                    setStandings(standingsData);
+                }
+
+            } catch (err) {
+                console.error("Error fetching data:", err);
+                setError(err.message);
+                
+                // Redirect to login if unauthorized
+                if (err.message.includes('401') || err.message.includes('unauthorized')) {
+                    window.location.href = '/login?error=session_expired';
+                }
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
     }, []);
 
-    if (!user || !stats) {
+    if (loading) {
         return <div className="flex items-center justify-center h-screen">Loading...</div>;
+    }
+
+    if (error) {
+        return (
+            <div className="flex items-center justify-center h-screen flex-col">
+                <div className="text-red-600 mb-4">Error: {error}</div>
+                <button 
+                    onClick={() => window.location.reload()} 
+                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                >
+                    Retry
+                </button>
+            </div>
+        );
+    }
+
+    if (!user || !stats) {
+        return <div className="flex items-center justify-center h-screen">No user data available</div>;
     }
 
     return (

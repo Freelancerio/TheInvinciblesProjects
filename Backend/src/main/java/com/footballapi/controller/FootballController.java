@@ -20,7 +20,6 @@ public class FootballController {
     @Autowired
     private PslFootballService pslService;
 
-    // GET /api/psl/standings
     @GetMapping("/standings")
     public ResponseEntity<?> getStandings() {
         try {
@@ -31,6 +30,17 @@ public class FootballController {
                     .body(Map.of("error", "Failed to fetch standings", "message", e.getMessage()));
         }
     }
+
+    @GetMapping("/matches")
+        public ResponseEntity<?> getMatches() {
+            try{
+                FixturesResponse fixturesResponse = pslService.getPastResults();
+                return ResponseEntity.ok(fixturesResponse);
+            }catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(Map.of("error", "Failed to fetch standings", "message", e.getMessage()));
+            }
+        }
 
     // GET /api/psl/standings/{season}
     @GetMapping("/standings/{season}")

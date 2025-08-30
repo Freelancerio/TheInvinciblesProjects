@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.annotation.Propagation;
 
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -33,26 +34,48 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
 
         try {
+            // For GitHub, the user ID is in the "id" attribute
             String externalId = oAuth2User.getAttribute("id").toString();
+            String email = oAuth2User.getAttribute("email");
+            String name = oAuth2User.getAttribute("name");
+            String login = oAuth2User.getAttribute("login"); // GitHub username
+
             System.out.println("GitHub User ID: " + externalId);
             System.out.println("GitHub OAuth2User attributes: " + oAuth2User.getAttributes());
 
-            Optional<User> possibleUser = userService.findById(externalId);
+            // Extract first and last name from full name
+            String firstName = null;
+            String lastName = null;
+            if (name != null) {
+                String[] nameParts = name.split(" ", 2);
+                firstName = nameParts[0];
+                if (nameParts.length > 1) {
+                    lastName = nameParts[1];
+                }
+            } else if (login != null) {
+                firstName = login;
+            }
+
+            Optional<User> possibleUser = userService.getUserById(externalId);
             User systemUser;
 
             if (possibleUser.isPresent()) {
                 systemUser = possibleUser.get();
                 System.out.println("Found existing GitHub user: " + externalId);
+                // Update last login time
+                systemUser.setLastLogin(java.time.LocalDateTime.now());
+                userService.updateUserStats(externalId, systemUser.getTotalBets(),
+                        systemUser.getWinnings(), systemUser.getWinRate(), systemUser.getBalance());
             } else {
-                systemUser = new User(externalId);
-                userService.createUser(systemUser);
+
+                systemUser = userService.findOrCreateUser(externalId, email, firstName, lastName);
                 System.out.println("Created new GitHub user: " + externalId);
             }
 
             return oAuth2User;
         } catch (Exception e) {
             System.err.println("Error processing GitHub OAuth user: " + e.getMessage());
-            // Return the OAuth user even if database operations fail
+            e.printStackTrace();
             return oAuth2User;
         }
     }

@@ -31,7 +31,6 @@ public class User {
     @Column(name = "last_login")
     private LocalDateTime lastLogin;
 
-    // Fixed One-to-One relationship - removed mappedBy
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     private UserProfile userProfile;
@@ -142,5 +141,19 @@ public class User {
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "userId='" + userId + '\'' +
+                ", role='" + role + '\'' +
+                ", totalBets=" + totalBets +
+                ", winnings=" + winnings +
+                ", winRate=" + winRate +
+                ", balance=" + balance +
+                ", createdAt=" + createdAt +
+                ", lastLogin=" + lastLogin +
+                '}';
     }
 }

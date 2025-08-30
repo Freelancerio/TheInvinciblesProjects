@@ -102,10 +102,8 @@ public class PslFootballService {
         }
     }
 
-    // Get Past Results
     public FixturesResponse getPastResults() {
         String url = config.getBaseUrl() + "/eventspastleague.php?id=" + config.getPslLeagueId();
-    
 
         try {
             FixturesResponse response = restTemplate.getForObject(url, FixturesResponse.class);

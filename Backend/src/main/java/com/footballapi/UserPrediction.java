@@ -4,6 +4,14 @@ package com.footballapi;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
+// NB : ALways run this to populate the database tables: on terminal etc
+//#Refresh all data
+//     POST http://localhost:8080/api/admin/refresh-all
+//#Refresh only standings (clears and repopulates)
+//     POST http://localhost:8080/api/admin/refresh-standings
+//#Update only matches (adds new, keeps existing)
+//     POST http://localhost:8080/api/admin/refresh-matches
+
 @Entity
 @Table(name = "user_predictions")
 public class UserPrediction {

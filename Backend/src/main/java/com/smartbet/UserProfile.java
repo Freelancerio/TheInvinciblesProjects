@@ -9,9 +9,17 @@ import java.time.LocalDateTime;
 @Table(name = "user_profiles")
 public class UserProfile {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "profile_id")
-    private Integer profileId;
+    private String profileId;
+
+    @PrePersist
+    protected void onCreate() {
+        if (profileId == null) {
+            profileId = java.util.UUID.randomUUID().toString();
+        }
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
 
     @Column(name = "user_id", unique = true)
     private String userId;
@@ -60,8 +68,8 @@ public class UserProfile {
 
     public UserProfile() {}
 
-    public Integer getProfileId() { return profileId; }
-    public void setProfileId(Integer profileId) { this.profileId = profileId; }
+    public String getProfileId() { return profileId; }
+    public void setProfileId(String profileId) { this.profileId = profileId; }
 
     public String getUserId() { return userId; }
     public void setUserId(String userId) { this.userId = userId; }
@@ -107,12 +115,6 @@ public class UserProfile {
 
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
-
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
-    }
 
     @PreUpdate
     protected void onUpdate() {
