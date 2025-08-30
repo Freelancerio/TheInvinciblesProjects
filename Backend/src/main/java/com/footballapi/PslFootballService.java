@@ -19,9 +19,7 @@ public class PslFootballService {
     
 
         try {
-            LeagueTableResponse response = restTemplate.getForObject(url, LeagueTableResponse.class);
-        
-            return response;
+            return restTemplate.getForObject(url, LeagueTableResponse.class);
         } catch (Exception e) {
         
             throw new RuntimeException("Error fetching standings: " + e.getMessage());

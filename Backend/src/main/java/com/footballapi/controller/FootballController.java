@@ -1,5 +1,9 @@
-package com.footballapi;
+package com.footballapi.controller;
 
+import com.footballapi.FixturesResponse;
+import com.footballapi.LeagueTableResponse;
+import com.footballapi.PslFootballService;
+import com.footballapi.TeamsResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +15,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/psl")
 @CrossOrigin(origins = { "http://localhost:3000", "http://localhost:3001", "https://smartbet.vercel.app" })
-public class PslFootballController {
+public class FootballController {
 
     @Autowired
     private PslFootballService pslService;

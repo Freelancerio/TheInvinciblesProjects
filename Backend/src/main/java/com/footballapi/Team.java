@@ -1,30 +1,38 @@
 package com.footballapi;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "teams")
 public class Team {
-    private String idTeam;
-    private String strTeam;
-    private String strAlternate;
-    private String strLeague;
-    private String strStadium;
-    private String strTeamBadge;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "team_id")
+    private Integer teamId;
+
+    @Column(name = "team_name")
+    private String teamName;
+
+    @Column(name = "team_alias")
+    private String teamAlias;
+
+    @Column(name = "home_stadium")
+    private String homeStadium;
+
+    @Column(name = "league")
+    private String league;
 
     public Team() {}
 
-    public String getIdTeam() { return idTeam; }
-    public void setIdTeam(String idTeam) { this.idTeam = idTeam; }
-
-    public String getStrTeam() { return strTeam; }
-    public void setStrTeam(String strTeam) { this.strTeam = strTeam; }
-
-    public String getStrAlternate() { return strAlternate; }
-    public void setStrAlternate(String strAlternate) { this.strAlternate = strAlternate; }
-
-    public String getStrLeague() { return strLeague; }
-    public void setStrLeague(String strLeague) { this.strLeague = strLeague; }
-
-    public String getStrStadium() { return strStadium; }
-    public void setStrStadium(String strStadium) { this.strStadium = strStadium; }
-
-    public String getStrTeamBadge() { return strTeamBadge; }
-    public void setStrTeamBadge(String strTeamBadge) { this.strTeamBadge = strTeamBadge; }
+    // Getters and Setters
+    public Integer getTeamId() { return teamId; }
+    public void setTeamId(Integer teamId) { this.teamId = teamId; }
+    public String getTeamName() { return teamName; }
+    public void setTeamName(String teamName) { this.teamName = teamName; }
+    public String getTeamAlias() { return teamAlias; }
+    public void setTeamAlias(String teamAlias) { this.teamAlias = teamAlias; }
+    public String getHomeStadium() { return homeStadium; }
+    public void setHomeStadium(String homeStadium) { this.homeStadium = homeStadium; }
+    public String getLeague() { return league; }
+    public void setLeague(String league) { this.league = league; }
 }

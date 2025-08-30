@@ -27,7 +27,6 @@ spring:
         jdbc:
           time_zone: UTC
 
-  # Optimize startup performance
   main:
     lazy-initialization: true
 
@@ -55,7 +54,7 @@ spring:
         max-request-size: 10MB
 
 server:
-  port: ${PORT:10000}
+  port: ${PORT:3000}
   servlet:
     context-path: /
 
