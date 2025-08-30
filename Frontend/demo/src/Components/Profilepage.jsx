@@ -1,5 +1,5 @@
 import React,{ useEffect, useState } from "react";
-import "./profilepage.css"; // Custom styles for profile page
+import "./profilepage.css";
 import axios from "axios";
 import { baseUrl } from "../baseURL";
 

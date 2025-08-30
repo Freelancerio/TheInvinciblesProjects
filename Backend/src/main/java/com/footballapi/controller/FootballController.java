@@ -14,7 +14,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/psl")
-@CrossOrigin(origins = { "http://localhost:3000", "http://localhost:3001", "https://smartbet.vercel.app" })
+@CrossOrigin(origins = { "http://localhost:8080", "http://localhost:8080", "https://smartbet.vercel.app" })
 public class FootballController {
 
     @Autowired

@@ -26,7 +26,7 @@ public class PslFootballService {
         }
     }
 
-    // Get PSL Standings for specific season
+    
     public LeagueTableResponse getStandings(String season) {
         String url = config.getBaseUrl() + "/lookuptable.php?l=" + config.getPslLeagueId() + "&s=" + season;
     
@@ -41,7 +41,7 @@ public class PslFootballService {
         }
     }
 
-    // Get Upcoming Fixtures
+    
     public FixturesResponse getUpcomingFixtures() {
         String url = config.getBaseUrl() + "/eventsnextleague.php?id=" + config.getPslLeagueId();
     
@@ -56,7 +56,7 @@ public class PslFootballService {
         }
     }
 
-    // Get All PSL Teams
+    
     public TeamsResponse getAllTeams() {
         String url = config.getBaseUrl() + "/lookup_all_teams.php?id=" + config.getPslLeagueId();
     
@@ -71,7 +71,7 @@ public class PslFootballService {
         }
     }
 
-    // Search for specific team
+    
     public TeamsResponse searchTeam(String teamName) {
         String encodedTeamName = teamName.replace(" ", "%20");
         String url = config.getBaseUrl() + "/searchteams.php?t=" + encodedTeamName;
@@ -87,7 +87,7 @@ public class PslFootballService {
         }
     }
 
-    // Get Head to Head between two teams
+    
     public FixturesResponse getHeadToHead(String teamId1, String teamId2) {
         String url = config.getBaseUrl() + "/lookupfixture.php?id=" + teamId1 + "&id2=" + teamId2;
     

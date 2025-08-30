@@ -15,7 +15,7 @@ import org.springframework.security.web.SecurityFilterChain;
 // e.g.  @PreAuthorize("hasRole('ADMIN')")
 //    public void deleteAccount(Long id) {
 //        // only admins can delete accounts
-//    }
+//    }w
 
 public class SecurityConfig {
     @Bean
@@ -23,7 +23,7 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests(authorizeRequests -> authorizeRequests.anyRequest().authenticated())
                 .oauth2Login(oauth2 -> oauth2.userInfoEndpoint(userInfo -> userInfo
                         .userService(customOAuth2UserService)
-                ).defaultSuccessUrl("https://the-invincibles-projects.vercel.app/profile",true));
+                ).defaultSuccessUrl("http://localhost:3000/profile",true));
         return http.build();
     }
 

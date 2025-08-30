@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import StatCard from "../Components/StatsCard";
+import Section from "../Components/Section"
 
 function UserDashboard() {
     const [user, setUser] = useState(null);
@@ -123,4 +125,4 @@ function UserDashboard() {
     );
 }
 
-export default App;
+export default UserDashboard;
