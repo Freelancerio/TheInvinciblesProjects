@@ -1,10 +1,9 @@
-
 export const getBaseUrl = () => {
     let baseURL;
-    if (window.location.hostname === "localhost"){
+    if (window.location.hostname === "localhost") {
         baseURL = "http://localhost:8080";
     }
-    else{
+    else {
         baseURL = "http://celebrated-intuition-production.up.railway.app";
     }
     return baseURL;
