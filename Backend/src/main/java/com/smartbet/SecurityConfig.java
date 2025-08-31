@@ -59,7 +59,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
                                 .requestMatchers("/login", "/error", "/webjars/**", "/css/**", "/js/**").permitAll()
-                                .requestMatchers("/user-info", "/api/**").authenticated() // These require authentication
+                                .requestMatchers("/api/database/**").permitAll()
+                                .requestMatchers("/api/database/psl/**").permitAll()
+                                .requestMatchers("/health").permitAll()
+                                .requestMatchers("/actuator/health").permitAll()
+                                .requestMatchers("/register", "/auth/**").permitAll()
+                                .requestMatchers("/user-info", "/api/**").authenticated()
                                 .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2
