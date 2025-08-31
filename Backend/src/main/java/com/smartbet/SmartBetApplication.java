@@ -7,9 +7,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@EnableScheduling  // Enable scheduled tasks
-@EnableAsync       // Enable async execution
-@ComponentScan(basePackages = {"com.smartbet", "com.footballapi"}) // Scan both packages
+@EnableScheduling
+@EnableAsync     
+@ComponentScan(basePackages = {"com.smartbet", "com.footballapi"})
 public class SmartBetApplication {
 
     public static void main(String[] args) {

@@ -1,0 +1,97 @@
+---
+layout: '../layouts/Layout.astro'
+title: 'Frontend Testing Breakdown'
+description: 'Detailed breakdown of SmartBet frontend automated test coverage.'
+---
+
+
+<div class="prose prose-slate dark:prose-invert px-6 max-w-4xl mx-auto">
+
+  <h2>Files Covered</h2>
+  <ul>
+    <li><code>src/__tests__/loginpage.test.jsx</code></li>
+    <li><code>src/__tests__/Profilepage.test.jsx</code></li>
+    <li><code>src/__tests__/landingPage.test.jsx</code></li>
+  </ul>
+
+  <h2>src/__tests__/loginpage.test.jsx</h2>
+  <h3>Mocks Used</h3>
+  <ul>
+    <li><code>useNavigate</code> from react-router-dom - assert navigation without changing the real URL.</li>
+    <li><code>./firebase</code> - avoid real auth calls; observe calls and control outcomes.</li>
+  </ul>
+
+  <ol>
+    <li>
+      <strong>allows entering email and password</strong>
+      <ul>
+        <li>What it tests: Typing in email/password inputs updates component state (controlled inputs).</li>
+        <li>Why it matters: Ensures the form fields are wired to state correctly; prevents regressions in input bindings.</li>
+        <li>Triviality: Mostly trivial (sanity check for form bindings).</li>
+      </ul>
+    </li>
+    <li>
+      <strong>submitting email/password calls Firebase and navigates to /profile</strong>
+      <ul>
+        <li>What it tests: Filling fields then clicking Log In triggers signInWithEmailAndPassword and navigates to /profile.</li>
+        <li>Why it matters: Validates the primary happy path: user action -> auth call -> route change.</li>
+        <li>Triviality: Not trivial (covers side-effects and navigation).</li>
+      </ul>
+    </li>
+    <li>
+      <strong>Google button redirects to local OAuth</strong>
+      <ul>
+        <li>What it tests: Clicking Google sets window.location to http://localhost:8080/oauth2/authorization/google.</li>
+        <li>Why it matters: Guards against broken/local misconfigured OAuth entrypoint.</li>
+        <li>Triviality: Moderately trivial (small but high-signal when changed).</li>
+      </ul>
+    </li>
+    <li>
+      <strong>GitHub button redirects to local OAuth</strong>
+      <ul>
+        <li>What it tests: Clicking GitHub sets window.location to http://localhost:8080/oauth2/authorization/github.</li>
+        <li>Why it matters: Ensures correct OAuth start URL.</li>
+        <li>Triviality: Moderately trivial.</li>
+      </ul>
+    </li>
+  </ol>
+
+  <h2>src/__tests__/Profilepage.test.jsx</h2>
+  <h3>Mocks Used</h3>
+  <ul>
+    <li>Explicit factory mock for axios - avoids loading the real ESM axios in Jest 27 and lets us control responses.</li>
+  </ul>
+
+  <ol>
+    <li>
+      <strong>fetches and displays user data (happy path)</strong>
+      <ul>
+        <li>What it tests: On mount, calls GET http://localhost:8080/user-info with withCredentials: true; renders name and image.</li>
+        <li>Why it matters: Validates side-effects (network call), credentialed cookies, and the UI render of returned data.</li>
+        <li>Triviality: Not trivial (behavioral coverage across fetch + render).</li>
+      </ul>
+    </li>
+    <li>
+      <strong>on error, stays in loading state (no user shown)</strong>
+      <ul>
+        <li>What it tests: Failed request does not crash or render user UI; loading state remains (or shows a minimal state).</li>
+        <li>Why it matters: Ensures resilience and correct error handling when the backend is unreachable or rejects.</li>
+        <li>Triviality: Not trivial.</li>
+      </ul>
+    </li>
+  </ol>
+
+  <h2>src/__tests__/landingPage.test.jsx</h2>
+  <ol>
+    <li>
+      <strong>renders the greeting</strong>
+      <ul>
+        <li>What it tests: The landing page renders the main heading and supporting copy.</li>
+        <li>Why it matters: Smoke test that guards against accidental deletions/renames; verifies the page loads.</li>
+        <li>Triviality: Trivial (content presence, minimal behavior).</li>
+      </ul>
+    </li>
+  </ol>
+
+
+</div>
