@@ -43,7 +43,7 @@ title: 'Design & Methodology'
     See the Deployment diagram on the Design page for a visual layout of nodes, artifacts, and links.
   </p>
 
-  <h2>3. Feature set</h2>
+  <h2>3.1 Feature set</h2>
   <h3>Statistics module</h3>
   <ul>
     <li><strong>Standard stats:</strong> goals for/against, shots, shots on target, possession, cards, pass accuracy, home vs away results, 5 game form.</li>
@@ -67,9 +67,36 @@ title: 'Design & Methodology'
 
   <h3>Accounts and roles</h3>
   <ul>
-    <li>Firebase auth (email and Google).</li>
     <li>Roles: user, admin (admin can manage fixtures cache, metrics recompute, and users).</li>
   </ul>
+
+   <h2>3.2 Tag system for filtering statistics</h2>
+  <p>
+    To make the statistics more useful and interactive, our platform includes a 
+    <strong>tag-based filtering system</strong>. Tags allow users to quickly refine and compare 
+    statistics across matches, teams, and players without needing complex queries.
+  </p>
+
+  <h3>How it works</h3>
+  <ul>
+    <li>Each team, match, or stat entry is associated with descriptive tags (e.g. <em>home</em>, <em>away</em>, <em>high-possession</em>, <em>derby</em>).</li>
+    <li>Users can select one or more tags to filter displayed stats in real-time.</li>
+    <li>Filters combine logically (e.g. show <em>home</em> + <em>last-5 games</em> performance).</li>
+    <li>Tags are consistent across modules (fixtures, head-to-head, betting insights).</li>
+  </ul>
+
+  <h3>Benefits in our context</h3>
+  <ul>
+    <li><strong>Speed:</strong> Quick drill-down into relevant subsets of stats without browsing entire datasets.</li>
+    <li><strong>Comparisons:</strong> Easily compare similar contexts (e.g. <em>cup games</em> vs <em>league games</em>).</li>
+    <li><strong>Personalization:</strong> Bettors can save preferred tag sets for repeated use.</li>
+    <li><strong>Insights:</strong> Exposes trends (e.g. “Team X underperforms in <em>away night games</em>”).</li>
+  </ul>
+
+  <p>
+    This tag system ensures that our sports statistics tracker remains both powerful and user-friendly, 
+    bridging raw data with actionable insights for bettors and fans.
+  </p>
 
   <h2>4. UX and screens</h2>
   <p>
@@ -86,16 +113,11 @@ title: 'Design & Methodology'
 
 
   <h2>5. Data model (high level)</h2>
-  <ul>
-    <li><strong>teams</strong>: id, name, league, season, crest_url.</li>
-    <li><strong>fixtures</strong>: id, home_id, away_id, kickoff, league, season, score, status.</li>
-    <li><strong>stats_raw</strong>: fixture_id, team_id, provider_payload (jsonb).</li>
-    <li><strong>stats_derived</strong>: team_id, season, momentum, clutch, consistency, odds_bias.</li>
-    <li><strong>users</strong>: uid (firebase), email, display_name, role.</li>
-    <li><strong>wallets</strong>: uid, balance_cents.</li>
-    <li><strong>transactions</strong>: id, uid, type (deposit, withdraw), amount_cents, created_at.</li>
-    <li><strong>bets</strong>: id, uid, fixture_id, selection, stake_cents, odds, status, payout_cents.</li>
-  </ul>
+  <img
+  src="/SDP_Schema_Tables.svg"
+  alt="Deployment diagram: client, Vercel, Firebase, Render API, Supabase/PostgreSQL"
+  class="rounded-xl border border-slate-200 dark:border-slate-800"
+/>
 
 <h2>6. API design (selected endpoints)</h2>
 <pre><code>GET   /api/fixtures?league=EPL&amp;from=YYYY-MM-DD&amp;to=YYYY-MM-DD
@@ -108,10 +130,6 @@ POST  /api/wallet/deposit
 POST  /api/wallet/withdraw
 </code></pre>
 
-
-  <p class="text-sm">
-    All protected endpoints require Authorization: Bearer &lt;id-token&gt;. The API validates tokens with Firebase Admin SDK.
-  </p>
 
   <h2>7. Development methodology</h2>
   <p>

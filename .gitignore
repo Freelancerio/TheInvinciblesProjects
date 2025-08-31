@@ -18,8 +18,15 @@
 *.zip
 *.tar.gz
 *.rar
+ec2.txt
+ngrok_recovery_codes.txt
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
 .idea/
+*.pem
+.fake
+
+# Ignore built documentation output
+documentation/dist/

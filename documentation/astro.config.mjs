@@ -1,13 +1,11 @@
-// @ts-check
+// documentation/astro.config.mjs
 import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
 
-// https://astro.build/config
 export default defineConfig({
-  integrations: [
-    tailwind({
-      // Optional: Apply Tailwind to other file extensions if needed
-      // applyBaseStyles: false // Disable if you want to manually control base styles
-    })
-  ]
+  output: 'static',
+  integrations: [tailwind()],
+  // IMPORTANT: do NOT set outDir here; let Astro use the default "dist"
+  // If you previously had: outDir: './docs' — remove it.
+  // No site/base needed for Vercel.
 });

@@ -1,5 +1,10 @@
 package com.smartbet;
 
+<<<<<<< HEAD
+=======
+import java.util.Optional;
+
+>>>>>>> 3f151e00f7c6f3d4897c3ce182d2aedf2c37a412
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;

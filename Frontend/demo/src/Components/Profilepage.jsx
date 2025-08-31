@@ -1,7 +1,22 @@
-import React from "react";
-import "./profilepage.css"; // Custom styles for profile page
+import React,{ useEffect, useState } from "react";
+import "./profilepage.css";
+import axios from "axios";
+import { baseUrl } from "../baseURL";
 
 function ProfilePage() {
+
+  const [user,setUser] = useState(null);
+
+  useEffect(()=> {
+        axios.get(`${baseUrl}/user-info`,{withCredentials: true})
+        .then(response => {
+            setUser(response.data);
+        })
+        .catch(error => {
+            console.error('Error occurred: ',error);
+        } )
+    },[]);
+
   return (
     <>
       {/* === Navigation Bar === */}
@@ -21,25 +36,18 @@ function ProfilePage() {
       {/* === Profile Page Content === */}
       <div className="profile-container">
         <h1>My Account</h1>
-
-        {/* === Profile Header === */}
+        {user ? (
         <div className="profile-header">
-          <div className="profile-pic" />
-
           <div>
-            {/* TODO: Replace this hardcoded name with dynamic user data from backend/Firebase */}
-            {/* Example: Replace "Luvo Zulu" with user.displayName or user.email */}
-            <h2>Luvo Zulu</h2>
-
-            {/* TODO: Replace this static joined date with the actual registration date  (IDK IF WE ACTUALLY NEED THIS) */}
-            {/* Example: Format user.metadata.creationTime */}
+            <h2>{user.name}</h2>
+            {user.picture && <img src = {user.picture} alt = "User Profile" referrerPolicy="no-referrer"></img>}  
             <p>Joined 2021</p>
-
-            {/* TODO: Dynamically fetch verification status and user level  (IDK IF WE ACTUALLY NEED THIS) */}
-            {/* Example: Show "Verified" badge based on user.verified === true */}
-            <span>Verified • Level 2</span>
+            <span>Verified • Level 2</span>    
           </div>
         </div>
+        ):(
+          <p>Loading user data...</p>
+        )}
 
         {/* === Profile Tabs (static for now) === */}
         <div className="tab-nav">
@@ -55,7 +63,11 @@ function ProfilePage() {
           <form className="info-form">
             <label>Email</label>
             {/* TODO: Populate this field with user's email (read-only or editable) */}
-            <input type="email" placeholder="Email" id="" />
+            {user ? (
+            <input type="email" value = {user.email} id="" />
+            ):(
+              <input type="email" placeholder="Email" id="" />
+            )}
 
             <label>Phone</label>
             {/* TODO: Pre-fill with user.phoneNumber if available */}

@@ -7,7 +7,7 @@ description: 'The tools and platforms we chose for our project and why they work
 <section class="not-prose mb-6 px-6 max-w-4xl mx-auto">
   <h1 class="text-3xl font-bold tracking-tight">Our Tech Stack</h1>
   <p class="mt-2 text-slate-600 dark:text-slate-300">
-    We are building a full stack web app with a React frontend, a Spring Boot backend on Render, a PostgreSQL database, and Firebase for authentication.
+    We are building a full stack web app with a React frontend, a Spring Boot backend on Render, a PostgreSQL database, and OAuth2 login handled by Spring Security.
     Below we explain why we chose each tool and how they fit together.
   </p>
 </section>
@@ -17,107 +17,128 @@ description: 'The tools and platforms we chose for our project and why they work
   <h2>Frontend: React</h2>
   <p>
     We chose React because it is flexible, well documented, and supported by a large community. React components help us reuse UI pieces and keep screens consistent.
-    It can get complex if we over-engineer state, so we will keep things simple: local component state where possible and small, focused components.
+    To keep things simple, we use local state where possible and small, focused components.
   </p>
 
   <h2>Backend: Spring Boot on Render</h2>
   <p>
-    Spring Boot makes it straightforward to build a clean REST API in Java. It has strong support for validation, security, and testing.
+    Spring Boot makes it straightforward to build a clean REST API in Java. We secure endpoints with Spring Security and its OAuth2 support.
     We deploy the backend on Render so we do not manage servers by hand. Render gives us quick deployments, logs, and simple scaling.
   </p>
 
   <h2>Database: PostgreSQL</h2>
   <p>
     PostgreSQL is a reliable relational database with good performance and strong SQL features. It works well with Spring Data and gives us room to grow.
-    We will manage schema changes with migrations so every change is tracked and repeatable.
+    We manage schema changes with migrations so every change is tracked and repeatable.
   </p>
 
-  <h2>Authentication: Firebase</h2>
+  <h2>Authentication: OAuth2 + Spring Security</h2>
   <p>
-    Firebase Authentication handles sign up, login, and secure token management for us. It supports email and third party providers like Google.
-    The frontend gets an ID token from Firebase and sends it with requests. The backend verifies that token before serving protected data.
+    Users sign in with an external OAuth2 provider (for example Google or GitHub). We use Spring Security's OAuth2 Login to handle the Authorization Code flow.
+    After the provider verifies the user, Spring Security completes the callback, establishes the user session, and applies role-based access to our endpoints.
   </p>
+  <ul>
+    <li>Frontend redirects to the backend's login endpoint.</li>
+    <li>Backend redirects to the OAuth2 provider and handles the callback.</li>
+    <li>On success, Spring Security creates a secure session (HttpOnly cookie) or issues a server-side token.</li>
+    <li>Subsequent API calls include the session cookie automatically; the backend enforces access rules.</li>
+  </ul>
 
   <h2>How everything fits together</h2>
 
-  <!-- Responsive, accessible SVG diagram -->
+  <!-- Responsive, accessible SVG diagram (OAuth2 + Spring Security) -->
   <div class="not-prose mt-4 mb-8 rounded-xl border border-slate-200 bg-white/80 p-4 dark:border-slate-800 dark:bg-slate-900/60">
-    <svg viewBox="0 0 900 400" role="img" aria-label="System diagram: React client calls Spring Boot API on Render, API stores data in PostgreSQL, Firebase provides auth tokens">
+    <svg viewBox="0 0 980 420" role="img" aria-label="System diagram: React client, Spring Boot API on Render with Spring Security OAuth2 Login, PostgreSQL database, and an external OAuth2 provider">
       <defs>
         <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
           <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"></path>
         </marker>
         <style>
-          .box { fill: white; stroke: #94a3b8; stroke-width: 2; rx: 10; }
-          .box-dark { fill: #0f172a; }
-          .label { font: 14px system-ui, -apple-system, Segoe UI, Roboto, Arial; fill: #fff; }
+          .box { fill: white; stroke: #9bb894ff; stroke-width: 2; rx: 10; }
+          .label { font: 14px system-ui, -apple-system, Segoe UI, Roboto, Arial; fill: #0f172a; }
           .title { font-weight: 700; }
-          .note  { font: 12px system-ui, -apple-system, Segoe UI, Roboto, Arial; fill: currentColor; opacity: 0.8; }
+          .note  { font: 12px system-ui, -apple-system, Segoe UI, Roboto, Arial; fill: #006c76ff;; opacity: 0.8; }
           @media (prefers-color-scheme: dark) {
-            .box { fill: rgba(15,23,42,0.9); stroke: #334155; }
+            .box { fill: rgba(15,23,42,0.9); stroke: #ffffffff; }
+            .label { fill: #fff; }
           }
         </style>
       </defs>
 
       <!-- React Client -->
-      <rect x="40" y="70" width="230" height="90" class="box"></rect>
+      <rect x="40" y="70" width="260" height="100" class="box"></rect>
       <text x="60" y="105" class="label title">React (Frontend)</text>
-      <text x="60" y="130" class="label">SPA, fetches API, shows UI</text>
+      <text x="60" y="130" class="label">SPA, calls API, shows UI</text>
 
       <!-- Spring Boot API -->
-      <rect x="340" y="70" width="230" height="90" class="box"></rect>
-      <text x="360" y="105" class="label title">Spring Boot API</text>
-      <text x="360" y="130" class="label">REST endpoints, validation</text>
+      <rect x="360" y="70" width="260" height="100" class="box"></rect>
+      <text x="380" y="100" class="label title">Spring Boot API</text>
+      <text x="380" y="125" class="label">Spring Security, OAuth2 Login</text>
 
       <!-- Render -->
-      <rect x="340" y="200" width="230" height="70" class="box"></rect>
-      <text x="360" y="240" class="label">Hosted on Render</text>
+      <rect x="360" y="200" width="260" height="70" class="box"></rect>
+      <text x="380" y="240" class="label">Hosted on Render</text>
 
       <!-- PostgreSQL -->
-      <rect x="640" y="70" width="220" height="90" class="box"></rect>
-      <text x="660" y="105" class="label title">PostgreSQL</text>
-      <text x="660" y="130" class="label">Relational data, migrations</text>
+      <rect x="680" y="70" width="260" height="100" class="box"></rect>
+      <text x="700" y="100" class="label title">PostgreSQL</text>
+      <text x="700" y="125" class="label">Relational data, migrations</text>
 
-      <!-- Firebase -->
-      <rect x="40" y="220" width="230" height="90" class="box"></rect>
-      <text x="60" y="255" class="label title">Firebase Auth</text>
-      <text x="60" y="280" class="label">Issues ID token</text>
+      <!-- OAuth2 Provider -->
+      <rect x="40" y="220" width="260" height="100" class="box"></rect>
+      <text x="60" y="255" class="label title">OAuth2 Provider</text>
+      <text x="60" y="280" class="label">Google, GitHub, etc.</text>
 
-      <!-- Arrows -->
-      <!-- React -> API -->
-      <line x1="270" y1="115" x2="340" y2="115" stroke="currentColor" stroke-width="2" marker-end="url(#arrow)"></line>
-      <text x="275" y="105" class="note">HTTPS JSON</text>
+      <!-- Arrows and flow notes -->
+
+      <!-- React -> API normal calls -->
+      <line x1="300" y1="115" x2="360" y2="115" stroke="currentColor" stroke-width="2" marker-end="url(#arrow)"></line>
+      <text x="305" y="105" class="note">HTTPS JSON</text>
 
       <!-- API -> DB -->
-      <line x1="570" y1="115" x2="640" y2="115" stroke="currentColor" stroke-width="2" marker-end="url(#arrow)"></line>
-      <text x="575" y="105" class="note">SQL</text>
+      <line x1="620" y1="115" x2="680" y2="115" stroke="currentColor" stroke-width="2" marker-end="url(#arrow)"></line>
+      <text x="625" y="105" class="note">SQL</text>
 
-      <!-- Firebase -> React (token) -->
-      <line x1="155" y1="220" x2="155" y2="160" stroke="currentColor" stroke-width="2" marker-end="url(#arrow)"></line>
-      <text x="70" y="195" class="note">Login returns ID token</text>
+      <!-- Login: React -> API /login -->
+      <line x1="170" y1="170" x2="170" y2="220" stroke="currentColor" stroke-width="2" marker-end=""></line>
+      <text x="70" y="195" class="note">User clicks Login</text>
+      <line x1="170" y1="170" x2="360" y2="170" stroke="currentColor" stroke-width="2" marker-end="url(#arrow)"></line>
+      <text x="230" y="160" class="note">GET /oauth2/authorization/provider</text>
 
-      <!-- React token -> API -->
-      <line x1="270" y1="135" x2="340" y2="135" stroke="currentColor" stroke-width="2" marker-end="url(#arrow)"></line>
-      <text x="270" y="150" class="note">Authorization: Bearer ...</text>
+      <!-- API -> Provider redirect -->
+      <line x1="360" y1="250" x2="300" y2="250" stroke="currentColor" stroke-width="2" marker-end="url(#arrow)"></line>
+      <text x="315" y="240" class="note">Redirect to provider</text>
 
-      <!-- API hosted on Render -->
-      <line x1="455" y1="160" x2="455" y2="200" stroke="currentColor" stroke-width="2" marker-end="url(#arrow)"></line>
-      <text x="300" y="190" class="note">CI deploys image</text>
+      <!-- Provider -> API callback -->
+      <line x1="300" y1="290" x2="360" y2="290" stroke="currentColor" stroke-width="2" marker-end="url(#arrow)"></line>
+      <text x="305" y="305" class="note">Callback with code</text>
+
+      <!-- API -> React session established -->
+      <line x1="360" y1="200" x2="360" y2="170" stroke="currentColor" stroke-width="2" marker-end=""></line>
+      <line x1="360" y1="170" x2="300" y2="170" stroke="currentColor" stroke-width="2" marker-end="url(#arrow)"></line>
+      <text x="365" y="160" class="note">Sets HttpOnly session cookie</text>
+
+      <!-- Normal authenticated calls -->
+      <line x1="300" y1="135" x2="360" y2="135" stroke="currentColor" stroke-width="2" marker-end="url(#arrow)"></line>
+      <text x="230" y="150" class="note">Cookie sent automatically</text>
+
+      <!-- API hosted on Render (arrow down) -->
+      <line x1="490" y1="170" x2="490" y2="200" stroke="currentColor" stroke-width="2" marker-end="url(#arrow)"></line>
+      <text x="410" y="190" class="note">CI deploys image</text>
     </svg>
   </div>
 
   <h3>In short</h3>
   <p>
-    React handles the screens in the browser. Users sign in with Firebase and get a token.
-    The frontend calls the Spring Boot API and includes that token. The API, hosted on Render,
-    checks the token and then reads or writes data in PostgreSQL. This setup lets us move fast
-    while keeping the system secure and easy to deploy.
+    React renders the UI and calls the API. For login, it sends the user to the backend's OAuth2 login route.
+    Spring Security redirects to the OAuth2 provider, handles the callback, and creates a secure session.
+    Authenticated API requests include the session cookie automatically. The API, hosted on Render, reads and writes data in PostgreSQL.
   </p>
 
   <h2>Why this works for us</h2>
   <p>
-    We avoid heavy infrastructure work and focus on features. React gives us a smooth UI, Spring Boot gives a solid API,
-    PostgreSQL is dependable for our data, Firebase keeps accounts safe, and Render makes deployments simple.
+    This keeps secrets and token handling on the server, reduces client complexity, and lets Spring Security enforce policies.
+    React gives us a smooth UI, Spring Boot provides a solid and secure API, PostgreSQL is dependable for our data, and Render makes deployments simple.
     If our needs change, each part can scale or be swapped without rewriting the whole system.
   </p>
 

@@ -1,0 +1,184 @@
+---
+layout: '../layouts/Layout.astro'
+title: 'Work planning with Jira'
+description: 'How we plan, track, and review work using a simple Jira workflow.'
+---
+
+<section class="not-prose mb-6 px-6 max-w-4xl mx-auto">
+  <h1 class="text-3xl font-bold tracking-tight">Work planning with Jira</h1>
+  <p class="mt-2 text-slate-600 dark:text-slate-300">
+    We organise our sprints, track issues, and review changes in Jira. The workflow below
+    shows the typical paths an item can take from idea to production, including review
+    loops and a dedicated hotfix lane for urgent production problems.
+  </p>
+</section>
+
+<!-- Workflow image -->
+<div class="not-prose px-6 max-w-4xl mx-auto">
+  <figure class="rounded-xl border border-slate-200 bg-white/70 p-3 dark:border-slate-700 dark:bg-slate-900/60">
+    <!-- Put the diagram file in: documentation/public/images/jira-workflow.jpg -->
+    <img
+      src="jira_diagram.svg"
+      alt="Jira workflow diagram showing issue states, review loops, and hotfix lane"
+      class="mx-auto block max-w-full h-auto"
+    />
+    <figcaption class="mt-2 text-center text-sm text-slate-500 dark:text-slate-400">
+      Jira workflow we use for planning, development, review, and hotfixes.
+    </figcaption>
+  </figure>
+</div>
+
+<div class="prose prose-slate dark:prose-invert px-6 max-w-4xl mx-auto">
+
+  <h2>Benefits of Jira workflow</h2>
+
+  <h3>Quality Assurance benefits</h3>
+  <ul>
+    <li>Built-in review process: every work item goes through mandatory review before completion.</li>
+    <li>Multiple review outcomes: supports rejection, minor fixes, and full approval paths.</li>
+    <li>Rework loops: clear process for handling rejected or incomplete work.</li>
+    <li>Production issue handling: dedicated hotfix process for urgent production problems.</li>
+  </ul>
+
+  <h3>Project Management benefits</h3>
+  <ul>
+    <li>Clear issue lifecycle: every team member knows exactly where issues stand.</li>
+    <li>Sprint planning integration: seamless flow from backlog to sprint to development.</li>
+    <li>Epic management: large features are broken down into manageable stories.</li>
+    <li>Blocked issue tracking: dedicated state and resolution process for impediments.</li>
+  </ul>
+
+  <h3>Development Team benefits</h3>
+  <ul>
+    <li>Clear ownership: developer assignment is explicit in the workflow.</li>
+    <li>Status transparency: everyone can see what is in progress, blocked, or under review.</li>
+    <li>Flexible development: allows for extended work periods and iterative improvements.</li>
+    <li>Quick fix support: separate path for minor changes that do not need the full development cycle.</li>
+  </ul>
+
+  <h3>Stakeholder benefits</h3>
+  <ul>
+    <li>Visibility: complete transparency into work progress and bottlenecks.</li>
+    <li>Predictability: standardised process makes delivery timelines more reliable.</li>
+    <li>Issue traceability: full audit trail from creation to closure.</li>
+    <li>Feature request management: clear path for new requirements to enter the system.</li>
+  </ul>
+
+  <h3>Process Efficiency benefits</h3>
+  <ul>
+    <li>Reduced context switching: clear handoffs between development and review.</li>
+    <li>Bottleneck identification: easy to spot where work is getting stuck.</li>
+    <li>Automated workflows: can be enhanced with automation rules and triggers.</li>
+    <li>Consistent delivery: standardised process ensures consistent quality output.</li>
+  </ul>
+
+  <h3>Risk Management benefits</h3>
+  <ul>
+    <li>Change control: all modifications go through proper review channels.</li>
+    <li>Rollback capability: issues can be reopened if problems are discovered.</li>
+    <li>Documentation trail: complete history of all decisions and changes.</li>
+    <li>Quality gates: multiple checkpoints prevent defective work from reaching production.</li>
+  </ul>
+
+  <h3>Team Collaboration benefits</h3>
+  <ul>
+    <li>Cross-functional coordination: clear handoffs between different team roles.</li>
+    <li>Communication framework: status changes trigger appropriate notifications.</li>
+    <li>Knowledge sharing: review process ensures multiple people understand each change.</li>
+    <li>Accountability: clear ownership and responsibility at each stage.</li>
+  </ul>
+
+  <h3>Scalability benefits</h3>
+  <ul>
+    <li>Handles multiple issue types: stories, bugs, tasks, and epics all flow through appropriate paths.</li>
+    <li>Sprint integration: works seamlessly with agile sprint planning and execution.</li>
+    <li>Team growth: process remains consistent as team size increases.</li>
+    <li>Process improvement: workflow can be refined based on team feedback and metrics.</li>
+  </ul>
+
+  <h2>How we use it day to day</h2>
+  <ol>
+    <li>Create or refine issues in the backlog. Link them to epics where relevant.</li>
+    <li>Pick work during sprint planning and assign an owner.</li>
+    <li>Move to In progress, keep comments and checklists up to date.</li>
+    <li>Open a review when development is done. Reviewers request changes or approve.</li>
+    <li>Merge and deploy. If a production issue appears, use the hotfix lane.</li>
+  </ol>
+
+
+  <section class="not-prose mb-6 px-6 max-w-4xl mx-auto">
+  <h1 class="text-3xl font-bold tracking-tight">Sprint 1 Documentation (13-18 August)</h1>
+  <p class="mt-2 text-slate-600 dark:text-slate-300">
+    Sprint Goal: establish the project foundation by setting up the backend, frontend, and database connections,
+    and completing initial design and planning documentation.
+  </p>
+</section>
+
+<div class="prose prose-slate dark:prose-invert px-6 max-w-4xl mx-auto">
+
+  <h2>Sprint overview</h2>
+  <ul>
+    <li><strong>Duration:</strong> 13 August - 18 August (1 week)</li>
+    <li><strong>Team members:</strong> Luvo Zulu (LZ), Stephan Botha (SB), Kgadi Selepe (KS),Mokobane Rorisang(MR),Mzu Mboxo (MM)</li>
+    <li><strong>Meeting date:</strong> Wednesday, 13 August</li>
+  </ul>
+
+  <h3>Main discussion points</h3>
+  <ul>
+    <li>How to represent and store data retrieved from the API-Football service.</li>
+    <li>Structuring the database schema for scalability.</li>
+    <li>Initial design of frontend pages (Landing, Profile, System Frontend).</li>
+    <li>Documentation standards and responsibility assignment.</li>
+    <li>Agreement to use Jira for task tracking and progress transparency.</li>
+  </ul>
+
+  <h2>Sprint planning</h2>
+  <p>
+    During sprint planning we broke the initial work into 9 backlog items, balancing technical setup,
+    documentation, and design. Each item was assigned to a specific team member for ownership and
+    accountability. Jira was used to formalize the distribution and provide visibility into status
+    and progress.
+  </p>
+
+  <h2>Sprint backlog and assignments</h2>
+  <div class="flex justify-center my-6">
+    <img src="jira_table.png" alt="Sprint 1 Jira Backlog" class="rounded-xl shadow-lg max-w-full" />
+  </div>
+
+
+  <h2>Retrospective</h2>
+  <h3>What went well</h3>
+  <ul>
+    <li>Jira kept ownership and progress visible for everyone.</li>
+    <li>Early documentation enabled consistent decisions across the team.</li>
+    <li>Reviews caught issues early and spread knowledge.</li>
+  </ul>
+
+  <h3>What could improve</h3>
+  <ul>
+    <li>Time estimates for infra tasks were optimistic; some items carried risk and unknowns.</li>
+    <li>Integration tasks were blocked waiting for deployment readiness.</li>
+  </ul>
+
+  <h3>Actions for Sprint 2</h3>
+  <ul>
+    <li>Complete backend deployment early in the sprint, then connect React to API.</li>
+    <li>Improve estimates where external services are involved.</li>
+    <li>Keep using peer review and update docs with any architectural decisions.</li>
+  </ul>
+
+
+  <h2>Conclusion</h2>
+  <p>
+    Sprint 1 successfully laid the foundation of the SmartBet project. The team collaborated well using Jira to 
+    assign and track work, ensuring accountability and visibility. Documentation, database schema, and early UI 
+    designs are complete, while backend deployment and integration tasks will roll into Sprint 2. The sprint 
+    demonstrated that our Scrum process supports clear ownership, review-based quality assurance, and continuous 
+    progress toward project goals.
+  </p>
+
+
+</div>
+
+
+</div>

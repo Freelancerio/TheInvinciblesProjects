@@ -1,6 +1,4 @@
 // jest.setup.js
 import '@testing-library/jest-dom';
-// jest.setup.js
-import '@testing-library/jest-dom';
 import 'whatwg-fetch'; //  This polyfills fetch() for Jest
 

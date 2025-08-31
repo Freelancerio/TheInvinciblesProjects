@@ -1,0 +1,167 @@
+---
+layout: '../layouts/Layout.astro'
+title: 'Local Development Setup'
+description: 'How to run the app locally: database, backend, and frontend.'
+---
+
+<section class="not-prose mb-6 px-6 max-w-4xl mx-auto">
+  <h1 class="text-3xl font-bold tracking-tight">Local Development Setup</h1>
+  <p class="mt-2 text-slate-600 dark:text-slate-300">
+    This guide shows how to run the full stack locally:
+    PostgreSQL, the Spring Boot API with OAuth2 (Spring Security), and the React frontend.
+    Use it when onboarding new contributors or setting up a new machine.
+  </p>
+</section>
+
+<div class="prose prose-slate dark:prose-invert px-6 max-w-4xl mx-auto">
+
+  <h2>TL;DR quick start</h2>
+  <ol>
+    <li>Install Node 18+, Java 17+, Maven, and Git. Docker Desktop optional.</li>
+    <li>Start a local Postgres (Docker) or point to your Supabase dev database.</li>
+    <li>Create OAuth2 credentials (Google or GitHub). Add redirect URI(s) below.</li>
+    <li>Run the API: <code>./mvnw spring-boot:run</code> in <code>Backend/</code>.</li>
+    <li>Run the frontend: <code>npm install</code> then <code>npm run dev</code> in <code>Frontend/</code>.</li>
+  </ol>
+
+  <h2>1) Prerequisites</h2>
+  <ul>
+    <li>Node.js 18+ and npm</li>
+    <li>Java 17+ and Maven (or the included <code>./mvnw</code>)</li>
+    <li>Git</li>
+    <li>Docker Desktop (optional for local Postgres)</li>
+  </ul>
+
+  <h2>2) Clone the repo</h2>
+  <pre><code>git clone https://github.com/Stephan0709/TheInvinciblesProjects.git
+cd TheInvinciblesProjects
+</code></pre>
+
+  <h2>3) Database setup</h2>
+  <p>You have two choices for development:</p>
+
+  <h3>Option A: Local PostgreSQL via Docker</h3>
+  <p>Create and start a Postgres container:</p>
+  <pre><code>docker run --name invincibles-postgres -e POSTGRES_USER=app \
+  -e POSTGRES_PASSWORD=app -e POSTGRES_DB=invincibles \
+  -p 5432:5432 -d postgres:15
+</code></pre>
+  <p>Connection details you will use in Spring Boot:</p>
+  <pre><code>spring.datasource.url=jdbc:postgresql://localhost:5432/invincibles
+spring.datasource.username=app
+spring.datasource.password=app
+</code></pre>
+
+  <h3>Option B: Use Supabase dev database</h3>
+  <p>Get connection info from Supabase Project Settings - Database. It will look like:</p>
+  <pre><code>spring.datasource.url=jdbc:postgresql://YOUR_HOST:5432/postgres
+spring.datasource.username=postgres.YOUR_USER
+spring.datasource.password=YOUR_PASSWORD
+</code></pre>
+
+  <p>We use Flyway or Liquibase migrations (if present) so schema changes are tracked and reproducible.</p>
+
+  <h2>4) OAuth2 provider setup</h2>
+  <p>
+    The API uses Spring Security OAuth2 login. Create an OAuth app in Google or GitHub (either works).
+    Add these redirect URIs:
+  </p>
+  <ul>
+    <li>Google: <code>http://localhost:8080/login/oauth2/code/google</code></li>
+    <li>GitHub: <code>http://localhost:8080/login/oauth2/code/github</code></li>
+  </ul>
+  <p>Copy the client id and client secret to your API config (next section).</p>
+
+  <h2>5) Configure the backend</h2>
+  <p>Create <code>Backend/src/main/resources/application-dev.properties</code> (or use <code>application.properties</code> directly):</p>
+  <pre><code># Activate dev profile
+spring.profiles.active=dev
+
+# Database
+spring.datasource.url=jdbc:postgresql://localhost:5432/invincibles
+spring.datasource.username=app
+spring.datasource.password=app
+spring.jpa.hibernate.ddl-auto=validate
+
+# OAuth2 (choose the provider you set up)
+# Google
+spring.security.oauth2.client.registration.google.client-id=YOUR_GOOGLE_CLIENT_ID
+spring.security.oauth2.client.registration.google.client-secret=YOUR_GOOGLE_CLIENT_SECRET
+spring.security.oauth2.client.registration.google.scope=openid,profile,email
+
+# GitHub (alternative)
+spring.security.oauth2.client.registration.github.client-id=YOUR_GITHUB_CLIENT_ID
+spring.security.oauth2.client.registration.github.client-secret=YOUR_GITHUB_CLIENT_SECRET
+
+# CORS for local dev (adjust origins as needed)
+app.cors.allowed-origins=http://localhost:5173,http://localhost:3000
+</code></pre>
+
+  <p>If you prefer environment variables instead of properties, export them before running the app.</p>
+
+  <h2>6) Run the backend</h2>
+  <pre><code>cd Backend
+./mvnw clean spring-boot:run
+# or: mvn clean spring-boot:run
+</code></pre>
+  <p>API runs at <code>http://localhost:8080</code>. Check health:</p>
+  <pre><code>curl -i http://localhost:8080/actuator/health
+</code></pre>
+
+  <h2>7) Configure and run the frontend</h2>
+  <p>Create <code>Frontend/.env.local</code>:</p>
+  <pre><code>VITE_API_BASE=http://localhost:8080
+VITE_AUTH_PROVIDER=google   # or github
+</code></pre>
+  <p>Install and run:</p>
+  <pre><code>cd Frontend
+npm install
+npm run dev
+</code></pre>
+  <p>Open the app at the URL shown by Vite, typically <code>http://localhost:5173</code>.</p>
+
+  <h2>8) First login flow</h2>
+  <ol>
+    <li>Click Login in the UI. You are redirected to your OAuth provider.</li>
+    <li>After login, Spring Security completes the flow and sets an HTTP-only session cookie.</li>
+    <li>Frontend calls the API using the session, no token exposed to the browser code.</li>
+  </ol>
+
+  <h2>9) Verifying API endpoints</h2>
+  <p>With the session cookie set by the browser, you can browse stats pages. For manual checks:</p>
+  <pre><code># Example read-only endpoints (adjust to your API)
+curl -i "http://localhost:8080/api/fixtures?league=EPL&amp;from=2024-08-01&amp;to=2024-09-01"
+curl -i "http://localhost:8080/api/teams/123/stats?season=2023"
+</code></pre>
+
+  <h2>10) Seeding sample data (optional)</h2>
+  <p>If there is a seed script or migration for fixtures, run it now. Example:</p>
+  <pre><code># Example if you have a Spring Boot command or SQL script
+./mvnw -Dspring-boot.run.arguments="--app.seed=true" spring-boot:run
+# Or psql yourseed.sql against the local DB
+</code></pre>
+
+  <h2>11) Troubleshooting</h2>
+  <ul>
+    <li><strong>CRLF warnings on Windows:</strong> safe to ignore. Git will normalize line endings.</li>
+    <li><strong>CORS error from browser:</strong> add your dev origin in <code>app.cors.allowed-origins</code> and ensure your CORS config reads that list.</li>
+    <li><strong>OAuth redirect mismatch:</strong> the redirect URI in the provider must exactly match the one configured in Spring Security.</li>
+    <li><strong>DB connection refused:</strong> confirm Postgres is running and ports/credentials match your properties.</li>
+    <li><strong>Port already in use:</strong> change the conflicting dev server port: <code>server.port=8081</code> or use an alternate Vite port: <code>npm run dev -- --port 5174</code>.</li>
+  </ul>
+
+  <h2>12) Useful scripts and commands</h2>
+  <pre><code># Backend
+cd Backend
+./mvnw test
+./mvnw spring-boot:run
+
+# Frontend
+cd Frontend
+npm run lint
+npm run build
+npm run preview
+</code></pre>
+
+
+</div>
