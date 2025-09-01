@@ -1,0 +1,117 @@
+---
+layout: '../layouts/Layout.astro'
+title: 'Elo method we are using (Pythagorean season variant)'
+description: 'Season-level Elo using GF/GA with a Pythagorean expectation, re-centered per season, plus pros/cons and a worked example.'
+---
+
+<section class="not-prose mb-6 px-6 max-w-4xl mx-auto">
+  <h1 class="text-3xl font-bold tracking-tight">Elo method we're using (with Pythagorean season variant)</h1>
+</section>
+
+<div class="prose prose-slate dark:prose-invert px-6 max-w-4xl mx-auto">
+
+  <h2>1 What we want</h2>
+  <p>
+    A single <em>season-level</em> rating per team, comparable across teams <strong>within the same season</strong>,
+    using only the standings columns <strong>GF</strong> (Goals For) and <strong>GA</strong> (Goals Against)-no match-by-match loop.
+  </p>
+
+  <hr />
+
+  <h2>2 Classic Elo (quick recap)</h2>
+ <p>  Classical Elo gives every team a single number that represents its strength. 
+ Before a match, those numbers are compared to figure out how much each side is expected 
+ to get from the game (wins are expected for big favorites, draws or losses are more likely for underdogs).
+  After the match, both teams' ratings are updated: the team that did better than expected gains 
+  points, the other loses the same amount, and a draw sits in between. 
+  Upsets trigger larger swings because the result deviates more from expectation. 
+  A tuning constant ("K-factor") controls how fast ratings move-higher K means more volatile ratings. 
+  Many football variants also add small tweaks like a home-advantage bump before computing expectations, 
+  slightly larger changes for bigger goal margins, or different K values for friendlies versus high-stakes matches. Over time, these incremental updates settle on ratings that best reflect and predict teams' true level. </p>
+
+  <hr />
+
+  <h2>3 Our season-level (Pythagorean) Elo</h2>
+
+  <h3>3.1 Convert GF/GA -> implied strength share</h3>
+  <p>Use a football "Pythagorean" expectation with exponent γ (we use γ = 1.7):</p>
+  <figure class="my-4">
+    <img
+      src="p_formula.png"
+      alt="p = GF^γ / (GF^γ + GA^γ)"
+      class="mx-auto block max-w-full h-auto rounded"
+    />
+    <figcaption class="text-sm text-slate-500 dark:text-slate-400">Implied strength share from GF/GA with exponent γ.</figcaption>
+  </figure>
+  <p><strong>Intuition:</strong> if you score much more than you concede, <em>p -> 1</em>; if you concede more than you score, <em>p -> 0</em>.</p>
+
+  <h3>3.2 Map share p -> Elo offset</h3>
+  <p>Invert Elo's logistic curve to express "how many Elo points above/below average" a team projects:</p>
+  <figure class="my-4">
+    <img
+      src="delta.png"
+      alt="Δ = 400 · log10(p / (1 - p))"
+      class="mx-auto block max-w-full h-auto rounded"
+    />
+  </figure>
+  <p><em>Δ</em> is a <strong>relative</strong> strength vs an average opponent.</p>
+
+  <h3>3.3 Re-center within the season</h3>
+  <p>Make ratings comparable <strong>within the league/season</strong> by setting the season average to 1500:</p>
+  <figure class="my-4">
+    <img
+      src="re_center.png"
+      alt="Elo_season = 1500 + (Δ − mean(Δ))"
+      class="mx-auto block max-w-full h-auto rounded"
+    />
+  </figure>
+  
+
+  <hr />
+
+  <h2>5 Worked micro-example (season snapshot)</h2>
+  
+      <figure class="my-3">
+        <img
+          src="example.png"
+          alt="p = 66^{1.7} / (66^{1.7} + 36^{1.7}) ≈ 0.737"
+          class="mx-auto block max-w-full h-auto rounded"
+        />
+      </figure>
+    
+    
+
+  <hr />
+
+ 
+
+  <h2>6 Pros &amp; cons of this method</h2>
+
+  <h3>Pros</h3>
+  <ul>
+    <li><strong>Data-light:</strong> needs only season GF/GA (easy to scrape or pull from an API).</li>
+    <li><strong>Fast &amp; simple:</strong> no match loop, no opponent graphs, scales instantly across leagues/seasons.</li>
+    <li><strong>Predictive signal:</strong> goal difference (via Pythagorean <em>p</em>) is a strong indicator of team quality.</li>
+    <li><strong>Comparable within a season:</strong> re-centering at 1500 prevents drift and makes tables easy to read.</li>
+    <li><strong>Extensible:</strong> can add home/away correction, smoothing, and shrinkage <em>without</em> changing the core idea.</li>
+  </ul>
+
+  <h3>Cons</h3>
+  <ul>
+    <li><strong>No opponent strength adjustment:</strong> doesn't know if GF/GA came vs strong or weak schedules.</li>
+    <li><strong>Single-season snapshot:</strong> not a rolling, match-by-match "live" Elo-use classic Elo if you need that.</li>
+    <li><strong>Sensitive early in season:</strong> GA=0 or tiny samples can produce extreme Δ (we mitigate with +1 and shrinkage).</li>
+    <li><strong>Cross-league comparability requires care:</strong> absolute values differ by league scoring environments; use separate re-centering per league.</li>
+  </ul>
+
+  <hr />
+
+  <h2>8 Why we chose this approach</h2>
+  <ul>
+    <li>We often only have standings (GF/GA) for historical leagues and want a consistent metric <em>now</em>, not after building a full fixture pipeline.</li>
+    <li>It gives a clean, monotonic mapping from season scoring to Elo scale, which stakeholders already understand.</li>
+    <li>It's <strong>transparent:</strong> one exponent (γ), one logit mapping, and a simple re-center-easy to document, audit, and reproduce.</li>
+    <li>It's practical for databases: a single pass per league-season produces complete, comparable ratings we can store and query.</li>
+  </ul>
+
+</div>
