@@ -1,0 +1,127 @@
+---
+layout: '../layouts/Layout.astro'
+title: 'Why this schema fits our system'
+description: 'Justification of our relational schema: separation of concerns, integrity constraints, indexing, scalability, analytics, and safety.'
+---
+
+<!-- Top image placeholder (replace src with your ERD/diagram) -->
+<section class="not-prose mb-6 px-6 max-w-4xl mx-auto">
+  <figure class="rounded-xl border border-slate-200 bg-white/70 p-3 dark:border-slate-700 dark:bg-slate-900/60">
+    <img
+      src="SDP_Schema_Tables.svg"
+      alt="Database schema diagram (placeholder)"
+      class="mx-auto block max-w-full h-auto rounded"
+    />
+    <figcaption class="mt-2 text-center text-sm text-slate-500 dark:text-slate-400">
+      High-level database schema (replace with your actual diagram).
+    </figcaption>
+  </figure>
+</section>
+
+<section class="not-prose mb-6 px-6 max-w-4xl mx-auto">
+  <h1 class="text-3xl font-bold tracking-tight">Why this schema fits our system</h1>
+</section>
+
+<div class="prose prose-slate dark:prose-invert px-6 max-w-4xl mx-auto">
+
+  <h2> Clear separation of concerns -> simpler code, cleaner data</h2>
+  <ul>
+    <li><strong>USERS</strong> holds only platform identity and audit fields (<code>role</code>, <code>created_at</code>, <code>last_login</code>). We intentionally keep auth/PII out of domain tables so we can integrate with external auth (e.g., Auth0) while keeping domain data portable and GDPR-friendly.</li>
+    <li><strong>TEAMS</strong> models stable, slow-changing reference data (<code>name</code>, <code>alias</code>, <code>league</code>, <code>stadium</code>, <code>is_active</code>). It’s independent of seasons and match schedules to avoid duplication.</li>
+    <li><strong>FIXTURES</strong> vs <strong>MATCHES</strong> is a crucial split:
+      <ul>
+        <li><strong>FIXTURES</strong> represent scheduled events (<code>home_team_id</code>, <code>away_team_id</code>, <code>match_datetime</code>, <code>season_year</code>, <code>status</code> like scheduled/live/completed/postponed). Fixtures can move or be postponed without touching results.</li>
+        <li><strong>MATCHES</strong> represent outcomes for a fixture (final scores, terminal status like completed/abandoned, <code>completed_at</code>, venue). This prevents "mutable history" problems and simplifies auditability and model training.</li>
+      </ul>
+    </li>
+    <li><strong>MATCH_TEAM_STATS</strong> captures per-team, per-match performance (shots, shots on target, possession, cards, corners, fouls, offsides, saves, etc.). This is the right grain because every stat is attributable to one team in one match. It avoids repeating stats in MATCHES and supports both teams for the same match cleanly.</li>
+    <li><strong>PREDICTIONS</strong> vs <strong>USER_PREDICTIONS</strong> is another intentional split:
+      <ul>
+        <li><strong>PREDICTIONS</strong> are model/analyst predictions tied to a match (predicted winner team or scoreline, <code>confidence_percentage</code>, <code>created_at</code>). We can store multiple model versions or methodologies without mixing with user activity.</li>
+        <li><strong>USER_PREDICTIONS</strong> capture end-user score picks (<code>predicted_home_score</code>, <code>predicted_away_score</code>, timestamps). This enables fair leaderboards and historical evaluation without contaminating system/model outputs.</li>
+      </ul>
+    </li>
+    <li><strong>BETS</strong> isolates the monetary domain (<code>stake</code> as decimal, <code>odds</code>, <code>bet_type</code>, <code>potential_payout</code>, <code>placed_at</code>, <code>settled_at</code>). Keeping financials separate is important for correctness, auditing, and permissions (e.g., only finance/admin roles can settle).</li>
+    <li><strong>STANDINGS</strong> stores season snapshots (wins, draws, losses, goals_for/against, goal_difference, points, position, <code>last_updated</code>). This is a deliberate (light) denormalization to make league tables instant to render and to decouple front-end performance from heavy live aggregation.</li>
+  </ul>
+  <p><strong>Result:</strong> Each table maps to a single responsibility and a single "unit of change." That keeps writes simple, prevents accidental fan-out updates, and gives us predictable read patterns.</p>
+
+  <h2>2 Normalization where it matters (3NF) + targeted denormalization where it pays off</h2>
+  <ul>
+    <li>Core entities (<strong>USERS</strong>, <strong>TEAMS</strong>, <strong>FIXTURES</strong>, <strong>MATCHES</strong>) are in 3NF.</li>
+    <li><strong>MATCH_TEAM_STATS</strong> avoids duplication by storing two rows per match—one for each team—with a composite uniqueness invariant (<code>match_id</code>, <code>team_id</code>).</li>
+    <li><strong>STANDINGS</strong> is the only intentional denormalization for fast league tables.</li>
+  </ul>
+
+  <h2>3 The right cardinalities and constraints -> data integrity by construction</h2>
+  <ul>
+    <li><strong>TEAMS ↔ FIXTURES:</strong> two FKs (<code>home_team_id</code>, <code>away_team_id</code>). Add a unique constraint (<code>home_team_id</code>, <code>away_team_id</code>, <code>match_datetime</code>) to prevent duplicates.</li>
+    <li><strong>FIXTURES ↔ MATCHES:</strong> <code>fixture_id</code> FK ensures a match can only exist for a real fixture.</li>
+    <li><strong>MATCHES ↔ MATCH_TEAM_STATS:</strong> unique (<code>match_id</code>, <code>team_id</code>) ensures no duplicate stat rows.</li>
+    <li><strong>PREDICTIONS:</strong> checks for valid confidence range, non-negative scores.</li>
+    <li><strong>USER_PREDICTIONS:</strong> unique (<code>user_id</code>, <code>match_id</code>) so a user can’t submit duplicates.</li>
+    <li><strong>BETS:</strong> ensures financial consistency (<code>stake &gt; 0</code>, <code>odds ≥ 1.0</code>).</li>
+    <li><strong>STANDINGS:</strong> uniqueness per team and season, with points/wins/draws/losses checks.</li>
+  </ul>
+  <p><strong>Referential actions:</strong> <code>ON DELETE RESTRICT</code> to protect history; soft deletion (<code>is_active</code>) for TEAMS.</p>
+
+  <h2>4 Purpose-built types and money-safe arithmetic</h2>
+  <ul>
+    <li>IDs are int surrogates; decimals used for money; constrained enums for statuses; timestamps are UTC.</li>
+  </ul>
+
+  <h2>5 Indexing strategy -> fast reads for our most common queries</h2>
+  <ul>
+    <li><strong>FIXTURES:</strong> season/year, <code>match_datetime</code>, team-based indexes.</li>
+    <li><strong>MATCHES:</strong> <code>fixture_id</code>, <code>completed_at</code>.</li>
+    <li><strong>MATCH_TEAM_STATS:</strong> unique (<code>match_id</code>, <code>team_id</code>), <code>team_id</code> index.</li>
+    <li><strong>PREDICTIONS:</strong> <code>match_id</code>, (<code>match_id</code>, <code>created_at</code>).</li>
+    <li><strong>USER_PREDICTIONS:</strong> unique (<code>user_id</code>, <code>match_id</code>).</li>
+    <li><strong>BETS:</strong> (<code>user_id</code>, <code>placed_at</code>), (<code>match_id</code>).</li>
+    <li><strong>STANDINGS:</strong> (<code>season_year</code>, <code>league</code>, <code>position</code>).</li>
+  </ul>
+
+  <h2>6 Scales well with seasons, leagues, and features</h2>
+  <ul>
+    <li>Season/year fields make archiving possible.</li>
+    <li>Multi-league support with <code>league</code> field.</li>
+    <li>Easy to extend with players, lineups, events.</li>
+  </ul>
+
+  <h2>7 Analytics-ready for models and ELO-style metrics</h2>
+  <ul>
+    <li><strong>MATCHES</strong> + <strong>MATCH_TEAM_STATS</strong> support xG/ELO analytics.</li>
+    <li>Predictions stored with timestamps for back-testing.</li>
+    <li><strong>USER_PREDICTIONS</strong> enable leaderboard tracking.</li>
+    <li><strong>BETS</strong> supports ROI analysis and risk simulations.</li>
+  </ul>
+
+  <h2>8 Operational safety and auditability</h2>
+  <ul>
+    <li>Immutable history; RBAC with <code>USERS.role</code>.</li>
+    <li>Deterministic settlement via transactions.</li>
+  </ul>
+
+  <h2>9 Key invariants</h2>
+  <ul>
+    <li><code>home_team_id != away_team_id</code>.</li>
+    <li>Stats non-negative, <code>odds ≥ 1.0</code>, <code>stake &gt; 0</code>.</li>
+    <li><strong>MATCH_TEAM_STATS</strong> has exactly two rows per match.</li>
+    <li><strong>STANDINGS</strong> points formula consistent.</li>
+  </ul>
+
+  <h2>10 Alternatives considered (and why this wins)</h2>
+  <ul>
+    <li>All-in-one matches table -> duplication and awkward queries.</li>
+    <li>Only computed standings -> too expensive.</li>
+    <li>Document store -> weak constraints and joins.</li>
+  </ul>
+
+  <h2>Summary</h2>
+  <p>
+    This schema matches our domain boundaries, enforces integrity with the right keys and constraints, optimizes reads with focused indexes,
+    keeps money safe using decimals, leaves clean extension points for future features, and provides reliable analytics inputs for ELO metrics
+    and model audits. It balances normalization with pragmatic denormalization, ensuring scalability, correctness, and performance.
+  </p>
+
+</div>
