@@ -1,0 +1,1 @@
+scp -i "C:\Users\zulul\IdeaProjects\sdpDemo\TheInvinciblesSSH.pem" "C:\Users\zulul\IdeaProjects\sdpDemo\Backend\target\Theinvincibles-0.0.1-SNAPSHOT.jar" ec2-user@16.171.166.98:/home/ec2-user/

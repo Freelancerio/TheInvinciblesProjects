@@ -6,25 +6,86 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 @Configuration
-@EnableWebSecurity//enables wev security support
-@EnableMethodSecurity //allows you to put security rules directly on methods in your services,controllers, or repositories
-// e.g.  @PreAuthorize("hasRole('ADMIN')")
-//    public void deleteAccount(Long id) {
-//        // only admins can delete accounts
-//    }
-
+@EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
+
     @Bean
-    SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http, CustomOAuth2UserService customOAuth2UserService) throws Exception{
-        http.csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests(authorizeRequests -> authorizeRequests.anyRequest().authenticated())
-                .oauth2Login(oauth2 -> oauth2.userInfoEndpoint(userInfo -> userInfo
-                        .userService(customOAuth2UserService)
-                ).defaultSuccessUrl("http://localhost:3002/profile",true));
-        return http.build();
+    public AuthenticationFailureHandler authenticationFailureHandler() {
+        return (request, response, exception) -> {
+            System.out.println("Authentication failed: " + (exception != null ? exception.getMessage() : "Unknown error"));
+
+            String errorParam = "auth_failed";
+            if (exception != null) {
+                // Log the actual exception for debugging
+                System.out.println("Exception type: " + exception.getClass().getSimpleName());
+                System.out.println("Exception message: " + exception.getMessage());
+            }
+
+            try {
+                response.sendRedirect("http://localhost:3000/login?error=" + errorParam);
+            } catch (IOException e) {
+                System.err.println("Failed to redirect after auth failure: " + e.getMessage());
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            }
+        };
     }
 
+    @Bean
+    public AuthenticationSuccessHandler authenticationSuccessHandler() {
+        return (request, response, authentication) -> {
+            System.out.println("Authentication successful for user: " + authentication.getName());
+            try {
+                response.sendRedirect("http://localhost:3000/userDashboard");
+            } catch (IOException e) {
+                System.err.println("Failed to redirect after successful auth: " + e.getMessage());
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            }
+        };
+    }
+
+    @Bean
+    SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http, CustomOAuth2UserService customOAuth2UserService) throws Exception {
+        http.csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(authorizeRequests ->
+                        authorizeRequests
+                                .requestMatchers("/login", "/error", "/webjars/**", "/css/**", "/js/**").permitAll()
+                                .requestMatchers("/api/database/**").permitAll()
+                                .requestMatchers("/api/database/psl/**").permitAll()
+                                .requestMatchers("/health").permitAll()
+                                .requestMatchers("/actuator/health").permitAll()
+                                .requestMatchers("/register", "/auth/**").permitAll()
+                                .requestMatchers("/user-info", "/api/**").authenticated()
+                                .anyRequest().authenticated()
+                )
+                .oauth2Login(oauth2 -> oauth2
+                        .loginPage("http://localhost:3000/login")
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(customOAuth2UserService)
+                        )
+                        .successHandler(authenticationSuccessHandler())
+                        .failureHandler(authenticationFailureHandler())
+                )
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            System.out.println("Authentication required for: " + request.getRequestURI());
+                            try {
+                                response.sendRedirect("http://localhost:3000/login?error=session_expired");
+                            } catch (IOException e) {
+                                System.err.println("Failed to redirect to login: " + e.getMessage());
+                                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            }
+                        })
+                );
+        return http.build();
+    }
 }

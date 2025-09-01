@@ -1,0 +1,150 @@
+---
+layout: '../layouts/Layout.astro'
+title: 'Third-Party Code: TheSportsDB API'
+description: 'Why we use TheSportsDB, how we use it, endpoints, auth, limits, risks, and replacement strategy.'
+---
+
+<section class="not-prose mb-6 px-6 max-w-4xl mx-auto">
+  <h1 class="text-3xl font-bold tracking-tight">Third-Party Code: TheSportsDB API</h1>
+  <p class="mt-2 text-slate-600 dark:text-slate-300">
+    This page documents and justifies our use of the <strong>TheSportsDB</strong> REST API in the project.
+    It explains scope, endpoints, authentication, limits, caching, error handling, privacy considerations,
+    alternatives and how we would replace the dependency if needed.
+  </p>
+</section>
+
+<div class="prose prose-slate dark:prose-invert px-6 max-w-4xl mx-auto">
+
+  <h2>What it is</h2>
+  <p>
+    <a href="https://www.thesportsdb.com" target="_blank" rel="noopener">TheSportsDB</a> provides a community-maintained REST JSON API
+    for sports data (teams, leagues, fixtures/events, results, standings, players and images).
+    The public "demo" key (<code>1</code>) is available for testing, while production usage requires a personal API key.
+  </p>
+
+  <h2>Why we chose it (justification)</h2>
+  <ul>
+    <li><strong>Coverage vs. complexity:</strong> We primarily need league, team, fixture and result data for football. TheSportsDB's schema is simple and well suited to our MVP.</li>
+    <li><strong>Rapid prototyping:</strong> Public demo key allows the team to build and demo without immediate vendor onboarding.</li>
+    <li><strong>Cost:</strong> Lower entry cost than many enterprise feeds; upgrade path exists for higher usage tiers.</li>
+    <li><strong>JSON over HTTPS:</strong> Easy to consume from our Java (Spring Boot) backend and cache in Postgres.</li>
+    <li><strong>Community assets:</strong> Team badges and league logos enhance our UI without separate scraping.</li>
+  </ul>
+
+  <h2>How we use it (scope)</h2>
+  <ul>
+    <li><strong>Leagues &amp; teams:</strong> names, IDs, logos for navigation and team detail pages.</li>
+    <li><strong>Fixtures &amp; results:</strong> past and upcoming matches for the selected league and season.</li>
+    <li><strong>Standings:</strong> table/points for dashboards and H2H context.</li>
+  </ul>
+
+  <h2>Key endpoints (read-only)</h2>
+  <p>Base URL: <code>https://www.thesportsdb.com/api/v1/json/&#123;API_KEY&#125;/</code></p>
+  <ul>
+    <li><code>all_leagues.php</code> - list leagues.</li>
+    <li><code>lookupleague.php?id=&#123;leagueId&#125;</code> - league details.</li>
+    <li><code>searchteams.php?t=&#123;teamName&#125;</code> / <code>lookupteam.php?id=&#123;teamId&#125;</code> - teams.</li>
+    <li><code>eventspastleague.php?id=&#123;leagueId&#125;</code> - recent results.</li>
+    <li><code>eventsnextleague.php?id=&#123;leagueId&#125;</code> - upcoming fixtures.</li>
+    <li><code>lookupevent.php?id=&#123;eventId&#125;</code> - single event details.</li>
+    <li><code>lookuptable.php?l=&#123;leagueId&#125;&amp;s=&#123;season&#125;</code> - standings.</li>
+  </ul>
+
+  <h3>Example requests we call from the backend</h3>
+  <pre><code>// recent results (EPL example, using demo key 1)
+GET https://www.thesportsdb.com/api/v1/json/1/eventspastleague.php?id=4328
+
+// upcoming fixtures
+GET https://www.thesportsdb.com/api/v1/json/1/eventsnextleague.php?id=4328
+
+// standings by league + season
+GET https://www.thesportsdb.com/api/v1/json/1/lookuptable.php?l=4328&amp;s=2024-2025
+</code></pre>
+
+  <h2>Authentication &amp; configuration</h2>
+  <ul>
+    <li><strong>Local/dev:</strong> we may use the public demo key <code>1</code> for quick prototyping and screenshots.</li>
+    <li><strong>Staging/production:</strong> we use a private key stored in environment variables on Render (backend) and never expose it to the browser.</li>
+    <li><strong>Never call the API from the frontend:</strong> all requests are proxied via Spring Boot to protect the key and normalize responses.</li>
+  </ul>
+
+  <h2>Rate limits &amp; reliability</h2>
+  <ul>
+    <li>Public demo key is for testing only and has restricted coverage/throughput; it is not suitable for production.</li>
+    <li>We implement <strong>server-side caching</strong> (short TTL for fixtures/results, longer TTL for league/team metadata) to reduce external calls.</li>
+    <li>Graceful <strong>degradation</strong>: if the provider is slow or down, we serve the last cached data with a "last updated" timestamp.</li>
+  </ul>
+
+  <h2>Backend integration details</h2>
+  <ul>
+    <li><strong>Service layer:</strong> Spring components fetch and map provider JSON to our DTOs.</li>
+    <li><strong>Persistence:</strong> We store normalized snapshots in Postgres (e.g., <code>teams</code>, <code>fixtures</code>, <code>standings</code>) to power UI queries.</li>
+    <li><strong>Scheduler:</strong> periodic refresh jobs hydrate and update the cache while respecting limits.</li>
+    <li><strong>Error handling:</strong> 4xx/5xx responses are logged; the API returns an empty array or a null-wrapped object when "no data" - we guard against that.</li>
+  </ul>
+
+  <h2>Privacy &amp; security</h2>
+  <ul>
+    <li>No user PII is sent to the provider; we only make public sports lookups.</li>
+    <li>API key is kept server-side in environment variables and never returned to the client.</li>
+    <li>All outbound requests use HTTPS.</li>
+  </ul>
+
+  <h2>Licensing &amp; usage terms</h2>
+  <p>
+    Data is community-maintained; usage requires adherence to TheSportsDB's terms.
+    For non-demo usage we obtain a personal key and follow any attribution requirements on pages that display logos/badges.
+  </p>
+
+  <h2>Alternatives considered</h2>
+  <ul>
+    <li><strong>API-Football / RapidAPI feeds:</strong> great coverage and live odds, but higher cost and more complex schema for our timeline.</li>
+    <li><strong>Self-scraping:</strong> fragile, against many sites' terms, and high maintenance.</li>
+  </ul>
+  <p><strong>Conclusion:</strong> TheSportsDB offers the right balance for our MVP: fast to integrate, sufficient football data, and a clear path to upgrade if needed.</p>
+
+  <h2>Risks &amp; mitigations</h2>
+  <ul>
+    <li><strong>Data gaps / latency:</strong> mitigate with caching, "last updated" messaging, and the ability to refresh on demand.</li>
+    <li><strong>Schema drift:</strong> map responses via adapter DTOs; keep provider-specific fields isolated from core domain models.</li>
+    <li><strong>Vendor lock-in:</strong> our service layer isolates the provider. Swapping to another feed only requires re-implementing the adapters.</li>
+  </ul>
+
+  <h2>Replacement strategy (how to swap providers)</h2>
+  <ol>
+    <li>Introduce a new <code>SportsDataProvider</code> interface + implementation for the alternative feed.</li>
+    <li>Map the new provider&#39;s JSON to our existing DTOs (<code>TeamDto</code>, <code>FixtureDto</code>, <code>StandingDto</code>).</li>
+    <li>Run contract tests against the service layer to ensure parity.</li>
+    <li>Flip configuration (feature flag/env var) to route traffic to the new provider.</li>
+  </ol>
+
+  <h2>Sample Spring service (abbreviated)</h2>
+  <pre><code>// Pseudocode: fetch next events for a league
+@Service
+public class SportsDbService &#123;
+  private final WebClient http;
+  @Value("$&#123;sportsdb.key&#125;") String apiKey;
+
+  public Mono&lt;EventsResponse&gt; nextEvents(String leagueId) &#123;
+    String url = "https://www.thesportsdb.com/api/v1/json/"
+      + apiKey + "/eventsnextleague.php?id=" + leagueId;
+    return http.get().uri(url)
+      .retrieve()
+      .bodyToMono(EventsResponse.class)
+      .onErrorResume(ex -> cacheLastGood("next:" + leagueId));
+  &#125;
+&#125;
+</code></pre>
+
+  <h2>Frontend usage</h2>
+  <p>
+    The React app never hits TheSportsDB directly. It calls our Spring endpoints, which return normalized JSON.
+    This keeps keys secret, responses consistent, and allows us to enrich the data with our derived metrics.
+  </p>
+
+  <h2>Attribution</h2>
+  <p class="text-sm">
+    "Sports data provided by TheSportsDB." Logos and badges remain property of their respective owners.
+  </p>
+
+</div>

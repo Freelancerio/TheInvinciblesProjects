@@ -1,0 +1,121 @@
+---
+layout: '../layouts/Layout.astro'
+title: 'Frontend Testing Breakdown'
+description: 'Detailed breakdown of SmartBet frontend automated test coverage.'
+---
+
+<div class="prose prose-slate dark:prose-invert px-6 max-w-4xl mx-auto">
+
+  <h2>Files Covered</h2>
+  <ul>
+    <li><code>src/__tests__/landingPage.test.jsx</code></li>
+    <li><code>src/__tests__/loginpage.test.jsx</code></li>
+    <li><code>src/__tests__/Profilepage.test.jsx</code></li>
+    <li><code>src/__tests__/Section.test.jsx</code></li>
+    <li><code>src/__tests__/StatCard.test.jsx</code></li>
+    <li><code>src/__tests__/HelloWorld.test.js</code></li>
+  </ul>
+
+  <h2>src/__tests__/landingPage.test.jsx</h2>
+  <ol>
+    <li>
+      <strong>renders greeting text</strong>
+      <ul>
+        <li><strong>What it tests:</strong> Ensures the landing page shows the main heading ("Hello, welcome to SmartBet!") and supporting copy ("This is a stat betting app").</li>
+        <li><strong>Why it matters:</strong> Guarantees the hero section content is intact and accessible.</li>
+        <li><strong>Triviality:</strong> Trivial (simple smoke test).</li>
+      </ul>
+    </li>
+  </ol>
+  <p><strong>Summary:</strong> The landing page tests confirm that critical hero copy is present and semantically correct, preventing regressions in the app's entry point.</p>
+
+  <h2>src/__tests__/loginpage.test.jsx</h2>
+  <h3>Mocks Used</h3>
+  <ul>
+    <li><code>useNavigate</code> from react-router-dom - allows us to assert navigation without touching the real browser history.</li>
+    <li><code>firebase</code> module - mocked to avoid real auth calls; lets us observe function calls and control outcomes.</li>
+  </ul>
+
+  <ol>
+    <li>
+      <strong>allows entering email and password</strong>
+      <ul>
+        <li><strong>What it tests:</strong> Typing in the email/password fields updates component state.</li>
+        <li><strong>Why it matters:</strong> Validates controlled input bindings and state sync.</li>
+        <li><strong>Triviality:</strong> Trivial (basic form wiring check).</li>
+      </ul>
+    </li>
+    <li>
+      <strong>submitting email/password calls Firebase and navigates to /userDashboard</strong>
+      <ul>
+        <li><strong>What it tests:</strong> Filling fields then submitting triggers <code>signInWithEmailAndPassword</code> and navigates to <code>/userDashboard</code>.</li>
+        <li><strong>Why it matters:</strong> Verifies the primary happy path from input to API to navigation.</li>
+        <li><strong>Triviality:</strong> Not trivial (covers side-effects and redirect behavior).</li>
+      </ul>
+    </li>
+    <li>
+      <strong>Google button redirects to local OAuth</strong>
+      <ul>
+        <li><strong>What it tests:</strong> Clicking Google sets <code>window.location</code> to <code>http://localhost:8080/oauth2/authorization/google</code>.</li>
+        <li><strong>Why it matters:</strong> Ensures OAuth entrypoint is correct in local dev setup.</li>
+        <li><strong>Triviality:</strong> Moderately trivial.</li>
+      </ul>
+    </li>
+    <li>
+      <strong>GitHub button redirects to local OAuth</strong>
+      <ul>
+        <li><strong>What it tests:</strong> Clicking GitHub sets <code>window.location</code> to <code>http://localhost:8080/oauth2/authorization/github</code>.</li>
+        <li><strong>Why it matters:</strong> Verifies GitHub OAuth entrypoint is working.</li>
+        <li><strong>Triviality:</strong> Moderately trivial.</li>
+      </ul>
+    </li>
+  </ol>
+  <p><strong>Summary:</strong> Login page tests cover both the credential flow and social OAuth. They guard against regressions in Firebase integration, navigation, and OAuth endpoints.</p>
+
+  <h2>src/__tests__/Profilepage.test.jsx</h2>
+  <h3>Mocks Used</h3>
+  <ul>
+    <li>Explicit <code>axios</code> mock - avoids real HTTP requests and lets us simulate responses or errors.</li>
+  </ul>
+
+  <ol>
+    <li>
+      <strong>loads user info on mount and renders it</strong>
+      <ul>
+        <li><strong>What it tests:</strong> On mount, calls <code>/user-info</code> with credentials, then renders the user's name and profile image.</li>
+        <li><strong>Why it matters:</strong> Ensures network integration and UI state are correctly tied together.</li>
+        <li><strong>Triviality:</strong> Not trivial (covers async fetch and render flow).</li>
+      </ul>
+    </li>
+    <li>
+      <strong>on error, stays in loading state (no user shown)</strong>
+      <ul>
+        <li><strong>What it tests:</strong> A failed request does not crash; loading text persists and no user UI is shown.</li>
+        <li><strong>Why it matters:</strong> Protects against unhandled errors and bad UX when backend is unreachable.</li>
+        <li><strong>Triviality:</strong> Not trivial.</li>
+      </ul>
+    </li>
+  </ol>
+  <p><strong>Summary:</strong> Profile page tests validate both the success path and failure handling, ensuring reliability whether the backend is up or down.</p>
+
+  <h2>src/__tests__/Section.test.jsx</h2>
+  <ol>
+    <li><strong>renders the title in an h2</strong> - Trivial (ensures semantic heading is present).</li>
+    <li><strong>renders children inside content area</strong> - Trivial (basic composition check).</li>
+    <li><strong>applies base container styles</strong> - Low (protects shared styling contract).</li>
+    <li><strong>header row has divider and padding</strong> - Low (ensures layout consistency).</li>
+    <li><strong>content area wraps children with padding</strong> - Low (guards spacing regression).</li>
+    <li><strong>does not mutate children structure</strong> - Trivial (ensures semantic structure is preserved).</li>
+  </ol>
+  <p><strong>Summary:</strong> Section tests safeguard structural and visual consistency of a reusable container. They prevent regressions in styling, spacing, and DOM semantics.</p>
+
+  <h2>src/__tests__/StatCard.test.jsx</h2>
+  <ol>
+    <li><strong>renders title and value</strong> - Trivial (basic content smoke test).</li>
+    <li><strong>has base card styles applied inline</strong> - Low (checks style contract).</li>
+    <li><strong>hover adds elevation and translateY; mouse out resets</strong> - Medium (ensures UX polish interaction works).</li>
+    <li><strong>supports flexible width (flex contains '1')</strong> - Low (confirms layout flex behavior).</li>
+  </ol>
+  <p><strong>Summary:</strong> StatCard tests ensure both static rendering and interactive hover behavior work correctly, guarding dashboard layout and user experience polish.</p>
+
+</div>

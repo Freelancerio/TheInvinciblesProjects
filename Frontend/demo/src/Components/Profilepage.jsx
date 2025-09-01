@@ -1,12 +1,14 @@
 import React,{ useEffect, useState } from "react";
-import "./profilepage.css"; // Custom styles for profile page
+import "./profilepage.css";
 import axios from "axios";
+import { baseUrl } from "../baseURL";
+
 function ProfilePage() {
 
   const [user,setUser] = useState(null);
 
   useEffect(()=> {
-        axios.get('http://localhost:8080/user-info',{withCredentials: true})
+        axios.get(`${baseUrl}/user-info`,{withCredentials: true})
         .then(response => {
             setUser(response.data);
         })
