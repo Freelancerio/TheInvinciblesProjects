@@ -67,7 +67,7 @@ describe("Loginfunction", () => {
         "user@example.com",
         "secret123"
       );
-      expect(mockNavigate).toHaveBeenCalledWith("/profile");
+      expect(mockNavigate).toHaveBeenCalledWith("/userDashboard");
     });
   });
 
