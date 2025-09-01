@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.Map;
+import java.util.AbstractMap;
 
 @Service
 public class DatabaseFootballService {
@@ -18,22 +20,22 @@ public class DatabaseFootballService {
 
     public Map<String, Object> getStandings() {
         String sql = """
-            SELECT t.team_id, t.team_name, t.team_alias, t.home_stadium, t.league,
-                   COALESCE(s.matches_played, 0) as matches_played,
-                   COALESCE(s.wins, 0) as wins,
-                   COALESCE(s.draws, 0) as draws,
-                   COALESCE(s.losses, 0) as losses,
-                   COALESCE(s.goals_for, 0) as goals_for,
-                   COALESCE(s.goals_against, 0) as goals_against,
-                   COALESCE(s.goal_difference, 0) as goal_difference,
-                   COALESCE(s.points, 0) as points,
-                   COALESCE(s.position, 0) as position,
-                   s.season_year
-            FROM teams t
-            LEFT JOIN standings s ON t.team_id = s.team_id
-            WHERE s.season_year = (SELECT MAX(season_year) FROM standings WHERE season_year IS NOT NULL)
-            ORDER BY s.position ASC NULLS LAST, s.points DESC NULLS LAST
-            """;
+    SELECT t.team_id, t.team_name, t.team_alias, t.home_stadium, t.league,
+           COALESCE(s.matches_played, 0) as matches_played,
+           COALESCE(s.wins, 0) as wins,
+           COALESCE(s.draws, 0) as draws,
+           COALESCE(s.losses, 0) as losses,
+           COALESCE(s.goals_for, 0) as goals_for,
+           COALESCE(s.goals_against, 0) as goals_against,
+           COALESCE(s.goal_difference, 0) as goal_difference,
+           COALESCE(s.points, 0) as points,
+           COALESCE(s.position, 0) as position,
+           s.season_year
+    FROM teams t
+    LEFT JOIN standings s ON t.team_id = s.team_id AND s.season_year = 2024
+    WHERE s.season_year = 2024
+    ORDER BY s.position ASC NULLS LAST, s.points DESC NULLS LAST
+    """;
 
         List<Map<String, Object>> standings = jdbcTemplate.queryForList(sql);
 
@@ -527,6 +529,227 @@ public class DatabaseFootballService {
             return jdbcTemplate.queryForObject("SELECT MAX(season_year) FROM standings", Integer.class);
         } catch (Exception e) {
             return 2024; // Default season
+        }
+    }
+
+    // Add these methods to your DatabaseFootballService class
+
+    /**
+     * Get team by ID with basic information
+     */
+    public Map<String, Object> getTeamById(Integer teamId) {
+        String query = """
+        SELECT team_id, team_name, team_alias, home_stadium, league
+        FROM teams 
+        WHERE team_id = ?
+        """;
+
+        try {
+            List<Map<String, Object>> results = jdbcTemplate.queryForList(query, teamId);
+            if (results.isEmpty()) {
+                return Map.of();
+            }
+
+            Map<String, Object> team = results.get(0);
+            return Map.of("team", team);
+        } catch (Exception e) {
+            throw new RuntimeException("Error fetching team by ID: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Get team season statistics (wins, draws, losses, goals, points)
+     */
+    public Map<String, Object> getTeamSeasonStats(Integer teamId, Integer season) {
+        String query = """
+        WITH team_matches AS (
+            SELECT 
+                f.fixture_id,
+                f.home_team_id,
+                f.away_team_id,
+                f.season_year,
+                CASE WHEN f.home_team_id = ? THEN 'home' ELSE 'away' END as team_location,
+                -- You'll need to add score fields to your fixtures table or join with results
+                COALESCE(f.home_score, 0) as home_score,
+                COALESCE(f.away_score, 0) as away_score
+            FROM fixtures f
+            WHERE (f.home_team_id = ? OR f.away_team_id = ?)
+                AND f.status = 'completed'
+                AND (? IS NULL OR f.season_year = ?)
+        )
+        SELECT 
+            COUNT(*) as matches_played,
+            SUM(CASE 
+                WHEN (team_location = 'home' AND home_score > away_score) 
+                     OR (team_location = 'away' AND away_score > home_score) 
+                THEN 1 ELSE 0 END) as wins,
+            SUM(CASE WHEN home_score = away_score THEN 1 ELSE 0 END) as draws,
+            SUM(CASE 
+                WHEN (team_location = 'home' AND home_score < away_score) 
+                     OR (team_location = 'away' AND away_score < home_score) 
+                THEN 1 ELSE 0 END) as losses,
+            SUM(CASE WHEN team_location = 'home' THEN home_score ELSE away_score END) as goals_for,
+            SUM(CASE WHEN team_location = 'home' THEN away_score ELSE home_score END) as goals_against
+        FROM team_matches
+        """;
+
+        try {
+            List<Map<String, Object>> results = jdbcTemplate.queryForList(
+                    query, teamId, teamId, teamId, season, season);
+
+            if (results.isEmpty()) {
+                return Map.of("statistics", Map.of());
+            }
+
+            Map<String, Object> stats = results.get(0);
+            int matchesPlayed = ((Number) stats.get("matches_played")).intValue();
+            int wins = ((Number) stats.get("wins")).intValue();
+            int draws = ((Number) stats.get("draws")).intValue();
+            int losses = ((Number) stats.get("losses")).intValue();
+            int goalsFor = ((Number) stats.get("goals_for")).intValue();
+            int goalsAgainst = ((Number) stats.get("goals_against")).intValue();
+            int goalDifference = goalsFor - goalsAgainst;
+            int points = (wins * 3) + draws;
+
+            Map<String, Object> statistics = Map.of(
+                    "matchesPlayed", matchesPlayed,
+                    "wins", wins,
+                    "draws", draws,
+                    "losses", losses,
+                    "goalsFor", goalsFor,
+                    "goalsAgainst", goalsAgainst,
+                    "goalDifference", goalDifference,
+                    "points", points
+            );
+
+            return Map.of("statistics", statistics);
+        } catch (Exception e) {
+            throw new RuntimeException("Error fetching team season stats: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Get team home vs away statistics
+     */
+    public Map<String, Object> getTeamHomeAwayStats(Integer teamId, Integer season) {
+        String homeQuery = """
+        SELECT COUNT(*) as home_wins
+        FROM fixtures f
+        WHERE f.home_team_id = ?
+            AND f.status = 'completed'
+            AND COALESCE(f.home_score, 0) > COALESCE(f.away_score, 0)
+            AND (? IS NULL OR f.season_year = ?)
+        """;
+
+        String awayQuery = """
+        SELECT COUNT(*) as away_wins
+        FROM fixtures f
+        WHERE f.away_team_id = ?
+            AND f.status = 'completed'
+            AND COALESCE(f.away_score, 0) > COALESCE(f.home_score, 0)
+            AND (? IS NULL OR f.season_year = ?)
+        """;
+
+        try {
+            Integer homeWins = jdbcTemplate.queryForObject(homeQuery, Integer.class, teamId, season, season);
+            Integer awayWins = jdbcTemplate.queryForObject(awayQuery, Integer.class, teamId, season, season);
+
+            return Map.of(
+                    "homeWins", homeWins != null ? homeWins : 0,
+                    "awayWins", awayWins != null ? awayWins : 0
+            );
+        } catch (Exception e) {
+            throw new RuntimeException("Error fetching team home/away stats: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Get team's upcoming fixtures with opponent details
+     */
+    public Map<String, Object> getTeamUpcomingFixtures(Integer teamId, int limit) {
+        String query = """
+        SELECT 
+            f.fixture_id,
+            f.match_datetime,
+            f.venue,
+            CASE WHEN f.home_team_id = ? THEN true ELSE false END as is_home,
+            CASE WHEN f.home_team_id = ? THEN away_t.team_name ELSE home_t.team_name END as opponent_name
+        FROM fixtures f
+        JOIN teams home_t ON f.home_team_id = home_t.team_id
+        JOIN teams away_t ON f.away_team_id = away_t.team_id
+        WHERE (f.home_team_id = ? OR f.away_team_id = ?)
+            AND f.status = 'scheduled'
+            AND f.match_datetime > NOW()
+        ORDER BY f.match_datetime ASC
+        LIMIT ?
+        """;
+
+        try {
+            List<Map<String, Object>> fixtures = jdbcTemplate.queryForList(
+                    query, teamId, teamId, teamId, teamId, limit);
+
+            return Map.of(
+                    "fixtures", fixtures,
+                    "count", fixtures.size()
+            );
+        } catch (Exception e) {
+            throw new RuntimeException("Error fetching team upcoming fixtures: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Get team's aggregated match statistics from match_team_stats table
+     */
+    public Map<String, Object> getTeamMatchStats(Integer teamId, Integer season) {
+        String query = """
+        SELECT 
+            AVG(mts.total_shots) as avg_total_shots,
+            AVG(mts.shots_on_target) as avg_shots_on_target,
+            AVG(mts.passes) as avg_passes,
+            AVG(mts.possession_percentage) as avg_possession,
+            SUM(mts.yellow_cards) as total_yellow_cards,
+            SUM(mts.red_cards) as total_red_cards,
+            AVG(mts.offsides) as avg_offsides,
+            AVG(mts.corners) as avg_corners,
+            AVG(mts.fouls) as avg_fouls,
+            AVG(mts.saves) as avg_saves,
+            COUNT(*) as matches_with_stats
+        FROM match_team_stats mts
+        JOIN fixtures f ON mts.match_id = f.fixture_id
+        WHERE mts.team_id = ?
+            AND f.status = 'completed'
+            AND (? IS NULL OR f.season_year = ?)
+        """;
+
+        try {
+            List<Map<String, Object>> results = jdbcTemplate.queryForList(
+                    query, teamId, season, season);
+
+            if (results.isEmpty()) {
+                return Map.of("statistics", Map.of());
+            }
+
+            Map<String, Object> rawStats = results.get(0);
+
+
+            Map<String, Object> statistics = Map.ofEntries(
+                    new AbstractMap.SimpleEntry<>("totalShots", Math.round(((Number) rawStats.getOrDefault("avg_total_shots", 0)).doubleValue())),
+                    new AbstractMap.SimpleEntry<>("shotsOnTarget", Math.round(((Number) rawStats.getOrDefault("avg_shots_on_target", 0)).doubleValue())),
+                    new AbstractMap.SimpleEntry<>("avgPasses", Math.round(((Number) rawStats.getOrDefault("avg_passes", 0)).doubleValue())),
+                    new AbstractMap.SimpleEntry<>("avgPossession", Math.round(((Number) rawStats.getOrDefault("avg_possession", 0)).doubleValue() * 10.0) / 10.0),
+                    new AbstractMap.SimpleEntry<>("yellowCards", ((Number) rawStats.getOrDefault("total_yellow_cards", 0)).intValue()),
+                    new AbstractMap.SimpleEntry<>("redCards", ((Number) rawStats.getOrDefault("total_red_cards", 0)).intValue()),
+                    new AbstractMap.SimpleEntry<>("avgOffsides", Math.round(((Number) rawStats.getOrDefault("avg_offsides", 0)).doubleValue() * 10.0) / 10.0),
+                    new AbstractMap.SimpleEntry<>("avgCorners", Math.round(((Number) rawStats.getOrDefault("avg_corners", 0)).doubleValue() * 10.0) / 10.0),
+                    new AbstractMap.SimpleEntry<>("avgFouls", Math.round(((Number) rawStats.getOrDefault("avg_fouls", 0)).doubleValue() * 10.0) / 10.0),
+                    new AbstractMap.SimpleEntry<>("avgSaves", Math.round(((Number) rawStats.getOrDefault("avg_saves", 0)).doubleValue() * 10.0) / 10.0),
+                    new AbstractMap.SimpleEntry<>("matchesWithStats", ((Number) rawStats.getOrDefault("matches_with_stats", 0)).intValue())
+            );
+
+
+            return Map.of("statistics", statistics);
+        } catch (Exception e) {
+            throw new RuntimeException("Error fetching team match stats: " + e.getMessage(), e);
         }
     }
 }

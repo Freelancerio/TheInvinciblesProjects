@@ -27,6 +27,6 @@ replay_pid*
 .idea/
 *.pem
 .fake
-
+node_modules/
 # Ignore built documentation output
 documentation/dist/

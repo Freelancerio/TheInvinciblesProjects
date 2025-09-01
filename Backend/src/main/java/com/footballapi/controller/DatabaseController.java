@@ -262,6 +262,135 @@ public class DatabaseController {
         }
     }
 
+    // NEW ENDPOINTS FOR TEAM STATISTICS PAGE
+
+    /**
+     * Get detailed team information by team ID
+     * Endpoint: GET /api/database/psl/teams/{teamId}
+     */
+    @GetMapping("/teams/{teamId}")
+    public ResponseEntity<?> getTeamById(@PathVariable Integer teamId) {
+        try {
+            Map<String, Object> team = databaseService.getTeamById(teamId);
+            if (team == null || team.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of(
+                                "error", "Team not found",
+                                "teamId", teamId,
+                                "timestamp", Instant.now().toString()
+                        ));
+            }
+            return ResponseEntity.ok(team);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of(
+                            "error", "Failed to fetch team details",
+                            "teamId", teamId,
+                            "message", e.getMessage(),
+                            "timestamp", Instant.now().toString()
+                    ));
+        }
+    }
+
+    /**
+     * Get team season statistics (wins, draws, losses, goals, etc.)
+     * Endpoint: GET /api/database/psl/teams/{teamId}/season-stats
+     */
+    @GetMapping("/teams/{teamId}/season-stats")
+    public ResponseEntity<?> getTeamSeasonStats(
+            @PathVariable Integer teamId,
+            @RequestParam(required = false) Integer season) {
+        try {
+            Map<String, Object> stats = databaseService.getTeamSeasonStats(teamId, season);
+            return ResponseEntity.ok(stats);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of(
+                            "error", "Failed to fetch team season statistics",
+                            "teamId", teamId,
+                            "season", season,
+                            "message", e.getMessage(),
+                            "timestamp", Instant.now().toString()
+                    ));
+        }
+    }
+
+    /**
+     * Get team home vs away performance
+     * Endpoint: GET /api/database/psl/teams/{teamId}/home-away-stats
+     */
+    @GetMapping("/teams/{teamId}/home-away-stats")
+    public ResponseEntity<?> getTeamHomeAwayStats(
+            @PathVariable Integer teamId,
+            @RequestParam(required = false) Integer season) {
+        try {
+            Map<String, Object> stats = databaseService.getTeamHomeAwayStats(teamId, season);
+            return ResponseEntity.ok(stats);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of(
+                            "error", "Failed to fetch team home/away statistics",
+                            "teamId", teamId,
+                            "season", season,
+                            "message", e.getMessage(),
+                            "timestamp", Instant.now().toString()
+                    ));
+        }
+    }
+
+    /**
+     * Get team's upcoming fixtures with opponent details
+     * Endpoint: GET /api/database/psl/teams/{teamId}/upcoming-fixtures
+     */
+    @GetMapping("/teams/{teamId}/upcoming-fixtures")
+    public ResponseEntity<?> getTeamUpcomingFixtures(
+            @PathVariable Integer teamId,
+            @RequestParam(defaultValue = "5") int limit) {
+        try {
+            if (limit < 1 || limit > 20) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of(
+                                "error", "Limit must be between 1 and 20",
+                                "timestamp", Instant.now().toString()
+                        ));
+            }
+
+            Map<String, Object> fixtures = databaseService.getTeamUpcomingFixtures(teamId, limit);
+            return ResponseEntity.ok(fixtures);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of(
+                            "error", "Failed to fetch team's upcoming fixtures",
+                            "teamId", teamId,
+                            "message", e.getMessage(),
+                            "timestamp", Instant.now().toString()
+                    ));
+        }
+    }
+
+    /**
+     * Get team's match statistics aggregated (shots, passes, possession, etc.)
+     * Endpoint: GET /api/database/psl/teams/{teamId}/match-stats
+     */
+    @GetMapping("/teams/{teamId}/match-stats")
+    public ResponseEntity<?> getTeamMatchStats(
+            @PathVariable Integer teamId,
+            @RequestParam(required = false) Integer season) {
+        try {
+            Map<String, Object> stats = databaseService.getTeamMatchStats(teamId, season);
+            return ResponseEntity.ok(stats);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of(
+                            "error", "Failed to fetch team match statistics",
+                            "teamId", teamId,
+                            "season", season,
+                            "message", e.getMessage(),
+                            "timestamp", Instant.now().toString()
+                    ));
+        }
+    }
+
     @GetMapping("/predictions/{matchId}")
     public ResponseEntity<?> getMatchPredictions(@PathVariable Integer matchId) {
         try {

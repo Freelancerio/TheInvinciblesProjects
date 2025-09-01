@@ -1,15 +1,23 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom"; // Add this import
 import StatCard from "../Components/StatsCard";
 import Section from "../Components/Section";
 import "./UserDashboard.css";
 
 function UserDashboard() {
+    const navigate = useNavigate(); // Add navigation hook
     const [user, setUser] = useState(null);
     const [stats, setStats] = useState(null);
     const [matches, setMatches] = useState([]);
     const [standings, setStandings] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+
+    // Add function to handle team click
+    const handleTeamClick = (teamName) => {
+        // Navigate to team statistics page with team name as parameter
+        navigate(`/team-statistics?teamName=${encodeURIComponent(teamName)}`);
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -69,7 +77,6 @@ function UserDashboard() {
                         const standingsData = await standingsResponse.json();
                         console.log("Raw standings response:", standingsData);
 
-                        // Extract standings array from the response
                         if (standingsData && standingsData.standings && Array.isArray(standingsData.standings)) {
                             setStandings(standingsData.standings);
                         } else if (standingsData && standingsData.table && Array.isArray(standingsData.table)) {
@@ -343,10 +350,9 @@ function UserDashboard() {
                                     </thead>
                                     <tbody>
                                         {matches
-                                            .filter(match => match.status === 'scheduled') // Only show upcoming matches
+                                            .filter(match => match.status === 'scheduled')
                                             .slice(0, 5)
                                             .map((match, i) => {
-                                                // Format the date
                                                 const formatMatchDate = (dateTime) => {
                                                     try {
                                                         const date = new Date(dateTime);
@@ -362,7 +368,9 @@ function UserDashboard() {
                                                     }
                                                 };
 
-                                                const matchDisplay = `${match.home_team || match.home_team_alias || 'Home'} vs ${match.away_team || match.away_team_alias || 'Away'}`;
+                                                const homeTeam = match.home_team || match.home_team_alias || 'Home';
+                                                const awayTeam = match.away_team || match.away_team_alias || 'Away';
+                                                const matchDisplay = `${homeTeam} vs ${awayTeam}`;
                                                 const dateDisplay = formatMatchDate(match.match_datetime);
                                                 const isCompleted = match.status === 'completed' || match.match_status === 'finished';
                                                 const hasScore = match.home_team_score !== null && match.away_team_score !== null;
@@ -378,7 +386,32 @@ function UserDashboard() {
                                                     >
                                                         <td style={{ padding: '12px 16px', color: '#120e1b' }}>
                                                             <div style={{ fontWeight: '500' }}>
-                                                                {matchDisplay}
+                                                                {/* Make team names clickable */}
+                                                                <span
+                                                                    style={{ 
+                                                                        cursor: 'pointer', 
+                                                                        textDecoration: 'underline',
+                                                                        color: '#654e97'
+                                                                    }}
+                                                                    onClick={() => handleTeamClick(homeTeam)}
+                                                                    onMouseOver={(e) => e.target.style.color = '#5a4285'}
+                                                                    onMouseOut={(e) => e.target.style.color = '#654e97'}
+                                                                >
+                                                                    {homeTeam}
+                                                                </span>
+                                                                {' vs '}
+                                                                <span
+                                                                    style={{ 
+                                                                        cursor: 'pointer', 
+                                                                        textDecoration: 'underline',
+                                                                        color: '#654e97'
+                                                                    }}
+                                                                    onClick={() => handleTeamClick(awayTeam)}
+                                                                    onMouseOver={(e) => e.target.style.color = '#5a4285'}
+                                                                    onMouseOut={(e) => e.target.style.color = '#654e97'}
+                                                                >
+                                                                    {awayTeam}
+                                                                </span>
                                                             </div>
                                                             {match.venue && (
                                                                 <div style={{ fontSize: '12px', color: '#654e97', marginTop: '4px' }}>
@@ -547,22 +580,18 @@ function UserDashboard() {
                                     </thead>
                                     <tbody>
                                         {standings.map((team, i) => {
-                                            // Determine position styling based on league position
                                             let positionStyle = {};
                                             if (i < 4) {
-                                                // Top 4 - Champions League qualification
                                                 positionStyle = {
                                                     backgroundColor: '#d1fae5',
                                                     borderLeft: '4px solid #059669'
                                                 };
                                             } else if (i < 8) {
-                                                // 5th-8th - Europa/Conference League
                                                 positionStyle = {
                                                     backgroundColor: '#dbeafe',
                                                     borderLeft: '4px solid #3b82f6'
                                                 };
                                             } else if (i >= standings.length - 3) {
-                                                // Bottom 3 - Relegation zone
                                                 positionStyle = {
                                                     backgroundColor: '#fef2f2',
                                                     borderLeft: '4px solid #ef4444'
@@ -574,16 +603,22 @@ function UserDashboard() {
                                                     key={team.team_id || i}
                                                     style={{
                                                         borderTop: '1px solid #ebe7f3',
-                                                        ...positionStyle
+                                                        ...positionStyle,
+                                                        cursor: 'pointer' // Add cursor pointer for clickable rows
                                                     }}
+                                                    onClick={() => handleTeamClick(team.team_name || team.name)}
                                                     onMouseOver={(e) => {
                                                         if (!positionStyle.backgroundColor) {
                                                             e.currentTarget.style.backgroundColor = '#faf9fc';
+                                                        } else {
+                                                            e.currentTarget.style.opacity = '0.8';
                                                         }
                                                     }}
                                                     onMouseOut={(e) => {
                                                         if (!positionStyle.backgroundColor) {
                                                             e.currentTarget.style.backgroundColor = 'transparent';
+                                                        } else {
+                                                            e.currentTarget.style.opacity = '1';
                                                         }
                                                     }}
                                                 >
@@ -598,7 +633,11 @@ function UserDashboard() {
                                                     </td>
                                                     <td style={{ padding: '12px 16px', color: '#120e1b' }}>
                                                         <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                                            <div style={{ fontWeight: '600', fontSize: '14px' }}>
+                                                            <div style={{ 
+                                                                fontWeight: '600', 
+                                                                fontSize: '14px',
+                                                                color: '#654e97' // Make team name stand out as clickable
+                                                            }}>
                                                                 {team.team_name || team.name || `Team ${i + 1}`}
                                                             </div>
                                                             <div style={{
@@ -789,7 +828,9 @@ function UserDashboard() {
                                                     }
                                                 };
 
-                                                const matchDisplay = `${match.home_team || match.home_team_alias} vs ${match.away_team || match.away_team_alias}`;
+                                                const homeTeam = match.home_team || match.home_team_alias;
+                                                const awayTeam = match.away_team || match.away_team_alias;
+                                                const matchDisplay = `${homeTeam} vs ${awayTeam}`;
                                                 const scoreDisplay = (match.home_team_score !== null && match.away_team_score !== null)
                                                     ? `${match.home_team_score} - ${match.away_team_score}`
                                                     : 'N/A';
@@ -803,7 +844,32 @@ function UserDashboard() {
                                                     >
                                                         <td style={{ padding: '12px 16px', color: '#120e1b' }}>
                                                             <div style={{ fontWeight: '500' }}>
-                                                                {matchDisplay}
+                                                                {/* Make team names clickable in results too */}
+                                                                <span
+                                                                    style={{ 
+                                                                        cursor: 'pointer', 
+                                                                        textDecoration: 'underline',
+                                                                        color: '#654e97'
+                                                                    }}
+                                                                    onClick={() => handleTeamClick(homeTeam)}
+                                                                    onMouseOver={(e) => e.target.style.color = '#5a4285'}
+                                                                    onMouseOut={(e) => e.target.style.color = '#654e97'}
+                                                                >
+                                                                    {homeTeam}
+                                                                </span>
+                                                                {' vs '}
+                                                                <span
+                                                                    style={{ 
+                                                                        cursor: 'pointer', 
+                                                                        textDecoration: 'underline',
+                                                                        color: '#654e97'
+                                                                    }}
+                                                                    onClick={() => handleTeamClick(awayTeam)}
+                                                                    onMouseOver={(e) => e.target.style.color = '#5a4285'}
+                                                                    onMouseOut={(e) => e.target.style.color = '#654e97'}
+                                                                >
+                                                                    {awayTeam}
+                                                                </span>
                                                             </div>
                                                             {match.venue && (
                                                                 <div style={{ fontSize: '12px', color: '#654e97', marginTop: '2px' }}>
