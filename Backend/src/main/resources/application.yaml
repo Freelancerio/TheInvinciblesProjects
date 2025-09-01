@@ -109,7 +109,7 @@ cors:
   allowed-origins:
     - "http://localhost:3000"
     - "http://localhost:3001"
-    - "https://smartbet.vercel.app"
+    - "https://the-invincibles-projects.vercel.app"
   allowed-methods:
     - GET
     - POST

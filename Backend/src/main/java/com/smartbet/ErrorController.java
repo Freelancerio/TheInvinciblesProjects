@@ -14,9 +14,9 @@ public class ErrorController {
 
         // Redirect to login page with error parameter
         if (error != null) {
-            return "redirect:http://localhost:3000/login?error=" + error;
+            return "redirect:https://the-invincibles-projects.vercel.app/login?error=" + error;
         } else {
-            return "redirect:http://localhost:3000/login?error=unknown";
+            return "redirect:https://the-invincibles-projects.vercel.app/login?error=unknown";
         }
     }
 
@@ -24,6 +24,6 @@ public class ErrorController {
     public String loginPage() {
         // This endpoint can be used if you want to serve a login page from Spring Boot
         // Otherwise, it will redirect to your React login page
-        return "redirect:http://localhost:3000/login";
+        return "redirect:https://the-invincibles-projects.vercel.app/login";
     }
 }

@@ -6,11 +6,11 @@ import java.time.LocalDateTime;
 
 // NB : ALways run this to populate the database tables: on terminal etc
 //#Refresh all data
-//     POST http://localhost:8080/api/admin/refresh-all
+//     POST https://celebrated-intuition-production.up.railway.app/api/admin/refresh-all
 //#Refresh only standings (clears and repopulates)
-//     POST http://localhost:8080/api/admin/refresh-standings
+//     POST https://celebrated-intuition-production.up.railway.app/api/admin/refresh-standings
 //#Update only matches (adds new, keeps existing)
-//     POST http://localhost:8080/api/admin/refresh-matches
+//     POST https://celebrated-intuition-production.up.railway.app/api/admin/refresh-matches
 
 @Entity
 @Table(name = "user_predictions")

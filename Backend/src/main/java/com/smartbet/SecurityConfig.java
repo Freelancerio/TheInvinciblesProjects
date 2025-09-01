@@ -32,7 +32,7 @@ public class SecurityConfig {
             }
 
             try {
-                response.sendRedirect("http://localhost:3000/login?error=" + errorParam);
+                response.sendRedirect("https://the-invincibles-projects.vercel.app/login?error=" + errorParam);
             } catch (IOException e) {
                 System.err.println("Failed to redirect after auth failure: " + e.getMessage());
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -45,7 +45,7 @@ public class SecurityConfig {
         return (request, response, authentication) -> {
             System.out.println("Authentication successful for user: " + authentication.getName());
             try {
-                response.sendRedirect("http://localhost:3000/userDashboard");
+                response.sendRedirect("https://the-invincibles-projects.vercel.app/userDashboard");
             } catch (IOException e) {
                 System.err.println("Failed to redirect after successful auth: " + e.getMessage());
                 response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -68,7 +68,7 @@ public class SecurityConfig {
                                 .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2
-                        .loginPage("http://localhost:3000/login")
+                        .loginPage("https://the-invincibles-projects.vercel.app/login")
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(customOAuth2UserService)
                         )
@@ -79,7 +79,7 @@ public class SecurityConfig {
                         .authenticationEntryPoint((request, response, authException) -> {
                             System.out.println("Authentication required for: " + request.getRequestURI());
                             try {
-                                response.sendRedirect("http://localhost:3000/login?error=session_expired");
+                                response.sendRedirect("https://the-invincibles-projects.vercel.app/login?error=session_expired");
                             } catch (IOException e) {
                                 System.err.println("Failed to redirect to login: " + e.getMessage());
                                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
