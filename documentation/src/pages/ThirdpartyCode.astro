@@ -39,15 +39,15 @@ description: 'Why we use TheSportsDB, how we use it, endpoints, auth, limits, ri
   </ul>
 
   <h2>Key endpoints (read-only)</h2>
-  <p>Base URL: <code>https://www.thesportsdb.com/api/v1/json/{API_KEY}/</code></p>
+  <p>Base URL: <code>https://www.thesportsdb.com/api/v1/json/&#123;API_KEY&#125;/</code></p>
   <ul>
     <li><code>all_leagues.php</code> - list leagues.</li>
-    <li><code>lookupleague.php?id={leagueId}</code> - league details.</li>
-    <li><code>searchteams.php?t={teamName}</code> / <code>lookupteam.php?id={teamId}</code> - teams.</li>
-    <li><code>eventspastleague.php?id={leagueId}</code> - recent results.</li>
-    <li><code>eventsnextleague.php?id={leagueId}</code> - upcoming fixtures.</li>
-    <li><code>lookupevent.php?id={eventId}</code> - single event details.</li>
-    <li><code>lookuptable.php?l={leagueId}&amp;s={season}</code> - standings.</li>
+    <li><code>lookupleague.php?id=&#123;leagueId&#125;</code> - league details.</li>
+    <li><code>searchteams.php?t=&#123;teamName&#125;</code> / <code>lookupteam.php?id=&#123;teamId&#125;</code> - teams.</li>
+    <li><code>eventspastleague.php?id=&#123;leagueId&#125;</code> - recent results.</li>
+    <li><code>eventsnextleague.php?id=&#123;leagueId&#125;</code> - upcoming fixtures.</li>
+    <li><code>lookupevent.php?id=&#123;eventId&#125;</code> - single event details.</li>
+    <li><code>lookuptable.php?l=&#123;leagueId&#125;&amp;s=&#123;season&#125;</code> - standings.</li>
   </ul>
 
   <h3>Example requests we call from the backend</h3>
@@ -113,28 +113,27 @@ GET https://www.thesportsdb.com/api/v1/json/1/lookuptable.php?l=4328&amp;s=2024-
   <h2>Replacement strategy (how to swap providers)</h2>
   <ol>
     <li>Introduce a new <code>SportsDataProvider</code> interface + implementation for the alternative feed.</li>
-    <li>Map the new provider's JSON to our existing DTOs (<code>TeamDto</code>, <code>FixtureDto</code>, <code>StandingDto</code>).</li>
+    <li>Map the new provider&#39;s JSON to our existing DTOs (<code>TeamDto</code>, <code>FixtureDto</code>, <code>StandingDto</code>).</li>
     <li>Run contract tests against the service layer to ensure parity.</li>
     <li>Flip configuration (feature flag/env var) to route traffic to the new provider.</li>
   </ol>
 
   <h2>Sample Spring service (abbreviated)</h2>
-  <pre><code>
-// Pseudocode: fetch next events for a league
+  <pre><code>// Pseudocode: fetch next events for a league
 @Service
-public class SportsDbService {
+public class SportsDbService &#123;
   private final WebClient http;
-  @Value("${sportsdb.key}") String apiKey;
+  @Value("$&#123;sportsdb.key&#125;") String apiKey;
 
-  public Mono&lt;EventsResponse&gt; nextEvents(String leagueId) {
+  public Mono&lt;EventsResponse&gt; nextEvents(String leagueId) &#123;
     String url = "https://www.thesportsdb.com/api/v1/json/"
       + apiKey + "/eventsnextleague.php?id=" + leagueId;
     return http.get().uri(url)
       .retrieve()
       .bodyToMono(EventsResponse.class)
       .onErrorResume(ex -> cacheLastGood("next:" + leagueId));
-  }
-}
+  &#125;
+&#125;
 </code></pre>
 
   <h2>Frontend usage</h2>
