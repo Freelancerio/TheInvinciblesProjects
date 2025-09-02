@@ -118,4 +118,4 @@ app:
 #     - DELETE
 #     - OPTIONS
 #   allowed-headers: "*"
-  allow-credentials: true
+# allow-credentials: true
