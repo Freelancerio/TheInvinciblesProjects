@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom"; // Add this import
 import StatCard from "../Components/StatsCard";
 import Section from "../Components/Section";
 import "./UserDashboard.css";
+import { baseUrl } from "../baseURL";
 
 function UserDashboard() {
     const navigate = useNavigate(); // Add navigation hook
@@ -25,7 +26,7 @@ function UserDashboard() {
                 setLoading(true);
 
                 // Fetch user info
-                const userResponse = await fetch("http://localhost:8080/user-info", {
+                const userResponse = await fetch(`${baseUrl}/user-info`, {
                     credentials: 'include'
                 });
 
@@ -38,7 +39,7 @@ function UserDashboard() {
                 setUser(userData);
 
                 // Fetch user stats
-                const statsResponse = await fetch("http://localhost:8080/api/user/stats", {
+                const statsResponse = await fetch(`${baseUrl}/api/user/stats`, {
                     credentials: 'include'
                 });
 
@@ -52,7 +53,7 @@ function UserDashboard() {
 
                 // Fetch matches data
                 try {
-                    const matchesResponse = await fetch("http://localhost:8080/api/database/psl/matches");
+                    const matchesResponse = await fetch(`${baseUrl}/api/database/psl/matches`);
                     if (matchesResponse.ok) {
                         const matchesData = await matchesResponse.json();
                         console.log("Raw matches response:", matchesData);
@@ -72,7 +73,7 @@ function UserDashboard() {
 
                 // Fetch standings data
                 try {
-                    const standingsResponse = await fetch("http://localhost:8080/api/database/psl/standings");
+                    const standingsResponse = await fetch(`${baseUrl}/api/database/psl/standings`);
                     if (standingsResponse.ok) {
                         const standingsData = await standingsResponse.json();
                         console.log("Raw standings response:", standingsData);
@@ -215,7 +216,7 @@ function UserDashboard() {
             }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '16px', color: '#120e1b' }}>
                     <div style={{ width: '32px', height: '32px' }}>
-                        <svg viewBox="0 0 48 48" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <svg viewBox="0 0 48 48" fill="currentColor" xmlns="https://www.w3.org/2000/svg">
                             <path d="M44 11.27C44 14 39.8 16.4 33.7 17.6 39.8 18.9 44 21.3 44 24s-4.2 5.1-10.3 6.4C39.8 31.6 44 34 44 36.7 44 40.7 35 44 24 44S4 40.7 4 36.7c0-2.7 4.2-5.1 10.3-6.4C8.2 29.1 4 26.7 4 24s4.2-5.1 10.3-6.4C8.2 16.4 4 14 4 11.3 4 7.3 13 4 24 4s20 3.3 20 7.3z" />
                         </svg>
                     </div>
