@@ -14,7 +14,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/psl")
-@CrossOrigin(origins = { "https://celebrated-intuition-production.up.railway.app", "https://celebrated-intuition-production.up.railway.app", "https://smartbet.vercel.app" })
+@CrossOrigin(origins = { "https://celebrated-intuition-production.up.railway.app", "https://celebrated-intuition-production.up.railway.app", "https://smartbet.vercel.app" , "https://theinvinciblesprojects-3tv1.onrender.com" })
 public class FootballController {
 
     @Autowired

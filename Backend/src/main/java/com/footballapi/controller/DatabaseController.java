@@ -11,7 +11,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/database/psl")
-@CrossOrigin(origins = { "https://celebrated-intuition-production.up.railway.app", "https://the-invincibles-projects.vercel.app" })
+@CrossOrigin(origins = { "https://celebrated-intuition-production.up.railway.app", "https://the-invincibles-projects.vercel.app" , "https://theinvinciblesprojects-3tv1.onrender.com"})
 public class DatabaseController {
 
     @Autowired
