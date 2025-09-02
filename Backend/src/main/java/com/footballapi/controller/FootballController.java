@@ -1,20 +1,26 @@
 package com.footballapi.controller;
 
+import java.time.Instant;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.footballapi.FixturesResponse;
 import com.footballapi.LeagueTableResponse;
 import com.footballapi.PslFootballService;
 import com.footballapi.TeamsResponse;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.time.Instant;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/psl")
-@CrossOrigin(origins = { "https://celebrated-intuition-production.up.railway.app", "https://celebrated-intuition-production.up.railway.app", "https://smartbet.vercel.app" , "https://theinvinciblesprojects-3tv1.onrender.com" })
+@CrossOrigin(origins = { "https://celebrated-intuition-production.up.railway.app", "https://the-invincibles-projects.vercel.app","https://celebrated-intuition-production.up.railway.app", "https://smartbet.vercel.app" , "https://theinvinciblesprojects-3tv1.onrender.com" })
 public class FootballController {
 
     @Autowired
