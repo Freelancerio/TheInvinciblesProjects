@@ -4,7 +4,7 @@ export const getBaseUrl = () => {
         baseURL = "http://localhost:8080";
     }
     else {
-        baseURL = "http://celebrated-intuition-production.up.railway.app";
+        baseURL = "https://celebrated-intuition-production.up.railway.app";
     }
     return baseURL;
 };
