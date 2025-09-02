@@ -110,6 +110,7 @@ cors:
     - "http://localhost:3000"
     - "http://localhost:3001"
     - "https://the-invincibles-projects.vercel.app"
+    - "0.0.0.0"
   allowed-methods:
     - GET
     - POST
