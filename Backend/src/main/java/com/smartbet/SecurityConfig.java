@@ -1,5 +1,6 @@
 package com.smartbet;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -10,6 +11,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -18,6 +20,9 @@ import java.io.IOException;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
+
+    @Autowired
+    private CorsConfigurationSource corsConfigurationSource;
 
     @Bean
     public AuthenticationFailureHandler authenticationFailureHandler() {
@@ -55,7 +60,9 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http, CustomOAuth2UserService customOAuth2UserService) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)
+        http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource)) // Add this line
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
                                 .requestMatchers("/login", "/error", "/webjars/**", "/css/**", "/js/**").permitAll()
