@@ -4,7 +4,7 @@ export const getBaseUrl = () => {
         baseURL = "http://localhost:8080";
     }
     else {
-        baseURL = "https://celebrated-intuition-production.up.railway.app";
+        baseURL = "https://theinvinciblesprojects-3tv1.onrender.com"; // "https://celebrated-intuition-production.up.railway.app"
     }
     return baseURL;
 };
