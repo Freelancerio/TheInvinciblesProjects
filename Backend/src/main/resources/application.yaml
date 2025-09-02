@@ -105,17 +105,17 @@ app:
     enabled: true
     requests-per-minute: 60
 
-cors:
-  allowed-origins:
-    - "http://localhost:3000"
-    - "http://localhost:3001"
-    - "https://the-invincibles-projects.vercel.app"
-    - "0.0.0.0"
-  allowed-methods:
-    - GET
-    - POST
-    - PUT
-    - DELETE
-    - OPTIONS
-  allowed-headers: "*"
+# cors:
+#   allowed-origins:
+#     - "http://localhost:3000"
+#     - "http://localhost:3001"
+#     - "https://the-invincibles-projects.vercel.app"
+#     - "0.0.0.0"
+#   allowed-methods:
+#     - GET
+#     - POST
+#     - PUT
+#     - DELETE
+#     - OPTIONS
+#   allowed-headers: "*"
   allow-credentials: true
