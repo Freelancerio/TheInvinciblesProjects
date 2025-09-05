@@ -24,7 +24,7 @@ COPY src ./src
 RUN ./mvnw clean package -DskipTests -B
 
 # Create a new stage for the runtime image (multi-stage build for smaller image)
-FROM openjdk:17-jre-slim
+FROM eclipse-temurin:17-jre-slim
 
 WORKDIR /app
 
