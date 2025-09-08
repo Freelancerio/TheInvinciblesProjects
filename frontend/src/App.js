@@ -1,20 +1,17 @@
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Login from "./pages/Login.jsx";
+import Profile from "./pages/Profile.jsx";
+import Home from "./pages/Home.jsx";
 
-// The root component of the application.
-// It imports and renders Header and Footer, and provides a basic structure for the page.
-// All other pages/components will be added into this component later.
-
-import React from 'react';
-import Header from './components/Header';
-import Footer from './components/Footer';
-
-function App() {
+export default function App() {
   return (
-    <div>
-      <Header />
-      <h1>Hello from React App </h1>
-      <Footer />
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/home" element={<Home />} />
+        <Route path="/profile" element={<Profile />} />
+      </Routes>
+    </Router>
   );
 }
-
-export default App;
