@@ -12,13 +12,13 @@ export default function Profile() {
       {/* Top navigation */}
       <header className="profile-nav">
         <nav className="nav-links" aria-label="Profile Navigation">
-          <button className="btn btn-ghost" onClick={() => navigate("/home")}>
+          <button className="btn btn-ghost" onClick={() => navigate("/dashboard")}>
             Homepage
           </button>
           <button className="btn btn-ghost" onClick={() => navigate("/profile")}>
             Profile
           </button>
-          <button className="btn btn-ghost" onClick={() => navigate("/")}>
+          <button className="btn btn-ghost" onClick={() => navigate("/login")}>
             Logout
           </button>
         </nav>

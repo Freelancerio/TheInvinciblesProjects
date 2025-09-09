@@ -7,12 +7,12 @@ export default function Login() {
 
   const handleGoogleLogin = () => {
     // TODO: replace with real auth later
-    navigate("/profile");
+    navigate("/dashboard");
   };
 
   const handleFacebookLogin = () => {
     // TODO: replace with real auth later
-    navigate("/profile");
+    navigate("/dashboard");
   };
 
   return (
@@ -37,7 +37,7 @@ export default function Login() {
           sports and events to bet on. Join us today and experience the thrill of winning!
         </p>
 
-        <form className="form" onSubmit={(e)=>e.preventDefault()}>
+        <form className="form" onSubmit={(e) => e.preventDefault()}>
           <label htmlFor="email">Email</label>
           <input id="email" name="email" type="email" placeholder="Enter your email" required />
 

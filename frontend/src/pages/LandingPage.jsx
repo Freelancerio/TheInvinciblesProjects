@@ -1,10 +1,11 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { LiveUpdatesSection } from "./LiveUpdatesSection";
-import { MatchUpdatesSection } from "./MatchUpdatesSection";
-import { OddsSection } from "./OddsSection";
-import { UpcomingMatchesSection } from "./UpcomingMatchesSection";
+import { LiveUpdatesSection } from "./sections/LiveUpdatesSection";
+import { MatchUpdatesSection } from "./sections/MatchUpdatesSection";
+import { OddsSection } from "./sections/OddsSection";
+import { UpcomingMatchesSection } from "./sections/UpcomingMatchesSection";
+
 
 export const LandingPage = () => {
   const navigationButtons = [];

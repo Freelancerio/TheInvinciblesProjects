@@ -1,9 +1,16 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
 export const UpcomingMatchesSection = () => {
+    const navigate = useNavigate();
+
+    const handleLoginNavigation = () => {
+        navigate("/login");
+    };
+
     const navigationItems = [
-        { label: "Home", href: "#" },
+        { label: "Home", href: "#", onClick: handleLoginNavigation },
         { label: "Live", href: "#" },
         { label: "Upcoming", href: "#" },
         { label: "Promotions", href: "#" },
@@ -32,6 +39,12 @@ export const UpcomingMatchesSection = () => {
                         <a
                             key={item.label}
                             href={item.href}
+                            onClick={(e) => {
+                                if (item.onClick) {
+                                    e.preventDefault();
+                                    item.onClick();
+                                }
+                            }}
                             className="items-start inline-flex flex-col relative flex-[0_0_auto] transition-colors hover:text-[#8a2be2] cursor-pointer"
                         >
                             <div className="relative self-stretch mt-[-1.00px] [font-family:'Space_Grotesk',Helvetica] font-medium text-white text-sm tracking-[0] leading-[21px] whitespace-nowrap">
@@ -45,6 +58,7 @@ export const UpcomingMatchesSection = () => {
                     <Button
                         variant="secondary"
                         className="inline-flex min-w-[84px] max-w-[480px] h-10 items-center justify-center px-4 py-0 relative flex-[0_0_auto] bg-[#b0bec5] rounded-lg overflow-hidden hover:bg-[#9cabb2] transition-colors"
+                        onClick={handleLoginNavigation}
                     >
                         <div className="items-center inline-flex flex-col relative flex-[0_0_auto]">
                             <div className="relative self-stretch mt-[-1.00px] [font-family:'Space_Grotesk',Helvetica] font-bold text-[#1e1e2f] text-sm text-center tracking-[0] leading-[21px] whitespace-nowrap">
@@ -56,6 +70,7 @@ export const UpcomingMatchesSection = () => {
                     <Button
                         variant="default"
                         className="flex max-w-[480px] w-[84px] h-10 items-center justify-center px-4 py-0 bg-[#8a2be2] relative rounded-lg overflow-hidden hover:bg-[#7a24d1] transition-colors"
+                        onClick={handleLoginNavigation}
                     >
                         <div className="items-center inline-flex flex-col relative flex-[0_0_auto]">
                             <div className="relative self-stretch mt-[-1.00px] [font-family:'Space_Grotesk',Helvetica] font-bold text-[#1e1e2f] text-sm text-center tracking-[0] leading-[21px] whitespace-nowrap">
