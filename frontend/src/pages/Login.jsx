@@ -1,68 +1,120 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/login.css";   // <-- keep this path
+import { auth, googleProvider, signInWithPopup, signInWithEmailAndPassword } from "../firebase";
+import "../styles/login.css";
 
 export default function Login() {
   const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
-  const handleGoogleLogin = () => {
-    // TODO: replace with real auth later
-    navigate("/profile");
-  };
+const sendTokenToBackend = async (idToken) => {
+  try {
+    const response = await fetch("http://localhost:8080/api/me", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${idToken}`,
+      },
+    });
 
-  const handleFacebookLogin = () => {
-    // TODO: replace with real auth later
-    navigate("/profile");
-  };
+    if (!response.ok) {
+      const data = await response.json();
+      throw new Error(data.message || "Backend authentication failed");
+    }
+
+    return await response.json();
+  } catch (err) {
+    console.error(err);
+    setError(err.message);
+    return null;
+  }
+};
+
+
+const handleGoogleLogin = async () => {
+  try {
+    const result = await signInWithPopup(auth, googleProvider);
+    const idToken = await result.user.getIdToken();
+
+    //set the email into the localstorage
+    localStorage.setItem("email",  result.user.email);
+
+    const backendResponse = await sendTokenToBackend(idToken);
+    if (backendResponse) {
+      console.log(backendResponse);
+      localStorage.setItem("authToken", idToken); // i will be using this token to authenticate everytime
+      localStorage.setItem("user-name", backendResponse.username);
+      navigate("/profile"); // only navigate if backend accepted the token
+    }
+  } catch (err) {
+    console.error(err);
+    setError("Google login failed. Try again.");
+  }
+};
+
+const handleEmailLogin = async (e) => {
+  e.preventDefault();
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const idToken = await userCredential.user.getIdToken();
+
+    const backendResponse = await sendTokenToBackend(idToken);
+    if (backendResponse) {
+      navigate("/profile"); // only navigate if backend accepted the token
+    }
+  } catch (err) {
+    console.error(err);
+    setError("Email/password login failed. Check your credentials.");
+  }
+};
+
 
   return (
     <main className="login-wrap">
-      {/* Top nav */}
       <header className="login-nav">
         <div className="brand">
           <span className="brand-mark" aria-hidden="true">▦</span>
           <span className="brand-name">SmartBet</span>
         </div>
-
-        <nav className="nav-links" aria-label="Primary">
-          <button className="btn btn-ghost">Join Now</button>
-        </nav>
       </header>
 
-      {/* Card */}
       <section className="card">
         <h1 className="title">Welcome to SmartBet</h1>
         <p className="subtitle">
-          SmartBet is your premier destination for online sports betting, offering a wide range of
-          sports and events to bet on. Join us today and experience the thrill of winning!
+          SmartBet is your premier destination for online sports betting. Join us today and experience the thrill of winning!
         </p>
 
-        <form className="form" onSubmit={(e)=>e.preventDefault()}>
+        {error && <p className="error">{error}</p>}
+
+        <form className="form" onSubmit={handleEmailLogin}>
           <label htmlFor="email">Email</label>
-          <input id="email" name="email" type="email" placeholder="Enter your email" required />
+          <input
+            id="email"
+            type="email"
+            placeholder="Enter your email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
 
           <label htmlFor="password">Password</label>
-          <input id="password" name="password" type="password" placeholder="Enter your password" required />
+          <input
+            id="password"
+            type="password"
+            placeholder="Enter your password"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
 
-          <div className="row">
-            <label className="remember">
-              <input type="checkbox" name="remember" /> Remember Me
-            </label>
-            <a className="muted" href="#forgot">Forgot Password?</a>
-          </div>
-
-          {/* transparent primary button to match socials */}
           <button type="submit" className="btn btn-primary">Log In</button>
 
           <div className="divider"><span>Or log in with</span></div>
 
           <div className="social-row">
-            <button type="button" className="btn btn-soft" onClick={handleFacebookLogin}>
-              Continue with Facebook
-            </button>
-            <button type="button" className="btn btn-soft" onClick={handleGoogleLogin}>
-              {/* If you use an icon, add it here; otherwise remove this img */}
-              {/* <img src="/images/google-logo.png" alt="Google logo" className="btn-icon" /> */}
+            <button type="button" className="btn btn-soft"  onClick={handleGoogleLogin}>
               Continue with Google
             </button>
           </div>

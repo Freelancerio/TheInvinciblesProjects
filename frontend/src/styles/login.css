@@ -135,6 +135,7 @@ input:focus {
   background: rgba(255,255,255,.12);
   color: #fff;
   border-radius: 10px;
+  width: 100%;
 }
 .btn-soft:hover { background: rgba(255,255,255,.18); }
 

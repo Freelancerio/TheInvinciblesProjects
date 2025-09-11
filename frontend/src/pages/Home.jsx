@@ -1,44 +1,28 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
 import "../styles/home.css";
+import Navbar from "../components/navbar";
+import StatsCard from "../components/statsCard";
 
 export default function Home() {
-  const navigate = useNavigate();
+  const [username, setUsername] = useState("");
+
+  useEffect(() => {
+    const storedUsername = localStorage.getItem("user-name") || "User";
+    setUsername(storedUsername);
+  }, []);
 
   return (
     <main className="home-wrap">
       {/* Top nav */}
-      <header className="home-nav">
-        <nav className="nav-links" aria-label="Home Navigation">
-          <button className="btn btn-ghost" onClick={() => navigate("/home")}>Homepage</button>
-          <button className="btn btn-ghost" onClick={() => navigate("/profile")}>Profile</button>
-          <button className="btn btn-ghost" onClick={() => navigate("/")}>Logout</button>
-        </nav>
-      </header>
+      <Navbar/>
 
       {/* Page container */}
       <section className="home-card">
-        <h1 className="title">Welcome back, Luvo</h1>
+        <h1 className="title">Welcome back, {username}</h1>
 
-        {/* Stats */}
-        <div className="stats">
-          <div className="stat">
-            <div className="stat-label">Total Bets Placed</div>
-            <div className="stat-value">125</div>
-          </div>
-          <div className="stat">
-            <div className="stat-label">Win Rate</div>
-            <div className="stat-value">68%</div>
-          </div>
-          <div className="stat">
-            <div className="stat-label">Total Winnings</div>
-            <div className="stat-value">R 15,250</div>
-          </div>
-          <div className="stat">
-            <div className="stat-label">Available Balance</div>
-            <div className="stat-value">R 1,300</div>
-          </div>
-        </div>
+        {/* Stats */} 
+        <StatsCard/>
+      
 
         {/* Upcoming Matches (3 columns) */}
         <section className="block">
