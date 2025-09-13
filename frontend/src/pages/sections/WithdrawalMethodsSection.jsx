@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import {
     Avatar,
     AvatarFallback,
@@ -7,9 +8,14 @@ import {
 import { Button } from "@/components/ui/button";
 
 export const WithdrawalMethodsSection = () => {
+    const navigate = useNavigate();
+
+    const handleNavigation = (path) => {
+        navigate(path);
+    };
+
     const navigationItems = [
-        { label: "Home", href: "#" },
-        { label: "Promotions", href: "#" },
+        { label: "Home", onClick: () => handleNavigation("./dashboard") },
     ];
 
     return (
@@ -30,23 +36,26 @@ export const WithdrawalMethodsSection = () => {
             <div className="flex items-center justify-end gap-8 flex-1">
                 <nav className="translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:400ms] flex items-center gap-9">
                     {navigationItems.map((item, index) => (
-                        <a
+                        <button
                             key={item.label}
-                            href={item.href}
-                            className="[font-family:'Lexend',Helvetica] font-medium text-[#e8edf5] text-sm tracking-[0] leading-[21px] whitespace-nowrap hover:text-white transition-colors"
+                            onClick={item.onClick}
+                            className="[font-family:'Lexend',Helvetica] font-medium text-[#e8edf5] text-sm tracking-[0] leading-[21px] whitespace-nowrap hover:text-white transition-colors bg-transparent border-none cursor-pointer"
                         >
                             {item.label}
-                        </a>
+                        </button>
                     ))}
                 </nav>
 
-                <Button className="translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:600ms] min-w-[84px] max-w-[480px] h-10 px-4 py-0 bg-[#e8edf4] hover:bg-[#d4dae3] rounded-lg [font-family:'Lexend',Helvetica] font-bold text-[#1e1e2f] text-sm tracking-[0] leading-[21px] transition-colors">
+                <Button
+                    onClick={() => handleNavigation("/deposit")}
+                    className="translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:600ms] min-w-[84px] max-w-[480px] h-10 px-4 py-0 bg-[#e8edf4] hover:bg-[#d4dae3] rounded-lg [font-family:'Lexend',Helvetica] font-bold text-[#1e1e2f] text-sm tracking-[0] leading-[21px] transition-colors"
+                >
                     Deposit
                 </Button>
 
                 <Avatar className="translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:800ms] w-10 h-10">
                     <AvatarImage
-                        src="https://c.animaapp.com/mfcey0msCkDIKF/img/depth-4--frame-2.png"
+                        src="https://via.placeholder.com/40x40/666/fff?text=U"
                         alt="User Avatar"
                     />
                     <AvatarFallback>U</AvatarFallback>

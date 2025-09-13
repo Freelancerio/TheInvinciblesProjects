@@ -4,16 +4,22 @@ import {
     AvatarFallback,
     AvatarImage,
 } from "@/components/ui/avatar";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 export const AddFundsSection = () => {
+    const navigate = useNavigate();
+
+    const handleNavigation = (path) => {
+        navigate(path);
+    };
+
     const navigationItems = [
-        { label: "Home", active: false },
-        { label: "Live", active: false },
-        { label: "Upcoming", active: false },
-        { label: "Results", active: false },
-        { label: "My Bets", active: false },
+        { label: "Home", onClick: () => handleNavigation("/dashboard") },
+        { label: "Live", onClick: () => handleNavigation("/fixtures") },
+        { label: "Withdrawal", onClick: () => handleNavigation("/withdrawal") },
+        { label: "My Bets", onClick: () => handleNavigation("/my-bets") },
     ];
 
     return (
@@ -38,6 +44,7 @@ export const AddFundsSection = () => {
                         <Button
                             key={item.label}
                             variant="ghost"
+                            onClick={item.onClick}
                             className="inline-flex items-start flex-col relative flex-[0_0_auto] h-auto p-0 hover:bg-transparent"
                         >
                             <span className="relative self-stretch mt-[-1.00px] [font-family:'Inter',Helvetica] font-medium text-[#e8edf5] text-sm tracking-[0] leading-[21px] whitespace-nowrap hover:text-white transition-colors">
@@ -74,7 +81,7 @@ export const AddFundsSection = () => {
 
                 <Avatar className="relative w-10 h-10 rounded-[20px]">
                     <AvatarImage
-                        src="https://c.animaapp.com/mfcfd18iC3JgIz/img/depth-4--frame-2.png"
+                        src="https://via.placeholder.com/40x40/666/fff?text=U"
                         alt="User Avatar"
                         className="object-cover"
                     />
