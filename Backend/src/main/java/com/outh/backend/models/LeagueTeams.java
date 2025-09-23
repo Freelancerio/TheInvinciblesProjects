@@ -7,7 +7,6 @@ import jakarta.persistence.*;
 public class LeagueTeams {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, unique = true)
@@ -24,7 +23,8 @@ public class LeagueTeams {
 
     public LeagueTeams() {}
 
-    public LeagueTeams(String name, String stadiumName, String logoUrl, String abbreviation) {
+    public LeagueTeams(Long id, String name, String stadiumName, String logoUrl, String abbreviation) {
+        this.id = id;
         this.name = name;
         this.stadiumName = stadiumName;
         this.logoUrl = logoUrl;

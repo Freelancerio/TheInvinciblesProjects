@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fixture Details - EPL Betting & Stats</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#38003c',
+                        secondary: '#00ff85',
+                        accent: '#e90052',
+                        light: '#f5f5f5',
+                        dark: '#1a1a1a',
+                        gray: {
+                            custom: '#717171'
+                        }
+                    },
+                    backgroundImage: {
+                        'soccer-pattern': "url('https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3')"
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background: linear-gradient(rgba(56, 0, 60, 0.9), rgba(56, 0, 60, 0.95)), url('https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3') center/cover no-repeat fixed;
+        }
+        
+        .card-bg {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+        }
+        
+        .team-logo {
+            width: 80px;
+            height: 80px;
+        }
+        
+        .team-logo-small {
+            width: 30px;
+            height: 30px;
+        }
+        
+        .league-logo {
+            width: 40px;
+            height: 40px;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+        }
+        
+        .score-input {
+            width: 80px;
+        }
+        
+        .form-indicator {
+            width: 25px;
+            height: 25px;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-white">
+    <!-- Header Navigation -->
+    <header class="bg-primary py-4 sticky top-0 z-50 shadow-lg">
+        <div class="container mx-auto px-5">
+            <nav class="flex justify-between items-center">
+                <div class="logo flex items-center text-white font-bold text-xl">
+                    <i class="fas fa-futbol text-secondary mr-2 text-2xl"></i>
+                    <span>EPL Betting & Stats</span>
+                </div>
+                
+                <div class="nav-links hidden md:flex gap-6">
+                    <a href="#" class="text-white font-medium px-3 py-2 rounded transition-all hover:bg-white/10 hover:text-secondary">Home</a>
+                    <a href="#" class="text-white font-medium px-3 py-2 rounded transition-all hover:bg-white/10 hover:text-secondary">Profile</a>
+                    <a href="#" class="text-white font-medium px-3 py-2 rounded transition-all hover:bg-white/10 hover:text-secondary">Predictions</a>
+                    <a href="#" class="bg-white/10 text-secondary font-medium px-3 py-2 rounded transition-all">Bets</a>
+                    <a href="#" class="text-white font-medium px-3 py-2 rounded transition-all hover:bg-white/10 hover:text-secondary">Leaderboards</a>
+                </div>
+                
+                <div class="user-actions flex items-center gap-4">
+                    <div class="user-profile flex items-center gap-2 cursor-pointer">
+                        <div class="user-avatar rounded-full bg-secondary flex items-center justify-center font-bold text-primary">JS</div>
+                        <span class="hidden md:inline">John Smith</span>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Fixture Content -->
+    <div class="fixture-content py-8">
+        <div class="container mx-auto px-5">
+            <h1 class="page-title text-4xl text-secondary mb-8 text-center">Fixture Details</h1>
+            
+            <div class="fixture-grid grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Fixture Info Card -->
+                <div class="card card-bg rounded-xl p-6 mb-6 border border-white/10 col-span-1 lg:col-span-2">
+                    <div class="league-info flex items-center justify-center gap-2 mb-5">
+                        <div class="league-logo rounded-full bg-white flex items-center justify-center font-bold text-primary">EPL</div>
+                        <h2 class="text-xl">Premier League - Matchweek 29</h2>
+                    </div>
+                    
+                    <div class="match-details flex justify-between items-center my-8 flex-col md:flex-row gap-8 md:gap-0">
+                        <div class="team flex flex-col items-center gap-4 w-full md:w-2/5">
+                            <div class="team-logo rounded-full bg-white flex items-center justify-center font-bold text-primary text-xl">MCI</div>
+                            <div class="team-name text-xl font-semibold text-center">Manchester City</div>
+                        </div>
+                        
+                        <div class="vs text-2xl font-bold text-secondary">VS</div>
+                        
+                        <div class="team flex flex-col items-center gap-4 w-full md:w-2/5">
+                            <div class="team-logo rounded-full bg-white flex items-center justify-center font-bold text-primary text-xl">ARS</div>
+                            <div class="team-name text-xl font-semibold text-center">Arsenal</div>
+                        </div>
+                    </div>
+                    
+                    <div class="fixture-meta flex justify-center gap-8 mt-5 flex-wrap">
+                        <div class="meta-item flex flex-col items-center gap-1">
+                            <div class="meta-label text-sm opacity-80">Date</div>
+                            <div class="meta-value font-semibold">Saturday, April 15, 2023</div>
+                        </div>
+                        <div class="meta-item flex flex-col items-center gap-1">
+                            <div class="meta-label text-sm opacity-80">Time</div>
+                            <div class="meta-value font-semibold">17:30 GMT</div>
+                        </div>
+                        <div class="meta-item flex flex-col items-center gap-1">
+                            <div class="meta-label text-sm opacity-80">Venue</div>
+                            <div class="meta-value font-semibold">Etihad Stadium</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Head to Head Section -->
+                <div class="card card-bg rounded-xl p-6 mb-6 border border-white/10">
+                    <div class="card-header flex justify-between items-center mb-5 pb-4 border-b border-white/10">
+                        <h2 class="card-title text-xl font-semibold text-secondary">Head to Head</h2>
+                    </div>
+                    <div class="h2h-list">
+                        <div class="h2h-item flex justify-between items-center py-4 border-b border-white/10">
+                            <div class="h2h-teams flex items-center gap-4 flex-1">
+                                <div class="h2h-team h2h-team-home flex items-center gap-2 w-2/5 justify-end">
+                                    <span>Man City</span>
+                                    <div class="team-logo-small rounded-full bg-white flex items-center justify-center font-bold text-primary text-xs">MCI</div>
+                                </div>
+                                <div class="h2h-score bg-white/10 px-3 py-1 rounded font-bold min-w-[50px] text-center">1 - 0</div>
+                                <div class="h2h-team h2h-team-away flex items-center gap-2 w-2/5">
+                                    <div class="team-logo-small rounded-full bg-white flex items-center justify-center font-bold text-primary text-xs">ARS</div>
+                                    <span>Arsenal</span>
+                                </div>
+                            </div>
+                            <div class="h2h-date text-white/70 text-sm min-w-[90px] text-right">15 Feb 2023</div>
+                        </div>
+                        <div class="h2h-item flex justify-between items-center py-4 border-b border-white/10">
+                            <div class="h2h-teams flex items-center gap-4 flex-1">
+                                <div class="h2h-team h2h-team-home flex items-center gap-2 w-2/5 justify-end">
+                                    <span>Arsenal</span>
+                                    <div class="team-logo-small rounded-full bg-white flex items-center justify-center font-bold text-primary text-xs">ARS</div>
+                                </div>
+                                <div class="h2h-score bg-white/10 px-3 py-1 rounded font-bold min-w-[50px] text-center">1 - 3</div>
+                                <div class="h2h-team h2h-team-away flex items-center gap-2 w-2/5">
+                                    <div class="team-logo-small rounded-full bg-white flex items-center justify-center font-bold text-primary text-xs">MCI</div>
+                                    <span>Man City</span>
+                                </div>
+                            </div>
+                            <div class="h2h-date text-white/70 text-sm min-w-[90px] text-right">5 Oct 2022</div>
+                        </div>
+                        <div class="h2h-item flex justify-between items-center py-4">
+                            <div class="h2h-teams flex items-center gap-4 flex-1">
+                                <div class="h2h-team h2h-team-home flex items-center gap-2 w-2/5 justify-end">
+                                    <span>Arsenal</span>
+                                    <div class="team-logo-small rounded-full bg-white flex items-center justify-center font-bold text-primary text-xs">ARS</div>
+                                </div>
+                                <div class="h2h-score bg-white/10 px-3 py-1 rounded font-bold min-w-[50px] text-center">2 - 1</div>
+                                <div class="h2h-team h2h-team-away flex items-center gap-2 w-2/5">
+                                    <div class="team-logo-small rounded-full bg-white flex items-center justify-center font-bold text-primary text-xs">MCI</div>
+                                    <span>Man City</span>
+                                </div>
+                            </div>
+                            <div class="h2h-date text-white/70 text-sm min-w-[90px] text-right">1 Jan 2022</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Form Section -->
+                <div class="card card-bg rounded-xl p-6 mb-6 border border-white/10">
+                    <div class="card-header flex justify-between items-center mb-5 pb-4 border-b border-white/10">
+                        <h2 class="card-title text-xl font-semibold text-secondary">Recent Form</h2>
+                    </div>
+                    <div class="form-section grid grid-cols-1 md:grid-cols-1 gap-5">
+                        <div class="team-form bg-white/10 p-5 rounded-lg">
+                            <div class="form-header flex items-center gap-2 mb-4">
+                                <div class="team-logo-small rounded-full bg-white flex items-center justify-center font-bold text-primary text-xs">MCI</div>
+                                <div class="team-name">Man City</div>
+                            </div>
+                            <div class="form-indicators flex gap-2 mb-5">
+                                <div class="form-indicator rounded-full bg-secondary text-primary flex items-center justify-center text-xs font-bold">W</div>
+                                <div class="form-indicator rounded-full bg-secondary text-primary flex items-center justify-center text-xs font-bold">W</div>
+                                <div class="form-indicator rounded-full bg-[#ffcc00] text-dark flex items-center justify-center text-xs font-bold">D</div>
+                                <div class="form-indicator rounded-full bg-secondary text-primary flex items-center justify-center text-xs font-bold">W</div>
+                                <div class="form-indicator rounded-full bg-secondary text-primary flex items-center justify-center text-xs font-bold">W</div>
+                            </div>
+                            <ul class="recent-matches">
+                                <li class="recent-match flex justify-between items-center py-3 border-b border-white/10">
+                                    <div class="match-teams flex items-center gap-2 flex-1">
+                                        <div>Man City</div>
+                                        <div class="h2h-score bg-white/10 px-3 py-1 rounded font-bold">4 - 1</div>
+                                        <div>Liverpool</div>
+                                    </div>
+                                </li>
+                                <li class="recent-match flex justify-between items-center py-3 border-b border-white/10">
+                                    <div class="match-teams flex items-center gap-2 flex-1">
+                                        <div>Southampton</div>
+                                        <div class="h2h-score bg-white/10 px-3 py-1 rounded font-bold">1 - 4</div>
+                                        <div>Man City</div>
+                                    </div>
+                                </li>
+                                <li class="recent-match flex justify-between items-center py-3">
+                                    <div class="match-teams flex items-center gap-2 flex-1">
+                                        <div>Man City</div>
+                                        <div class="h2h-score bg-white/10 px-3 py-1 rounded font-bold">0 - 0</div>
+                                        <div>Crystal Palace</div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="team-form bg-white/10 p-5 rounded-lg">
+                            <div class="form-header flex items-center gap-2 mb-4">
+                                <div class="team-logo-small rounded-full bg-white flex items-center justify-center font-bold text-primary text-xs">ARS</div>
+                                <div class="team-name">Arsenal</div>
+                            </div>
+                            <div class="form-indicators flex gap-2 mb-5">
+                                <div class="form-indicator rounded-full bg-secondary text-primary flex items-center justify-center text-xs font-bold">W</div>
+                                <div class="form-indicator rounded-full bg-accent text-white flex items-center justify-center text-xs font-bold">L</div>
+                                <div class="form-indicator rounded-full bg-secondary text-primary flex items-center justify-center text-xs font-bold">W</div>
+                                <div class="form-indicator rounded-full bg-secondary text-primary flex items-center justify-center text-xs font-bold">W</div>
+                                <div class="form-indicator rounded-full bg-[#ffcc00] text-dark flex items-center justify-center text-xs font-bold">D</div>
+                            </div>
+                            <ul class="recent-matches">
+                                <li class="recent-match flex justify-between items-center py-3 border-b border-white/10">
+                                    <div class="match-teams flex items-center gap-2 flex-1">
+                                        <div>Arsenal</div>
+                                        <div class="h2h-score bg-white/10 px-3 py-1 rounded font-bold">4 - 1</div>
+                                        <div>Leeds</div>
+                                    </div>
+                                </li>
+                                <li class="recent-match flex justify-between items-center py-3 border-b border-white/10">
+                                    <div class="match-teams flex items-center gap-2 flex-1">
+                                        <div>Liverpool</div>
+                                        <div class="h2h-score bg-white/10 px-3 py-1 rounded font-bold">2 - 0</div>
+                                        <div>Arsenal</div>
+                                    </div>
+                                </li>
+                                <li class="recent-match flex justify-between items-center py-3">
+                                    <div class="match-teams flex items-center gap-2 flex-1">
+                                        <div>Arsenal</div>
+                                        <div class="h2h-score bg-white/10 px-3 py-1 rounded font-bold">3 - 1</div>
+                                        <div>Chelsea</div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Team Stats Section -->
+                <div class="card card-bg rounded-xl p-6 mb-6 border border-white/10">
+                    <div class="card-header flex justify-between items-center mb-5 pb-4 border-b border-white/10">
+                        <h2 class="card-title text-xl font-semibold text-secondary">Team Statistics</h2>
+                    </div>
+                    <div class="stats-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div class="stat-item bg-white/10 p-5 rounded-lg text-center">
+                            <div class="stat-value text-3xl font-bold text-secondary mb-1">2.8</div>
+                            <div class="stat-label text-sm opacity-80">Man City Avg Goals</div>
+                        </div>
+                        <div class="stat-item bg-white/10 p-5 rounded-lg text-center">
+                            <div class="stat-value text-3xl font-bold text-secondary mb-1">2.4</div>
+                            <div class="stat-label text-sm opacity-80">Arsenal Avg Goals</div>
+                        </div>
+                        <div class="stat-item bg-white/10 p-5 rounded-lg text-center">
+                            <div class="stat-value text-3xl font-bold text-secondary mb-1">0.7</div>
+                            <div class="stat-label text-sm opacity-80">Man City Goals Conceded</div>
+                        </div>
+                        <div class="stat-item bg-white/10 p-5 rounded-lg text-center">
+                            <div class="stat-value text-3xl font-bold text-secondary mb-1">1.1</div>
+                            <div class="stat-label text-sm opacity-80">Arsenal Goals Conceded</div>
+                        </div>
+                        <div class="stat-item bg-white/10 p-5 rounded-lg text-center">
+                            <div class="stat-value text-3xl font-bold text-secondary mb-1">65%</div>
+                            <div class="stat-label text-sm opacity-80">Man City Avg Possession</div>
+                        </div>
+                        <div class="stat-item bg-white/10 p-5 rounded-lg text-center">
+                            <div class="stat-value text-3xl font-bold text-secondary mb-1">58%</div>
+                            <div class="stat-label text-sm opacity-80">Arsenal Avg Possession</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Prediction Section -->
+                <div class="card card-bg rounded-xl p-6 mb-6 border border-white/10 col-span-1 lg:col-span-2">
+                    <div class="card-header flex justify-between items-center mb-5 pb-4 border-b border-white/10">
+                        <h2 class="card-title text-xl font-semibold text-secondary">Match Prediction</h2>
+                    </div>
+                    <button class="prediction-btn bg-secondary text-primary border-none py-4 px-8 rounded-lg text-lg font-semibold cursor-pointer transition-all hover:bg-[#00d46e] hover:-translate-y-1 mb-5" id="predict-btn">
+                        <i class="fas fa-brain"></i> Show Predicted Outcome
+                    </button>
+                    
+                    <div class="prediction-result bg-white/10 p-6 rounded-lg my-5 hidden" id="prediction-result">
+                        <div class="prediction-text text-xl text-secondary mb-4">AI Prediction</div>
+                        <div class="predicted-score text-4xl font-extrabold my-4">2 - 1</div>
+                        <div class="prediction-text text-xl text-secondary mb-2">Manchester City to win</div>
+                        <div class="confidence">Confidence: 72%</div>
+                    </div>
+                    
+                    <div class="user-prediction mt-8">
+                        <h3 class="text-lg mb-4">Make Your Prediction</h3>
+                        <div class="score-inputs flex justify-center items-center gap-5 my-5 flex-col md:flex-row">
+                            <input type="number" min="0" max="10" class="score-input py-3 px-4 rounded-lg border border-white/20 bg-white/10 text-white text-xl font-bold text-center" id="home-score" placeholder="0">
+                            <span class="text-xl">:</span>
+                            <input type="number" min="0" max="10" class="score-input py-3 px-4 rounded-lg border border-white/20 bg-white/10 text-white text-xl font-bold text-center" id="away-score" placeholder="0">
+                        </div>
+                        <button class="submit-prediction bg-secondary text-primary border-none py-3 px-6 rounded-lg font-semibold cursor-pointer transition-all hover:bg-[#00d46e]">Submit Prediction</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Prediction button functionality
+        const predictBtn = document.getElementById('predict-btn');
+        const predictionResult = document.getElementById('prediction-result');
+        
+        predictBtn.addEventListener('click', function() {
+            predictionResult.classList.toggle('hidden');
+            
+            if (!predictionResult.classList.contains('hidden')) {
+                predictBtn.innerHTML = '<i class="fas fa-eye-slash"></i> Hide Prediction';
+            } else {
+                predictBtn.innerHTML = '<i class="fas fa-brain"></i> Show Predicted Outcome';
+            }
+        });
+        
+        // Score input validation
+        const homeScore = document.getElementById('home-score');
+        const awayScore = document.getElementById('away-score');
+        
+        homeScore.addEventListener('change', function() {
+            if (this.value > 10) this.value = 10;
+            if (this.value < 0) this.value = 0;
+        });
+        
+        awayScore.addEventListener('change', function() {
+            if (this.value > 10) this.value = 10;
+            if (this.value < 0) this.value = 0;
+        });
+        
+        // Submit prediction
+        document.querySelector('.submit-prediction').addEventListener('click', function() {
+            const homeValue = homeScore.value || 0;
+            const awayValue = awayScore.value || 0;
+            
+            if (homeValue == 0 && awayValue == 0) {
+                alert('Please enter a valid score prediction');
+                return;
+            }
+            
+            alert(`Prediction submitted: Manchester City ${homeValue} - ${awayValue} Arsenal`);
+            
+            // In a real app, this would send the prediction to the server
+            homeScore.value = '';
+            awayScore.value = '';
+        });
+    </script>
+</body>
+</html>

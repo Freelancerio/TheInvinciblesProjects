@@ -19,11 +19,14 @@ public class LeagueTeamService {
         this.repo = repo;
     }
 
-    public void updateTeamsFromApi() {
-        String url = "https://v3.football.api-sports.io/teams?league=39&season=2023";
+    public List<LeagueTeams> getTeams() {
+        return repo.findAll();
+    }
+    public void updateTeamsFromApi(Integer seasonYear) {
+        String url = "https://v3.football.api-sports.io/teams?league=39&season=" + seasonYear;
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set("x-apisports-key", "66362a3229703cc13a9ca3fa0c3f181a"); // replace with your key
+        headers.set("x-apisports-key", "2f3b76a05701c413702bb1a263d2163c");
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
         ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
@@ -35,14 +38,17 @@ public class LeagueTeamService {
                 Map<String, Object> team = (Map<String, Object>) teamObj.get("team");
                 Map<String, Object> venue = (Map<String, Object>) teamObj.get("venue");
 
+                Long apiId = ((Number) team.get("id")).longValue();  // API id
                 String name = (String) team.get("name");
                 String code = (String) team.get("code");
                 String logo = (String) team.get("logo");
                 String stadium = (String) venue.get("name");
 
-                LeagueTeams leagueTeam = repo.findByName(name)
+                // find by id, not by name
+                LeagueTeams leagueTeam = repo.findById(apiId)
                         .orElse(new LeagueTeams());
 
+                leagueTeam.setId(apiId);
                 leagueTeam.setName(name);
                 leagueTeam.setAbbreviation(code);
                 leagueTeam.setLogoUrl(logo);
@@ -52,4 +58,5 @@ public class LeagueTeamService {
             }
         }
     }
+
 }

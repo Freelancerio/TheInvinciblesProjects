@@ -1,4 +1,4 @@
-import "../styles/profile.css";
+
 import React, { useState, useEffect } from "react";
 
 export default function ProfileCard() {
@@ -93,6 +93,85 @@ export default function ProfileCard() {
     }
   };
 
+  const populateMatches = async (e) => {
+    e.preventDefault();
+
+    try {
+      const token = localStorage.getItem("authToken");
+      const response = await fetch("http://localhost:8080/api/matches/sync", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+       // body: JSON.stringify({ username }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update username");
+      }
+
+      const updatedUser = await response.json();
+      console.log("Updated user:", updatedUser);
+    } catch (err) {
+      console.error("Error updating username:", err);
+    }
+  };
+
+
+   const populateStandings = async (e) => {
+    e.preventDefault();
+
+    try {
+      const token = localStorage.getItem("authToken");
+      const response = await fetch("http://localhost:8080/api/standings/sync", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+       // body: JSON.stringify({ username }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update username");
+      }
+
+      const updatedUser = await response.json();
+      console.log("Updated user:", updatedUser);
+    } catch (err) {
+      console.error("Error updating username:", err);
+    }
+  };
+
+
+  
+   const populateStats = async (e) => {
+    e.preventDefault();
+
+    try {
+      const token = localStorage.getItem("authToken");
+      const response = await fetch("http://localhost:8080/api/statistics/sync", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+       // body: JSON.stringify({ username }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update username");
+      }
+
+      const updatedUser = await response.json();
+      console.log("Updated user:", updatedUser);
+    } catch (err) {
+      console.error("Error updating username:", err);
+    }
+  };
+
+
 
   return (
     <section className="profile-card">
@@ -119,7 +198,17 @@ export default function ProfileCard() {
         </button>
 
         <button onClick={populate} className="btn-primary">
-          populate
+          populate teams
+        </button>
+        <button onClick={populateMatches} className="btn-primary">
+          populate matches
+        </button>
+         <button onClick={populateStandings} className="btn-primary">
+          populate standings
+        </button>
+
+         <button onClick={populateStats} className="btn-primary">
+          populate stats
         </button>
       </div>
     </section>
