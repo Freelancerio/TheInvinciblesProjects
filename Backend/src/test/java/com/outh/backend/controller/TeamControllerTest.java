@@ -4,13 +4,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.outh.backend.models.LeagueTeams;
 import com.outh.backend.services.LeagueTeamService;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
@@ -22,6 +25,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.hamcrest.Matchers.*;
 
+@ExtendWith(MockitoExtension.class)
 @WebMvcTest(TeamController.class)
 @ActiveProfiles("test")
 class TeamControllerTest {
@@ -29,11 +33,20 @@ class TeamControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockitoBean
+    @Mock
     private LeagueTeamService teamService;
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @TestConfiguration
+    static class TestConfig {
+        @Bean
+        @Primary
+        public LeagueTeamService teamService() {
+            return mock(LeagueTeamService.class);
+        }
+    }
 
     @Test
     void testGetAllTeams() throws Exception {
@@ -41,6 +54,9 @@ class TeamControllerTest {
                 new LeagueTeams(1L, "Arsenal", "Emirates Stadium", "logo1.png", "ARS"),
                 new LeagueTeams(2L, "Chelsea", "Stamford Bridge", "logo2.png", "CHE")
         );
+
+        // Reset and configure the mock
+        reset(teamService);
         when(teamService.getTeams()).thenReturn(mockTeams);
 
         mockMvc.perform(get("/api/teams/"))
@@ -63,6 +79,7 @@ class TeamControllerTest {
 
     @Test
     void testGetAllTeams_EmptyList() throws Exception {
+        reset(teamService);
         when(teamService.getTeams()).thenReturn(Collections.emptyList());
 
         mockMvc.perform(get("/api/teams/"))
@@ -75,6 +92,7 @@ class TeamControllerTest {
 
     @Test
     void testSyncTeams() throws Exception {
+        reset(teamService);
         doNothing().when(teamService).updateTeamsFromApi(anyInt());
 
         mockMvc.perform(post("/api/teams/sync"))
@@ -89,6 +107,7 @@ class TeamControllerTest {
 
     @Test
     void testSyncTeams_ServiceException() throws Exception {
+        reset(teamService);
         doThrow(new RuntimeException("API Error")).when(teamService).updateTeamsFromApi(2023);
 
         mockMvc.perform(post("/api/teams/sync"))
@@ -99,6 +118,7 @@ class TeamControllerTest {
 
     @Test
     void testGetAllTeams_ServiceException() throws Exception {
+        reset(teamService);
         when(teamService.getTeams()).thenThrow(new RuntimeException("Database Error"));
 
         mockMvc.perform(get("/api/teams/"))
@@ -109,7 +129,9 @@ class TeamControllerTest {
 
     @Test
     void testEndpointMapping() throws Exception {
+        reset(teamService);
         when(teamService.getTeams()).thenReturn(Collections.emptyList());
+        doNothing().when(teamService).updateTeamsFromApi(anyInt());
 
         mockMvc.perform(get("/api/teams/"))
                 .andExpect(status().isOk());
