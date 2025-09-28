@@ -33,9 +33,12 @@ jobs:
         echo '{"type": "service_account", "project_id": "test"}' > src/main/resources/config/firebase-service-account.json
         
     - name: Run tests with coverage
-      run: mvn clean test jacoco:report -Dspring.profiles.active=test
+      run: mvn clean test -Dspring.profiles.active=test
       env:
         SPRING_PROFILES_ACTIVE: test
+        
+    - name: Generate JaCoCo coverage report
+      run: mvn jacoco:report
         
     - name: Generate test report
       uses: dorny/test-reporter@v1
@@ -44,6 +47,7 @@ jobs:
         name: Maven Tests
         path: target/surefire-reports/*.xml
         reporter: java-junit
+        fail-on-error: false
         
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v4
