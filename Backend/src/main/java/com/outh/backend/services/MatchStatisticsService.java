@@ -1,6 +1,8 @@
+
 package com.outh.backend.services;
 
 
+import com.outh.backend.dto.TeamSeasonStatsDTO;
 import com.outh.backend.models.LeagueMatches;
 import com.outh.backend.models.MatchStatistics;
 import com.outh.backend.dto.MatchStatisticsDTO;
@@ -9,13 +11,14 @@ import com.outh.backend.repository.MatchStatisticsRepository;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import jakarta.annotation.PostConstruct;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-public class MatchStatisticsService {
+public class  MatchStatisticsService {
 
     private final LeagueMatchesRepository matchesRepository;
     private final MatchStatisticsRepository statsRepository;
@@ -121,4 +124,61 @@ public class MatchStatisticsService {
                 ))
                 .collect(Collectors.toList());
     }
+
+    public TeamSeasonStatsDTO getTeamSeasonStats(String teamName, Integer season) {
+        // 1. Get all finished matches for this team in current season
+        List<LeagueMatches> matches = matchesRepository.findFinishedMatchesForTeamInSeason(season, "FT", teamName);
+
+        //List<LeagueMatches> matches = matchesRepository.findBySeasonAndMatchStatusAndHomeTeamOrAwayTeam(season, "FT", teamName, teamName);
+
+        if (matches.isEmpty()) return new TeamSeasonStatsDTO(teamName, 0.0, 0.0, 0.0);
+
+        // 2. Calculate goals scored & conceded
+        double totalScored = 0;
+        double totalConceded = 0;
+        List<Long> matchIds = matches.stream().map(LeagueMatches::getMatchId).collect(Collectors.toList());
+
+        for (LeagueMatches m : matches) {
+            if (teamName.equals(m.getHomeTeam())) {
+                totalScored += m.getHomeScore();
+                totalConceded += m.getAwayScore();
+            } else {
+                totalScored += m.getAwayScore();
+                totalConceded += m.getHomeScore();
+            }
+        }
+
+        // 3. Get possession stats
+        List<MatchStatistics> stats = statsRepository.findByMatchIdInAndTeamName(matchIds, teamName);
+
+        double totalPossession = 0;
+        for (MatchStatistics s : stats) {
+            if (s.getBallPossession() != null && !s.getBallPossession().isEmpty()) {
+                String poss = s.getBallPossession().replace("%", "");
+                totalPossession += Double.parseDouble(poss);
+            }
+        }
+
+
+        int games = matches.size();
+        double avgGoalsScored = totalScored / games;
+        double avgGoalsConceded = totalConceded / games;
+        double avgPossession = stats.isEmpty() ? 0 : totalPossession / stats.size();
+
+        avgGoalsScored = Math.round(avgGoalsScored * 10.0) / 10.0;
+        avgGoalsConceded = Math.round(avgGoalsConceded * 10.0) / 10.0;
+        avgPossession = Math.round(avgPossession * 10.0) / 10.0;
+
+        return new TeamSeasonStatsDTO(teamName, avgGoalsScored, avgGoalsConceded, avgPossession);
+    }
+
+//    @PostConstruct
+//    public void init() {
+//        int season = 2025;
+//
+//        populateStatisticsFromApi();
+//
+//        System.out.println("Team strengths calculated at startup!");
+//    }
 }
+

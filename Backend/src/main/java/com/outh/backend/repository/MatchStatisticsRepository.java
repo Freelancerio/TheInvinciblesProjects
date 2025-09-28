@@ -14,4 +14,7 @@ public interface MatchStatisticsRepository extends JpaRepository<MatchStatistics
     int countByMatchId(Long matchId);
 
     List<MatchStatistics> findByMatchId(Long matchId);
+
+    List<MatchStatistics> findByMatchIdInAndTeamName(List<Long> matchIds, String teamName);
+
 }

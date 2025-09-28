@@ -8,6 +8,7 @@ import com.outh.backend.models.LeagueTeams;
 import com.outh.backend.models.LeagueMatches;
 import com.outh.backend.repository.LeagueMatchesRepository;
 import com.outh.backend.repository.LeagueTeamRepository;
+import jakarta.annotation.PostConstruct;
 import org.springframework.data.domain.Sort;
 
 import org.springframework.data.domain.PageRequest;
@@ -102,4 +103,22 @@ public class LeagueMatchesService {
         return matchesRepository.findLatestFinishedMatchesBySeason(season, pageable);
     }
 
+    public List<LeagueMatches> getCompletedMatchesBetweenTeams(String teamA, String teamB) {
+        return matchesRepository.findCompletedMatchesBetweenTeams(teamA, teamB);
+    }
+
+
+//    @PostConstruct
+//    public void init() {
+//        int season = 2025;
+//
+//        for(int start = 2023; start <= season; start++){
+//            populateMatchesFromApi(start);
+//        }
+//
+//        System.out.println("Team matches at startup!");
+//    }
+
+
 }
+

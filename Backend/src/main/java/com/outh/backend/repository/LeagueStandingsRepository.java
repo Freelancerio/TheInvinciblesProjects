@@ -22,5 +22,6 @@ public interface LeagueStandingsRepository extends JpaRepository<LeagueStandings
     List<LeagueStandingDTO> findTopStandingsBySeason(Integer season);
     List<LeagueStandings> findByTeamName(String teamName);
 
+    LeagueStandings findByTeamNameAndSeason(String teamB, Integer season);
 }
 

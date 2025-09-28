@@ -70,6 +70,7 @@ const UpcomingMatches = ({
             <Link
               key={match.matchId}
               to={`/match/${match.matchId}`}
+              state={{ match }}
               className="no-underline w-full"
             >
               <li className="match-item flex justify-between items-center py-[15px] border-b border-[rgba(255,255,255,0.1)] cursor-pointer hover:bg-[rgba(255,255,255,0.05)]">
