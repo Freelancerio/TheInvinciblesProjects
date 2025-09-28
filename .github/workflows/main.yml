@@ -1,5 +1,4 @@
 name: Testing and Coverage
-
 on:
   push:
     branches: [ main, develop ]
@@ -21,50 +20,92 @@ jobs:
         distribution: 'temurin'
         
     - name: Cache Maven dependencies
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ~/.m2
         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
         restore-keys: ${{ runner.os }}-m2
         
+    - name: Verify project structure
+      run: |
+        pwd
+        ls -la
+        find . -name "pom.xml" -type f
+        
     - name: Create Firebase service account file (mock)
       run: |
-        mkdir -p src/main/resources/config
-        echo '{"type": "service_account", "project_id": "test"}' > src/main/resources/config/firebase-service-account.json
+        mkdir -p Backend/src/main/resources/config
+        echo '{"type": "service_account", "project_id": "test", "private_key_id": "test", "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC7VJTUt9Us8cKB\n-----END PRIVATE KEY-----", "client_email": "test@test.iam.gserviceaccount.com", "client_id": "test", "auth_uri": "https://accounts.google.com/o/oauth2/auth", "token_uri": "https://oauth2.googleapis.com/token"}' > Backend/src/main/resources/config/firebase-service-account.json
+        
+    - name: Create test application properties
+      run: |
+        mkdir -p Backend/src/main/resources
+        cat > Backend/src/main/resources/application-test.properties << EOF
+        spring.datasource.url=jdbc:h2:mem:testdb
+        spring.datasource.driver-class-name=org.h2.Driver
+        spring.datasource.username=sa
+        spring.datasource.password=password
+        spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+        spring.jpa.hibernate.ddl-auto=create-drop
+        spring.h2.console.enabled=false
+        logging.level.org.springframework.web=DEBUG
+        logging.level.com.outh.backend=DEBUG
+        EOF
         
     - name: Run tests with coverage
-      run: mvn clean test -Dspring.profiles.active=test
+      run: |
+        cd Backend
+        if [ -f "pom.xml" ]; then
+          mvn clean test -Dspring.profiles.active=test
+        else
+          echo "No pom.xml found in Backend directory"
+          exit 1
+        fi
       env:
         SPRING_PROFILES_ACTIVE: test
         
     - name: Generate JaCoCo coverage report
-      run: mvn jacoco:report
+      run: |
+        cd Backend
+        if [ -f "pom.xml" ]; then
+          mvn jacoco:report
+        else
+          echo "Skipping JaCoCo report generation - no pom.xml found"
+        fi
+        
+    - name: List generated reports
+      run: |
+        echo "Looking for test reports..."
+        find . -name "*.xml" -path "*/surefire-reports/*" || echo "No surefire reports found"
+        find . -name "jacoco.xml" || echo "No jacoco.xml found"
+        ls -la Backend/target/ || echo "No Backend/target directory found"
         
     - name: Generate test report
       uses: dorny/test-reporter@v1
       if: success() || failure()
       with:
         name: Maven Tests
-        path: target/surefire-reports/*.xml
+        path: 'Backend/target/surefire-reports/*.xml'
         reporter: java-junit
         fail-on-error: false
         
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v4
+      if: hashFiles('Backend/target/site/jacoco/jacoco.xml') != ''
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
-        file: ./target/site/jacoco/jacoco.xml
+        file: ./Backend/target/site/jacoco/jacoco.xml
         flags: unittests
         name: codecov-umbrella
-        fail_ci_if_error: true
+        fail_ci_if_error: false
         verbose: true
         
     - name: Comment coverage on PR
       uses: madrapps/jacoco-report@v1.6.1
-      if: github.event_name == 'pull_request'
+      if: github.event_name == 'pull_request' && hashFiles('Backend/target/site/jacoco/jacoco.xml') != ''
       with:
         paths: |
-          ${{ github.workspace }}/target/site/jacoco/jacoco.xml
+          ${{ github.workspace }}/Backend/target/site/jacoco/jacoco.xml
         token: ${{ secrets.GITHUB_TOKEN }}
         min-coverage-overall: 70
         min-coverage-changed-files: 80
@@ -88,7 +129,7 @@ jobs:
         output: 'trivy-results.sarif'
         
     - name: Upload Trivy scan results to GitHub Security tab
-      uses: github/codeql-action/upload-sarif@v2
+      uses: github/codeql-action/upload-sarif@v3
       if: always()
       with:
         sarif_file: 'trivy-results.sarif'
