@@ -1,73 +1,166 @@
-import React from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/login.css";   // <-- keep this path
+import {
+  auth,
+  googleProvider,
+  signInWithPopup,
+  signInWithEmailAndPassword,
+} from "../firebase";
+import "../styles/login.css";
+import { UserContext } from "../UserContext";
 
 export default function Login() {
   const navigate = useNavigate();
+  const { loginUser } = useContext(UserContext);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
-  const handleGoogleLogin = () => {
-    // TODO: replace with real auth later
-    navigate("/profile");
+  const sendTokenToBackend = async (idToken) => {
+    try {
+      const response = await fetch("http://localhost:8080/api/me", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${idToken}`,
+        },
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || "Backend authentication failed");
+      }
+
+      return await response.json();
+    } catch (err) {
+      console.error(err);
+      setError(err.message);
+      return null;
+    }
   };
 
-  const handleFacebookLogin = () => {
-    // TODO: replace with real auth later
-    navigate("/profile");
+  const handleGoogleLogin = async () => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const idToken = await result.user.getIdToken();
+
+      //localStorage.setItem("email", result.user.email);
+
+      const backendResponse = await sendTokenToBackend(idToken);
+      if (backendResponse) {
+        localStorage.setItem("authToken", idToken);
+         loginUser({
+          email: result.user.email,
+          ...backendResponse, // merge backend fields into user object
+        });
+        navigate("/home");
+      }
+    } catch (err) {
+      console.error(err);
+      setError("Google login failed. Try again.");
+    }
+  };
+
+  const handleEmailLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const idToken = await userCredential.user.getIdToken();
+
+      //localStorage.setItem("email", userCredential.user.email);
+
+      const backendResponse = await sendTokenToBackend(idToken);
+      if (backendResponse) {
+        localStorage.setItem("authToken", idToken);
+         loginUser({
+          email: userCredential.user.email,
+          ...backendResponse,
+        });
+
+        navigate("/home");
+      }
+    } catch (err) {
+      console.error(err);
+      setError("Email/password login failed. Check your credentials.");
+    }
   };
 
   return (
-    <main className="login-wrap">
-      {/* Top nav */}
-      <header className="login-nav">
-        <div className="brand">
-          <span className="brand-mark" aria-hidden="true">▦</span>
-          <span className="brand-name">SmartBet</span>
+    <div className="login-page">
+      <div className="login-container">
+        {/* Logo */}
+        <div className="logo">
+          <i className="fas fa-futbol"></i>
+          <h1>
+            EPL <span>SmartBet</span>
+          </h1>
         </div>
 
-        <nav className="nav-links" aria-label="Primary">
-          <button className="btn btn-ghost">Join Now</button>
-        </nav>
-      </header>
+        {/* Error message */}
+        {error && <p className="error-message">{error}</p>}
 
-      {/* Card */}
-      <section className="card">
-        <h1 className="title">Welcome to SmartBet</h1>
-        <p className="subtitle">
-          SmartBet is your premier destination for online sports betting, offering a wide range of
-          sports and events to bet on. Join us today and experience the thrill of winning!
-        </p>
-
-        <form className="form" onSubmit={(e)=>e.preventDefault()}>
-          <label htmlFor="email">Email</label>
-          <input id="email" name="email" type="email" placeholder="Enter your email" required />
-
-          <label htmlFor="password">Password</label>
-          <input id="password" name="password" type="password" placeholder="Enter your password" required />
-
-          <div className="row">
-            <label className="remember">
-              <input type="checkbox" name="remember" /> Remember Me
-            </label>
-            <a className="muted" href="#forgot">Forgot Password?</a>
+        {/* Form */}
+        <form onSubmit={handleEmailLogin}>
+          <div className="form-group">
+            <label htmlFor="email">Email</label>
+            <div className="input-with-icon">
+              <i className="fas fa-envelope"></i>
+              <input
+                type="email"
+                id="email"
+                placeholder="Enter your email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
           </div>
 
-          {/* transparent primary button to match socials */}
-          <button type="submit" className="btn btn-primary">Log In</button>
-
-          <div className="divider"><span>Or log in with</span></div>
-
-          <div className="social-row">
-            <button type="button" className="btn btn-soft" onClick={handleFacebookLogin}>
-              Continue with Facebook
-            </button>
-            <button type="button" className="btn btn-soft" onClick={handleGoogleLogin}>
-              {/* If you use an icon, add it here; otherwise remove this img */}
-              {/* <img src="/images/google-logo.png" alt="Google logo" className="btn-icon" /> */}
-              Continue with Google
-            </button>
+          <div className="form-group">
+            <label htmlFor="password">Password</label>
+            <div className="input-with-icon">
+              <i className="fas fa-lock"></i>
+              <input
+                type="password"
+                id="password"
+                placeholder="Enter your password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
           </div>
+
+          <button type="submit" className="login-btn">
+            Login
+          </button>
         </form>
-      </section>
-    </main>
+
+        {/* Divider */}
+        <div className="divider">
+          <span>Or continue with</span>
+        </div>
+
+        {/* Google login */}
+        <button className="google-btn" type="button" onClick={handleGoogleLogin}>
+          <i className="fab fa-google"></i>
+          Sign in with Google
+        </button>
+
+        {/* Signup link */}
+        <div className="signup-section">
+          <p>
+            Don&apos;t have an account?
+            <a href="/signup" className="signup-link">
+              Sign up
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
   );
 }
