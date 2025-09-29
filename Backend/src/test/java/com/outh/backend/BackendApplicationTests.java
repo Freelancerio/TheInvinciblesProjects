@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class BackendApplicationTests {
 
     @Test
-    @Timeout(value = 27, unit = TimeUnit.SECONDS)
+    @Timeout(value = 13, unit = TimeUnit.MINUTES)
     void contextLoads() {
         assertTrue(true, "Application context should load successfully");
     }

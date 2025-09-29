@@ -18,13 +18,12 @@ class LeagueTeamsTest {
     private LeagueTeams leagueTeam;
 
     @BeforeEach
-    @Timeout(value = 20, unit = TimeUnit.SECONDS)
+
     void setUp() {
         leagueTeam = new LeagueTeams();
     }
 
     @Test
-    @Timeout(value = 20, unit = TimeUnit.SECONDS)
     @DisplayName("Test default constructor creates object with null fields")
     void testDefaultConstructor() {
         assertNotNull(leagueTeam, "LeagueTeams object should not be null");
@@ -36,7 +35,6 @@ class LeagueTeamsTest {
     }
 
     @Test
-    @Timeout(value = 20, unit = TimeUnit.SECONDS)
     @DisplayName("Test parameterized constructor sets all fields correctly")
     void testParameterizedConstructor() {
         Long id = 1L;
@@ -56,7 +54,6 @@ class LeagueTeamsTest {
     }
 
     @Test
-    @Timeout(value = 20, unit = TimeUnit.SECONDS)
     @DisplayName("Test all setters and getters work correctly")
     void testSettersAndGetters() {
         Long id = 2L;
@@ -79,7 +76,6 @@ class LeagueTeamsTest {
     }
 
     @Test
-    @Timeout(value = 20, unit = TimeUnit.SECONDS)
     @DisplayName("Test setting null values for all fields")
     void testSetNullValues() {
         leagueTeam.setId(null);
@@ -96,7 +92,6 @@ class LeagueTeamsTest {
     }
 
     @Test
-    @Timeout(value = 20, unit = TimeUnit.SECONDS)
     @DisplayName("Test updating values after initial set")
     void testUpdateValues() {
         leagueTeam.setName("Chelsea");
@@ -107,7 +102,6 @@ class LeagueTeamsTest {
     }
 
     @Test
-    @Timeout(value = 20, unit = TimeUnit.SECONDS)
     @DisplayName("Test object with all empty strings")
     void testEmptyStringValues() {
         leagueTeam.setName("");

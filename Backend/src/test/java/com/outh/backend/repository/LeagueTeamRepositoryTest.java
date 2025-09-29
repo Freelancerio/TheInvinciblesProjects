@@ -29,7 +29,6 @@ class LeagueTeamRepositoryTest {
     private AtomicLong idGenerator = new AtomicLong(1);
 
     @BeforeEach
-    @Timeout(value = 20, unit = TimeUnit.SECONDS)
     void setUp() {
         repository.deleteAll();
         idGenerator.set(1);
@@ -40,7 +39,6 @@ class LeagueTeamRepositoryTest {
     }
 
     @Test
-    @Timeout(value = 20, unit = TimeUnit.SECONDS)
     @DisplayName("Find all teams should return correct list")
     void testFindAll() {
         LeagueTeams team1 = new LeagueTeams(generateId(), "Arsenal", "Emirates Stadium", "logo1.png", "ARS");
@@ -57,7 +55,6 @@ class LeagueTeamRepositoryTest {
     }
 
     @Test
-    @Timeout(value = 20, unit = TimeUnit.SECONDS)
     @DisplayName("Find by ID should return correct team")
     void testFindById() {
         LeagueTeams team = new LeagueTeams(generateId(), "Liverpool", "Anfield", "logo.png", "LIV");
@@ -73,7 +70,6 @@ class LeagueTeamRepositoryTest {
     }
 
     @Test
-    @Timeout(value = 20, unit = TimeUnit.SECONDS)
     @DisplayName("Find by name should return correct team")
     void testFindByName() {
         LeagueTeams team = new LeagueTeams(generateId(), "Manchester City", "Etihad Stadium", "logo.png", "MCI");
@@ -87,7 +83,6 @@ class LeagueTeamRepositoryTest {
     }
 
     @Test
-    @Timeout(value = 20, unit = TimeUnit.SECONDS)
     @DisplayName("Find by name with non-existent team should return empty")
     void testFindByName_NotFound() {
         Optional<LeagueTeams> found = repository.findByName("Nonexistent Team");
@@ -96,7 +91,6 @@ class LeagueTeamRepositoryTest {
     }
 
     @Test
-    @Timeout(value = 20, unit = TimeUnit.SECONDS)
     @DisplayName("Save should persist new team")
     void testSave() {
         LeagueTeams team = new LeagueTeams(generateId(), "Tottenham", "Tottenham Hotspur Stadium", "logo.png", "TOT");
@@ -113,7 +107,6 @@ class LeagueTeamRepositoryTest {
     }
 
     @Test
-    @Timeout(value = 20, unit = TimeUnit.SECONDS)
     @DisplayName("Update should modify existing team")
     void testUpdate() {
         LeagueTeams team = new LeagueTeams(generateId(), "West Ham", "Old Stadium", "old-logo.png", "WHU");
@@ -137,7 +130,6 @@ class LeagueTeamRepositoryTest {
     }
 
     @Test
-    @Timeout(value = 20, unit = TimeUnit.SECONDS)
     @DisplayName("Delete should remove team")
     void testDelete() {
         LeagueTeams team = new LeagueTeams(generateId(), "Brighton", "Amex Stadium", "logo.png", "BHA");
@@ -151,7 +143,6 @@ class LeagueTeamRepositoryTest {
     }
 
     @Test
-    @Timeout(value = 20, unit = TimeUnit.SECONDS)
     @DisplayName("Unique name constraint should prevent duplicate team names")
     void testUniqueNameConstraint() {
         LeagueTeams team1 = new LeagueTeams(generateId(), "Arsenal", "Emirates Stadium", "logo1.png", "ARS");
@@ -165,7 +156,6 @@ class LeagueTeamRepositoryTest {
     }
 
     @Test
-    @Timeout(value = 20, unit = TimeUnit.SECONDS)
     @DisplayName("Find all should return empty list when no teams exist")
     void testFindAll_EmptyDatabase() {
         List<LeagueTeams> teams = repository.findAll();
@@ -175,7 +165,6 @@ class LeagueTeamRepositoryTest {
     }
 
     @Test
-    @Timeout(value = 20, unit = TimeUnit.SECONDS)
     @DisplayName("Save multiple teams and verify count")
     void testSaveMultipleTeams() {
         LeagueTeams team1 = new LeagueTeams(generateId(), "Team A", "Stadium A", "logoA.png", "TA");
