@@ -1,13 +1,19 @@
 name: Testing and Coverage
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, auth-feature ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, auth-feature ]
 
 jobs:
   test:
     runs-on: ubuntu-latest
+    
+    # Add PostgreSQL service for Testcontainers
+    services:
+      docker:
+        image: docker:dind
+        options: --privileged
     
     steps:
     - name: Checkout code
@@ -37,32 +43,27 @@ jobs:
         mkdir -p Backend/src/main/resources/config
         echo '{"type": "service_account", "project_id": "test", "private_key_id": "test", "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC7VJTUt9Us8cKB\n-----END PRIVATE KEY-----", "client_email": "test@test.iam.gserviceaccount.com", "client_id": "test", "auth_uri": "https://accounts.google.com/o/oauth2/auth", "token_uri": "https://oauth2.googleapis.com/token"}' > Backend/src/main/resources/config/firebase-service-account.json
         
-    - name: Create test application properties
+    - name: Verify test configuration exists
       run: |
-        mkdir -p Backend/src/main/resources
-        cat > Backend/src/main/resources/application-test.properties << EOF
-        spring.datasource.url=jdbc:h2:mem:testdb
-        spring.datasource.driver-class-name=org.h2.Driver
-        spring.datasource.username=sa
-        spring.datasource.password=password
-        spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
-        spring.jpa.hibernate.ddl-auto=create-drop
-        spring.h2.console.enabled=false
-        logging.level.org.springframework.web=DEBUG
-        logging.level.com.outh.backend=DEBUG
-        EOF
+        if [ -f "Backend/src/test/resources/application-ci.properties" ]; then
+          echo "CI test configuration found:"
+          cat Backend/src/test/resources/application-ci.properties
+        else
+          echo "ERROR: No CI configuration found at Backend/src/test/resources/application-ci.properties"
+          exit 1
+        fi
         
     - name: Run tests with coverage
       run: |
         cd Backend
         if [ -f "pom.xml" ]; then
-          mvn clean test -Dspring.profiles.active=test
+          mvn clean test -Dspring.profiles.active=ci
         else
           echo "No pom.xml found in Backend directory"
           exit 1
         fi
       env:
-        SPRING_PROFILES_ACTIVE: test
+        SPRING_PROFILES_ACTIVE: ci
         
     - name: Generate JaCoCo coverage report
       run: |
