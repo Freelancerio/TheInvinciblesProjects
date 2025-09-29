@@ -11,6 +11,7 @@ import java.util.Map;
 @RestController
 public class AuthController {
 
+
     private final UserRepository userRepository;
 
     public AuthController(UserRepository userRepository) {
