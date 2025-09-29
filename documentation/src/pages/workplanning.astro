@@ -105,286 +105,277 @@ description: 'How we plan, track, and review work using a simple Jira workflow.'
     <li>Merge and deploy. If a production issue appears, use the hotfix lane.</li>
   </ol>
 
-
+  <!-- Sprint 1 -->
   <section class="not-prose mb-6 px-6 max-w-4xl mx-auto">
-  <h1 class="text-3xl font-bold tracking-tight">Sprint 1 Documentation (13-18 August)</h1>
-  <p class="mt-2 text-slate-600 dark:text-slate-300">
-    Sprint Goal: establish the project foundation by setting up the backend, frontend, and database connections,
-    and completing initial design and planning documentation.
-  </p>
-</section>
+    <h1 class="text-3xl font-bold tracking-tight">Sprint 1 Documentation (13-18 August)</h1>
+    <p class="mt-2 text-slate-600 dark:text-slate-300">
+      Sprint Goal: establish the project foundation by setting up the backend, frontend, and database connections,
+      and completing initial design and planning documentation.
+    </p>
+  </section>
 
-<div class="prose prose-slate dark:prose-invert px-6 max-w-4xl mx-auto">
+  <div class="prose prose-slate dark:prose-invert px-6 max-w-4xl mx-auto">
+    <h2>Sprint overview</h2>
+    <ul>
+      <li><strong>Duration:</strong> 13 August - 18 August (1 week)</li>
+      <li><strong>Team members:</strong> Luvo Zulu (LZ), Stephan Botha (SB), Kgadi Selepe (KS), Mokobane Rorisang (MR), Mzu Mboxo (MM)</li>
+      <li><strong>Meeting date:</strong> Wednesday, 13 August</li>
+    </ul>
 
-  <h2>Sprint overview</h2>
-  <ul>
-    <li><strong>Duration:</strong> 13 August - 18 August (1 week)</li>
-    <li><strong>Team members:</strong> Luvo Zulu (LZ), Stephan Botha (SB), Kgadi Selepe (KS),Mokobane Rorisang(MR),Mzu Mboxo (MM)</li>
-    <li><strong>Meeting date:</strong> Wednesday, 13 August</li>
-  </ul>
+    <h3>Main discussion points</h3>
+    <ul>
+      <li>How to represent and store data retrieved from the API-Football service.</li>
+      <li>Structuring the database schema for scalability.</li>
+      <li>Initial design of frontend pages (Landing, Profile, System Frontend).</li>
+      <li>Documentation standards and responsibility assignment.</li>
+      <li>Agreement to use Jira for task tracking and progress transparency.</li>
+    </ul>
 
-  <h3>Main discussion points</h3>
-  <ul>
-    <li>How to represent and store data retrieved from the API-Football service.</li>
-    <li>Structuring the database schema for scalability.</li>
-    <li>Initial design of frontend pages (Landing, Profile, System Frontend).</li>
-    <li>Documentation standards and responsibility assignment.</li>
-    <li>Agreement to use Jira for task tracking and progress transparency.</li>
-  </ul>
+    <h2>Sprint planning</h2>
+    <p>
+      During sprint planning we broke the initial work into 9 backlog items, balancing technical setup,
+      documentation, and design. Each item was assigned to a specific team member for ownership and
+      accountability. Jira was used to formalize the distribution and provide visibility into status
+      and progress.
+    </p>
 
-  <h2>Sprint planning</h2>
-  <p>
-    During sprint planning we broke the initial work into 9 backlog items, balancing technical setup,
-    documentation, and design. Each item was assigned to a specific team member for ownership and
-    accountability. Jira was used to formalize the distribution and provide visibility into status
-    and progress.
-  </p>
+    <h2>Sprint backlog and assignments</h2>
+    <div class="flex justify-center my-6">
+      <img src="jira_table.png" alt="Sprint 1 Jira Backlog" class="rounded-xl shadow-lg max-w-full" />
+    </div>
 
-  <h2>Sprint backlog and assignments</h2>
-  <div class="flex justify-center my-6">
-    <img src="jira_table.png" alt="Sprint 1 Jira Backlog" class="rounded-xl shadow-lg max-w-full" />
+    <h2>Retrospective</h2>
+    <h3>What went well</h3>
+    <ul>
+      <li>Jira kept ownership and progress visible for everyone.</li>
+      <li>Early documentation enabled consistent decisions across the team.</li>
+      <li>Reviews caught issues early and spread knowledge.</li>
+    </ul>
+
+    <h3>What could improve</h3>
+    <ul>
+      <li>Time estimates for infra tasks were optimistic; some items carried risk and unknowns.</li>
+      <li>Integration tasks were blocked waiting for deployment readiness.</li>
+    </ul>
+
+    <h3>Actions for Sprint 2</h3>
+    <ul>
+      <li>Complete backend deployment early in the sprint, then connect React to API.</li>
+      <li>Improve estimates where external services are involved.</li>
+      <li>Keep using peer review and update docs with any architectural decisions.</li>
+    </ul>
+
+    <h2> Sprint 1 - Conclusion</h2>
+    <p>
+      Sprint 1 successfully laid the foundation of the SmartBet project. The team collaborated well using Jira to
+      assign and track work, ensuring accountability and visibility. Documentation, database schema, and early UI
+      designs are complete, while backend deployment and integration tasks will roll into Sprint 2. The sprint
+      demonstrated that our Scrum process supports clear ownership, review-based quality assurance, and continuous
+      progress toward project goals.
+    </p>
   </div>
 
+  <!-- Sprint 2 -->
+  <section class="not-prose mb-6 px-6 max-w-4xl mx-auto">
+    <h1 class="text-3xl font-bold tracking-tight">Sprint 2 - Scrum Documentation (19 Aug - 1 Sep)</h1>
+    <p class="mt-2 text-slate-600 dark:text-slate-300">
+      Project: <strong>SmartBet</strong>. Important note: by the end of Sprint 2, our
+      <em>project API was <u>not</u> ready for external use</em>. External availability is a Sprint 3 priority.
+    </p>
+  </section>
 
-  <h2>Retrospective</h2>
-  <h3>What went well</h3>
-  <ul>
-    <li>Jira kept ownership and progress visible for everyone.</li>
-    <li>Early documentation enabled consistent decisions across the team.</li>
-    <li>Reviews caught issues early and spread knowledge.</li>
+  <div class="prose prose-slate dark:prose-invert px-6 max-w-4xl mx-auto">
+
+    <h2>1. Sprint Goal</h2>
+    <ul>
+      <li>Progress core features and land a deployable slice (frontend + backend).</li>
+      <li>Begin external API usage and prepare our own API for external consumption.</li>
+      <li>Expand automated testing (UI & backend), reduce flakiness.</li>
+      <li>Hold stakeholder reviews; gather early user feedback and action critical items.</li>
+      <li>Strengthen documentation (DB schema, third-party justifications, testing how-tos).</li>
+      <li>Use our bug tracker actively for visibility and throughput.</li>
+    </ul>
+
+    <h2>2. Sprint Backlog (Planned)</h2>
+    <ul>
+      <li><strong>Core features:</strong> Landing page creation & fixes; authentication fixes; backend fixes; releases pipeline; deployment to Render/other host.</li>
+      <li><strong>Testing:</strong> Frontend and backend testing tasks.</li>
+      <li><strong>Process:</strong> Stakeholder sessions; structured feedback capture; docs updates (DB, third-party, testing).</li>
+      <li><strong>DevOps:</strong> Release tagging on GitHub; hosting.</li>
+    </ul>
+
+    <figure class="my-6 rounded-xl border border-slate-200 bg-white/70 p-3 dark:border-slate-700 dark:bg-slate-900/60">
+      <img
+        src="sprint_2_jira.png"
+        alt="Jira Sprint 2 backlog screenshot with 8 work items and statuses"
+        class="mx-auto block max-w-full h-auto rounded-lg shadow"
+      />
+      <figcaption class="mt-2 text-center text-sm text-slate-500 dark:text-slate-400">
+        Sprint 2 backlog items and statuses (Done / In Progress / In Review / To Do).
+      </figcaption>
+    </figure>
+
+    <p class="mt-2">
+      Reference file:
+      <a href="https://drive.google.com/file/d/16qfgbbLWF9dC2E1DyCXtAlaqUJo_mzdT/view?usp=sharing" target="_blank" rel="noopener">
+        Google Drive link
+      </a>
+    </p>
+
+    <h2>3. Work Completed</h2>
+    <ul>
+      <li><strong>Core Features:</strong> Landing page created; several fixes applied; subset of backend issues resolved; release flow on GitHub; deployment attempts documented.</li>
+      <li><strong>Testing:</strong> Frontend and backend testing initiated; basic coverage landed.</li>
+      <li><strong>Process & Collaboration:</strong> Stakeholder review held; feedback captured and prioritized in backlog; active bug tracking in Jira.</li>
+    </ul>
+
+    <figure class="my-6 rounded-xl border border-slate-200 bg-white/70 p-3 dark:border-slate-700 dark:bg-slate-900/60">
+      <img
+        src="meeting.png"
+        alt="Online stakeholder/team review call with five participants"
+        class="mx-auto block max-w-full h-auto rounded-lg shadow"
+      />
+      <figcaption class="mt-2 text-center text-sm text-slate-500 dark:text-slate-400">
+        Sprint 2 stakeholder/team review call (evidence of regular reviews and feedback).
+      </figcaption>
+    </figure>
+
+    <p class="mt-2">
+      Meeting link:
+      <a href="https://drive.google.com/file/d/16qfgbbLWF9dC2E1DyCXtAlaqUJo_mzdT/view?usp=sharing" target="_blank" rel="noopener">
+        Google Drive link
+      </a>
+    </p>
+
+    <h2>4. Work Not Completed / Variances</h2>
+    <ul>
+      <li><strong>API Integration:</strong> External API usage started, but our <em>project API was not externally available</em> at sprint end.</li>
+      <li><strong>Testing:</strong> Coverage not yet extensive; some tests still brittle.</li>
+      <li><strong>User Feedback:</strong> Only informal sessions completed; formal process scheduled for Sprint 3.</li>
+    </ul>
+
+    <h2>5. Sprint Review (Outcomes)</h2>
+    <ul>
+      <li><strong>Demo:</strong> Landing page, partial auth flow, selected backend fixes, initial test runs, releases on GitHub.</li>
+      <li><strong>Stakeholder feedback:</strong> Prioritize external availability of the project API; deepen automated tests.</li>
+      <li><strong>Backlog updates:</strong> New/updated stories for API hardening, auth edge cases, and testing improvements.</li>
+    </ul>
+
+    <h2>6. Sprint Retrospective</h2>
+    <p><strong>What went well:</strong> Consistent Scrum ceremonies; transparent issue tracking and releases; productive stakeholder sessions; docs advanced (DB, third-party, testing).</p>
+    <p><strong>What didn’t go well:</strong> API externalization slipped; test coverage behind target; formal user-testing cadence not set.</p>
+    <p><strong>Actions for Sprint 3:</strong> Make the <em>project API externally consumable</em>; expand automated tests and deflake CI; establish a formal user-feedback process; continue documentation hardening.</p>
+
+    <h2>7. Rubric-Aligned Self-Assessment (Sprint 2)</h2>
+    <table>
+      <thead>
+        <tr><th>Criterion</th><th style="text-align:right">Weight</th><th>Status (evidence)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Core Features</td><td style="text-align:right">25%</td><td>Implemented with minor issues (landing page, auth fixes in progress, backend fixes; releases & deploy attempts).</td></tr>
+        <tr><td>Automated Testing</td><td style="text-align:right">10%</td><td>Some UI/API tests implemented; basic flows only; some flakiness remains.</td></tr>
+        <tr><td>Stakeholder Reviews</td><td style="text-align:right">10%</td><td>Regular session held; feedback captured and reflected in backlog.</td></tr>
+        <tr><td><strong>API Integration</strong></td><td style="text-align:right">15%</td><td>External API usage started; <strong>project API not externally available</strong> by sprint end.</td></tr>
+        <tr><td>User Feedback</td><td style="text-align:right">10%</td><td>Informal sessions completed; formal process planned for Sprint 3.</td></tr>
+        <tr><td>Project Management Methodology</td><td style="text-align:right">10%</td><td>Scrum followed (planning, dailies, review, retro).</td></tr>
+        <tr><td>Bug Tracker</td><td style="text-align:right">5%</td><td>Active Jira usage (board, statuses, owners, due dates).</td></tr>
+        <tr><td>Database Documentation</td><td style="text-align:right">5%</td><td>Schema & deployment info updated; rationale captured.</td></tr>
+        <tr><td>Third-Party Code Documentation</td><td style="text-align:right">5%</td><td>Most important third-party code documented & justified.</td></tr>
+        <tr><td>Testing Documentation</td><td style="text-align:right">5%</td><td>How-to for running tests drafted; user-feedback process to be formalized in Sprint 3.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ───────────────────────────────────────────── -->
+  <!-- Sprint 3 - Scrum Documentation (APPENDED)     -->
+  <!-- ───────────────────────────────────────────── -->
+
+  <section class="not-prose mb-6 px-6 max-w-4xl mx-auto">
+    <h1 class="text-3xl font-bold tracking-tight">Sprint 3 - Scrum Documentation (2 September - 30 September)</h1>
+    <p class="mt-2 text-slate-600 dark:text-slate-300">
+      Focus this sprint: make the project API externally consumable; deepen automated tests; establish a formal
+      user-feedback cadence; continue documentation hardening; tag a releasable slice (frontend + API).
+    </p>
+  </section>
+
+  <div class="prose prose-slate dark:prose-invert px-6 max-w-4xl mx-auto">
+
+    <h2>1. Sprint Goal</h2>
+    <ul>
+      <li>Make the <strong>project API externally available</strong> (public endpoints, auth, CORS, docs).</li>
+      <li>Expand <strong>automated testing</strong> (UI + backend) and deflake CI runs.</li>
+      <li>Run <strong>formal user-feedback sessions</strong> and push results into the backlog.</li>
+      <li>Continue <strong>documentation hardening</strong> (API docs, DB schema deltas, testing how-tos).</li>
+      <li>Improve UI and usability of website as well as value of the information it provieds</li>
+      <li>Start implementation of betting system with odds and deposit funds features</li>
+    </ul>
+
+    <h2>2. Sprint Backlog (Planned)</h2>
+    <ul>
+    <li> Prediction Model</li>
+    <li> Betting Model</li>
+    <li> Show Leaderboards</li>
+    <li> Deposit and Withdrawal Pages</li>
+    <li> Improve Prediction Models (Best ROI team, League end, Top Scorcer per team, most clean sheets)</li>
+    <li> Improve calculations of attack str, defence, str and midfield strength</li>
+    <li> Betting Website</li>
+    <li> Yoco Integration for Deposit</li>
+    <li> Deploy Website</li>
+    <li> Integrate with third-party websites</li>
+    <li> Testing Backend</li>
+    <li> Testing Frontend</li>
   </ul>
+    <figure class="my-6 rounded-xl border border-slate-200 bg-white/70 p-3 dark:border-slate-700 dark:bg-slate-900/60">
+      <img
+        src="sprint 3_jira.png"
+        alt="Jira Sprint 3 backlog screenshot "
+        class="mx-auto block max-w-full h-auto rounded-lg shadow"
+      />
+      <figcaption class="mt-2 text-center text-sm text-slate-500 dark:text-slate-400">
+        Sprint 2 backlog items and statuses (Done / In Progress / In Review / To Do).
+      </figcaption>
+    </figure>
 
-  <h3>What could improve</h3>
-  <ul>
-    <li>Time estimates for infra tasks were optimistic; some items carried risk and unknowns.</li>
-    <li>Integration tasks were blocked waiting for deployment readiness.</li>
+    <h2>3. Work Completed</h2>
+    <ul>
+    <li> Prediction Model</li>
+    <li> Betting Model</li>
+    <li> Improve calculations of attack str, defence, str and midfield strength</li>
+    <li> Deploy Website</li>
+    <li> Integrate with third-party websites</li>
+    <li> Tsting Frontend</li>
   </ul>
-
-  <h3>Actions for Sprint 2</h3>
-  <ul>
-    <li>Complete backend deployment early in the sprint, then connect React to API.</li>
-    <li>Improve estimates where external services are involved.</li>
-    <li>Keep using peer review and update docs with any architectural decisions.</li>
+    <h2>4. Work Not Completed / Variances</h2>
+    <ul>
+    <li> Show Leaderboards</li>
+    <li> Deposit and Withdrawal Pages</li>
+    <li> Improve Prediction Models (Best ROI team, League end, Top Scorcer per team, most clean sheets)</li>
+    <li> Betting Website</li>
+    <li> Yoco Integration for Deposit</li>
+    <li> Testing Backend</li>
   </ul>
+    <h2>5. Sprint Review (Outcomes)</h2>
+    <ul>
+      <li><strong>Demo:</strong> Front-end integrated with public API; showed auth, data views, health endpoints.</li>
+      <li><strong>Stakeholder feedback:</strong> comparison with team,user needs to be able to bet ( place a bet --> if they win or lose balance should be updated) and integrating with live scores api.</li>
+      <li><strong>Backlog updates:</strong> Stories created/updated for API hardening, additional tests, and UX polish.</li>
+    </ul>
 
+    <h2>6. Sprint Retrospective</h2>
+    <p><strong>What went well:</strong> API made externally consumable; test coverage increased; clear feedback loop with stakeholders.</p>
+    <p><strong>What didn’t go well:</strong> Some API hardening slipped; several edge-case tests still outstanding.</p>
+    <p><strong>Actions for next sprint:</strong> Complete rate-limit/caching/error-message work; expand edge-case tests; batch small UX polish tasks.</p>
 
-  <h2> Sprint 1 - Conclusion</h2>
-  <p>
-    Sprint 1 successfully laid the foundation of the SmartBet project. The team collaborated well using Jira to 
-    assign and track work, ensuring accountability and visibility. Documentation, database schema, and early UI 
-    designs are complete, while backend deployment and integration tasks will roll into Sprint 2. The sprint 
-    demonstrated that our Scrum process supports clear ownership, review-based quality assurance, and continuous 
-    progress toward project goals.
-  </p>
+  
 
-</div>
-</div>
-
-<!-- ───────────────────────────────────────────── -->
-<!-- Sprint 2 - Scrum Documentation (appended) -->
-<!-- ───────────────────────────────────────────── -->
-
-<section class="not-prose mb-6 px-6 max-w-4xl mx-auto">
-  <h1 class="text-3xl font-bold tracking-tight">Sprint 2 - Scrum Documentation (19 Aug - 1 Sep)</h1>
-  <p class="mt-2 text-slate-600 dark:text-slate-300">
-    Project: <strong>SmartBet</strong>. Important note: by the end of Sprint 2, our
-    <em>project API was <u>not</u> ready for external use</em>. External availability is a Sprint 3 priority.
-  </p>
-</section>
-
-<div class="prose prose-slate dark:prose-invert px-6 max-w-4xl mx-auto">
-
-  <h2>1. Sprint Goal</h2>
-  <ul>
-    <li>Progress core features and land a deployable slice (frontend + backend).</li>
-    <li>Begin external API usage and prepare our own API for external consumption.</li>
-    <li>Expand automated testing (UI & backend), reduce flakiness.</li>
-    <li>Hold stakeholder reviews; gather early user feedback and action critical items.</li>
-    <li>Strengthen documentation (DB schema, third-party justifications, testing how-tos).</li>
-    <li>Use our bug tracker actively for visibility and throughput.</li>
-  </ul>
-
-  <h2>2. Sprint Backlog (Planned)</h2>
-  <ul>
-    <li><strong>Core features:</strong> Landing page creation & fixes; authentication fixes; backend fixes; releases pipeline; deployment to Render/other host.</li>
-    <li><strong>Testing:</strong> Frontend and backend testing tasks.</li>
-    <li><strong>Process:</strong> Stakeholder sessions; structured feedback capture; docs updates (DB, third-party, testing).</li>
-    <li><strong>DevOps:</strong> Release tagging on GitHub; hosting.</li>
-  </ul>
-
-  <figure class="my-6 rounded-xl border border-slate-200 bg-white/70 p-3 dark:border-slate-700 dark:bg-slate-900/60">
-    <img
-      src="sprint_2_jira.png"
-      alt="Jira Sprint 2 backlog screenshot with 8 work items and statuses"
-      class="mx-auto block max-w-full h-auto rounded-lg shadow"
-    />
-    <figcaption class="mt-2 text-center text-sm text-slate-500 dark:text-slate-400">
-      Sprint 2 backlog items and statuses (Done / In Progress / In Review / To Do).
-    </figcaption>
-  </figure>
-
-  <p class="mt-2">
-    Reference file:
-    <a href="https://drive.google.com/file/d/16qfgbbLWF9dC2E1DyCXtAlaqUJo_mzdT/view?usp=sharing" target="_blank" rel="noopener">
-      Google Drive link
-    </a>
-  </p>
-
-  <h2>3. Work Completed</h2>
-  <ul>
-    <li><strong>Core Features:</strong> Landing page created; several fixes applied; subset of backend issues resolved; release flow on GitHub; deployment attempts documented.</li>
-    <li><strong>Testing:</strong> Frontend and backend testing initiated; basic coverage landed.</li>
-    <li><strong>Process & Collaboration:</strong> Stakeholder review held; feedback captured and prioritized in backlog; active bug tracking in Jira.</li>
-  </ul>
-
-  <figure class="my-6 rounded-xl border border-slate-200 bg-white/70 p-3 dark:border-slate-700 dark:bg-slate-900/60">
-    <img
-      src="meeting.png"
-      alt="Online stakeholder/team review call with five participants"
-      class="mx-auto block max-w-full h-auto rounded-lg shadow"
-    />
-    <figcaption class="mt-2 text-center text-sm text-slate-500 dark:text-slate-400">
-      Sprint 2 stakeholder/team review call (evidence of regular reviews and feedback).
-    </figcaption>
-  </figure>
-
-  <p class="mt-2">
-    Meeting link:
-    <a href="https://drive.google.com/file/d/16qfgbbLWF9dC2E1DyCXtAlaqUJo_mzdT/view?usp=sharing" target="_blank" rel="noopener">
-      Google Drive link
-    </a>
-  </p>
-
-  <h2>4. Work Not Completed / Variances</h2>
-  <ul>
-    <li><strong>API Integration:</strong> External API usage started, but our <em>project API was not externally available</em> at sprint end.</li>
-    <li><strong>Testing:</strong> Coverage not yet extensive; some tests still brittle.</li>
-    <li><strong>User Feedback:</strong> Only informal sessions completed; formal process scheduled for Sprint 3.</li>
-  </ul>
-
-  <h2>5. Sprint Review (Outcomes)</h2>
-  <ul>
-    <li><strong>Demo:</strong> Landing page, partial auth flow, selected backend fixes, initial test runs, releases on GitHub.</li>
-    <li><strong>Stakeholder feedback:</strong> Prioritize external availability of the project API; deepen automated tests.</li>
-    <li><strong>Backlog updates:</strong> New/updated stories for API hardening, auth edge cases, and testing improvements.</li>
-  </ul>
-
-  <h2>6. Sprint Retrospective</h2>
-  <p><strong>What went well:</strong> Consistent Scrum ceremonies; transparent issue tracking and releases; productive stakeholder sessions; docs advanced (DB, third-party, testing).</p>
-  <p><strong>What didn't go well:</strong> API externalization slipped; test coverage behind target; formal user-testing cadence not set.</p>
-  <p><strong>Actions for Sprint 3:</strong> Make the <em>project API externally consumable</em>; expand automated tests and deflake CI; establish a formal user-feedback process; continue documentation hardening.</p>
-
-<!-- ───────────────────────────────────────────── -->
-<!-- Sprint 2 - Scrum Documentation (appended) -->
-<!-- ───────────────────────────────────────────── -->
-
-<section class="not-prose mb-6 px-6 max-w-4xl mx-auto">
-  <h1 class="text-3xl font-bold tracking-tight">Sprint 2 - Scrum Documentation (19 Aug - 1 Sep)</h1>
-  <p class="mt-2 text-slate-600 dark:text-slate-300">
-    Project: <strong>SmartBet</strong>. Important note: by the end of Sprint 2, our
-    <em>project API was <u>not</u> ready for external use</em>. External availability is a Sprint 3 priority.
-  </p>
-</section>
-
-<div class="prose prose-slate dark:prose-invert px-6 max-w-4xl mx-auto">
-
-  <h2>1. Sprint Goal</h2>
-  <ul>
-    <li>Progress core features and land a deployable slice (frontend + backend).</li>
-    <li>Begin external API usage and prepare our own API for external consumption.</li>
-    <li>Expand automated testing (UI & backend), reduce flakiness.</li>
-    <li>Hold stakeholder reviews; gather early user feedback and action critical items.</li>
-    <li>Strengthen documentation (DB schema, third-party justifications, testing how-tos).</li>
-    <li>Use our bug tracker actively for visibility and throughput.</li>
-  </ul>
-
-  <h2>2. Sprint Backlog (Planned)</h2>
-  <ul>
-    <li><strong>Core features:</strong> Landing page creation & fixes; authentication fixes; backend fixes; releases pipeline; deployment to Render/other host.</li>
-    <li><strong>Testing:</strong> Frontend and backend testing tasks.</li>
-    <li><strong>Process:</strong> Stakeholder sessions; structured feedback capture; docs updates (DB, third-party, testing).</li>
-    <li><strong>DevOps:</strong> Release tagging on GitHub; hosting.</li>
-  </ul>
-
-  <figure class="my-6 rounded-xl border border-slate-200 bg-white/70 p-3 dark:border-slate-700 dark:bg-slate-900/60">
-    <img
-      src="sprint_2_jira.png"
-      alt="Jira Sprint 2 backlog screenshot with 8 work items and statuses"
-      class="mx-auto block max-w-full h-auto rounded-lg shadow"
-    />
-    <figcaption class="mt-2 text-center text-sm text-slate-500 dark:text-slate-400">
-      Sprint 2 backlog items and statuses (Done / In Progress / In Review / To Do).
-    </figcaption>
-  </figure>
-
-  <p class="mt-2">
-    Reference file:
-    <a href="https://drive.google.com/file/d/16qfgbbLWF9dC2E1DyCXtAlaqUJo_mzdT/view?usp=sharing" target="_blank" rel="noopener">
-      Google Drive link
-    </a>
-  </p>
-
-  <h2>3. Work Completed</h2>
-  <ul>
-    <li><strong>Core Features:</strong> Landing page created; several fixes applied; subset of backend issues resolved; release flow on GitHub; deployment attempts documented.</li>
-    <li><strong>Testing:</strong> Frontend and backend testing initiated; basic coverage landed.</li>
-    <li><strong>Process & Collaboration:</strong> Stakeholder review held; feedback captured and prioritized in backlog; active bug tracking in Jira.</li>
-  </ul>
-
-  <figure class="my-6 rounded-xl border border-slate-200 bg-white/70 p-3 dark:border-slate-700 dark:bg-slate-900/60">
-    <img
-      src="meeting.png"
-      alt="Online stakeholder/team review call with five participants"
-      class="mx-auto block max-w-full h-auto rounded-lg shadow"
-    />
-    <figcaption class="mt-2 text-center text-sm text-slate-500 dark:text-slate-400">
-      Sprint 2 stakeholder/team review call (evidence of regular reviews and feedback).
-    </figcaption>
-  </figure>
-
-  <p class="mt-2">
-    Meeting link:
-    <a href="https://drive.google.com/file/d/16qfgbbLWF9dC2E1DyCXtAlaqUJo_mzdT/view?usp=sharing" target="_blank" rel="noopener">
-      Google Drive link
-    </a>
-  </p>
-
-  <h2>4. Work Not Completed / Variances</h2>
-  <ul>
-    <li><strong>API Integration:</strong> External API usage started, but our <em>project API was not externally available</em> at sprint end.</li>
-    <li><strong>Testing:</strong> Coverage not yet extensive; some tests still brittle.</li>
-    <li><strong>User Feedback:</strong> Only informal sessions completed; formal process scheduled for Sprint 3.</li>
-  </ul>
-
-  <h2>5. Sprint Review (Outcomes)</h2>
-  <ul>
-    <li><strong>Demo:</strong> Landing page, partial auth flow, selected backend fixes, initial test runs, releases on GitHub.</li>
-    <li><strong>Stakeholder feedback:</strong> Prioritize external availability of the project API; deepen automated tests.</li>
-    <li><strong>Backlog updates:</strong> New/updated stories for API hardening, auth edge cases, and testing improvements.</li>
-  </ul>
-
-  <h2>6. Sprint Retrospective</h2>
-  <p><strong>What went well:</strong> Consistent Scrum ceremonies; transparent issue tracking and releases; productive stakeholder sessions; docs advanced (DB, third-party, testing).</p>
-  <p><strong>What didn’t go well:</strong> API externalization slipped; test coverage behind target; formal user-testing cadence not set.</p>
-  <p><strong>Actions for Sprint 3:</strong> Make the <em>project API externally consumable</em>; expand automated tests and deflake CI; establish a formal user-feedback process; continue documentation hardening.</p>
-
-  <h2>7. Rubric-Aligned Self-Assessment (Sprint 2)</h2>
-  <table>
-    <thead>
-      <tr><th>Criterion</th><th style="text-align:right">Weight</th><th>Status (evidence)</th></tr>
-    </thead>
-    <tbody>
-      <tr><td>Core Features</td><td style="text-align:right">25%</td><td>Implemented with minor issues (landing page, auth fixes in progress, backend fixes; releases & deploy attempts).</td></tr>
-      <tr><td>Automated Testing</td><td style="text-align:right">10%</td><td>Some UI/API tests implemented; basic flows only; some flakiness remains.</td></tr>
-      <tr><td>Stakeholder Reviews</td><td style="text-align:right">10%</td><td>Regular session held; feedback captured and reflected in backlog.</td></tr>
-      <tr><td><strong>API Integration</strong></td><td style="text-align:right">15%</td><td>External API usage started; <strong>project API not externally available</strong> by sprint end.</td></tr>
-      <tr><td>User Feedback</td><td style="text-align:right">10%</td><td>Informal sessions completed; formal process planned for Sprint 3.</td></tr>
-      <tr><td>Project Management Methodology</td><td style="text-align:right">10%</td><td>Scrum followed (planning, dailies, review, retro).</td></tr>
-      <tr><td>Bug Tracker</td><td style="text-align:right">5%</td><td>Active Jira usage (board, statuses, owners, due dates).</td></tr>
-      <tr><td>Database Documentation</td><td style="text-align:right">5%</td><td>Schema & deployment info updated; rationale captured.</td></tr>
-      <tr><td>Third-Party Code Documentation</td><td style="text-align:right">5%</td><td>Most important third-party code documented & justified.</td></tr>
-      <tr><td>Testing Documentation</td><td style="text-align:right">5%</td><td>How-to for running tests drafted; user-feedback process to be formalized in Sprint 3.</td></tr>
-    </tbody>
-  </table>
+    <h2>Meeting Proof Links</h2>
+    <ul>
+      <li><a class="text-sky-600 hover:underline" href="https://drive.google.com/file/d/17r4rQYAx6-x9ecK9ZglnXAnDHAuykjga/view?usp=sharing" target="_blank" rel="noopener">Tuesday, 16 September</a></li>
+      <li><a class="text-sky-600 hover:underline" href="https://drive.google.com/file/d/1fZxw3izMru6XwGnk5i4FVQzeNwGbFo8b/view?usp=sharing" target="_blank" rel="noopener">Thursday, 18 September</a></li>
+      <li><a class="text-sky-600 hover:underline" href="https://drive.google.com/file/d/1BmPfzSSJVEb_dEk-Gz_4A516LRBTNjcJ/view?usp=sharing" target="_blank" rel="noopener">Saturday, 21 September</a></li>
+      <li><a class="text-sky-600 hover:underline" href="https://drive.google.com/file/d/1CZCwV7EaywfFQaLwLZ5o-TIUjXbrrPUq/view?usp=sharing" target="_blank" rel="noopener">Monday, 24 September</a></li>
+      <li><a class="text-sky-600 hover:underline" href="https://drive.google.com/file/d/1osNB_xnAhPF6wtY0zCbSPaCGiCRCavbo/view?usp=sharing" target="_blank" rel="noopener">Wednesday, 27 September</a></li>
+    </ul>
+  </div>
 
 </div>
