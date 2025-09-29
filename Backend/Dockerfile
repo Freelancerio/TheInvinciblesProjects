@@ -1,45 +1,60 @@
-# Use Eclipse Temurin 17 as the base image (recommended for Spring Boot 3.x)
-FROM eclipse-temurin:17-jdk-alpine
+# =========================
+# Stage 1: Build & Test
+# =========================
+FROM maven:3.9.6-openjdk-17-slim AS build
 
-# Set the working directory inside the container
+# Install Docker CLI for Testcontainers (optional for local dev/test)
+RUN apt-get update && \
+    apt-get install -y docker.io curl && \
+    rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
-# Install necessary packages and create a non-root user for security
-RUN apk add --no-cache curl \
-    && addgroup -g 1000 spring \
-    && adduser -u 1000 -G spring -s /bin/sh -D spring
-
-# Copy the Maven wrapper and pom.xml (for dependency caching)
-COPY mvnw pom.xml ./
+# Copy Maven config and download dependencies
+COPY pom.xml ./
 COPY .mvn .mvn
-
-# Make mvnw executable
-RUN chmod +x ./mvnw
-
-# Download dependencies (this layer will be cached if pom.xml doesn't change)
+COPY mvnw ./
+RUN chmod +x mvnw
 RUN ./mvnw dependency:go-offline -B
 
 # Copy the source code
 COPY src ./src
 
-# Build the application
-RUN ./mvnw clean package -DskipTests -B
+# Run tests (can be skipped in CI/CD if needed by passing --target runtime)
+ARG SKIP_TESTS=false
+RUN if [ "$SKIP_TESTS" = "true" ]; then \
+      ./mvnw clean package -DskipTests -B; \
+    else \
+      ./mvnw clean verify -Dspring.profiles.active=test -B; \
+    fi
 
-# Change ownership of the app directory to the spring user
-RUN chown -R spring:spring /app
+# =========================
+# Stage 2: Runtime Image
+# =========================
+FROM eclipse-temurin:17-jdk-alpine AS runtime
 
-# Switch to non-root user
+WORKDIR /app
+
+# Add non-root user for security
+RUN addgroup -g 1000 spring && \
+    adduser -u 1000 -G spring -s /bin/sh -D spring
+
+# Copy built jar from build stage
+COPY --from=build /app/target/*.jar app.jar
+
+# Change ownership
+RUN chown spring:spring /app/app.jar
 USER spring
 
-# Expose the port (Render will set the PORT environment variable)
+# Render exposes port dynamically
 EXPOSE $PORT
 
-# Set JVM options for containerized environments
+# JVM options
 ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -Djava.security.egd=file:/dev/./urandom"
 
-# Health check (optional but recommended for Render)
+# Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
   CMD curl -f http://localhost:$PORT/actuator/health || exit 1
 
-# Run the application
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar target/*.jar"]
+# Run app
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
