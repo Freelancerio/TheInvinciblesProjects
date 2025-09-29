@@ -3,166 +3,190 @@ package com.outh.backend.repository;
 import com.outh.backend.models.LeagueTeams;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Timeout;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.dao.DataIntegrityViolationException;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DataJpaTest
+@SpringBootTest
 @ActiveProfiles("test")
+@Transactional
 class LeagueTeamRepositoryTest {
-
-    @Autowired
-    private TestEntityManager entityManager;
 
     @Autowired
     private LeagueTeamRepository repository;
 
+    private AtomicLong idGenerator = new AtomicLong(1);
+
     @BeforeEach
+    @Timeout(value = 20, unit = TimeUnit.SECONDS)
     void setUp() {
-        // Clear any existing data before each test
         repository.deleteAll();
-        entityManager.flush();
-        entityManager.clear();
+        idGenerator.set(1);
+    }
+
+    private Long generateId() {
+        return idGenerator.getAndIncrement();
     }
 
     @Test
+    @Timeout(value = 20, unit = TimeUnit.SECONDS)
+    @DisplayName("Find all teams should return correct list")
     void testFindAll() {
-        // Given
-        LeagueTeams team1 = new LeagueTeams(null, "Arsenal", "Emirates Stadium", "logo1.png", "ARS");
-        LeagueTeams team2 = new LeagueTeams(null, "Chelsea", "Stamford Bridge", "logo2.png", "CHE");
+        LeagueTeams team1 = new LeagueTeams(generateId(), "Arsenal", "Emirates Stadium", "logo1.png", "ARS");
+        LeagueTeams team2 = new LeagueTeams(generateId(), "Chelsea", "Stamford Bridge", "logo2.png", "CHE");
 
-        entityManager.persistAndFlush(team1);
-        entityManager.persistAndFlush(team2);
+        repository.saveAndFlush(team1);
+        repository.saveAndFlush(team2);
 
-        // When
         List<LeagueTeams> teams = repository.findAll();
 
-        // Then
-        assertEquals(2, teams.size());
-        assertTrue(teams.stream().anyMatch(t -> "Arsenal".equals(t.getName())));
-        assertTrue(teams.stream().anyMatch(t -> "Chelsea".equals(t.getName())));
+        assertEquals(2, teams.size(), "Should return exactly 2 teams");
+        assertTrue(teams.stream().anyMatch(t -> "Arsenal".equals(t.getName())), "Should contain Arsenal");
+        assertTrue(teams.stream().anyMatch(t -> "Chelsea".equals(t.getName())), "Should contain Chelsea");
     }
 
     @Test
+    @Timeout(value = 20, unit = TimeUnit.SECONDS)
+    @DisplayName("Find by ID should return correct team")
     void testFindById() {
-        // Given
-        LeagueTeams team = new LeagueTeams(null, "Liverpool", "Anfield", "logo.png", "LIV");
-        LeagueTeams saved = entityManager.persistAndFlush(team);
+        LeagueTeams team = new LeagueTeams(generateId(), "Liverpool", "Anfield", "logo.png", "LIV");
+        LeagueTeams saved = repository.saveAndFlush(team);
 
-        // When
         Optional<LeagueTeams> found = repository.findById(saved.getId());
 
-        // Then
-        assertTrue(found.isPresent());
-        assertEquals("Liverpool", found.get().getName());
-        assertEquals("Anfield", found.get().getStadiumName());
-        assertEquals("logo.png", found.get().getLogoUrl());
-        assertEquals("LIV", found.get().getAbbreviation());
+        assertTrue(found.isPresent(), "Team should be found");
+        assertEquals("Liverpool", found.get().getName(), "Name should match");
+        assertEquals("Anfield", found.get().getStadiumName(), "Stadium should match");
+        assertEquals("logo.png", found.get().getLogoUrl(), "Logo should match");
+        assertEquals("LIV", found.get().getAbbreviation(), "Abbreviation should match");
     }
 
     @Test
+    @Timeout(value = 20, unit = TimeUnit.SECONDS)
+    @DisplayName("Find by name should return correct team")
     void testFindByName() {
-        // Given
-        LeagueTeams team = new LeagueTeams(null, "Manchester City", "Etihad Stadium", "logo.png", "MCI");
-        entityManager.persistAndFlush(team);
+        LeagueTeams team = new LeagueTeams(generateId(), "Manchester City", "Etihad Stadium", "logo.png", "MCI");
+        repository.saveAndFlush(team);
 
-        // When
         Optional<LeagueTeams> found = repository.findByName("Manchester City");
 
-        // Then
-        assertTrue(found.isPresent());
-        assertEquals("Etihad Stadium", found.get().getStadiumName());
-        assertEquals("MCI", found.get().getAbbreviation());
+        assertTrue(found.isPresent(), "Team should be found by name");
+        assertEquals("Etihad Stadium", found.get().getStadiumName(), "Stadium should match");
+        assertEquals("MCI", found.get().getAbbreviation(), "Abbreviation should match");
     }
 
     @Test
+    @Timeout(value = 20, unit = TimeUnit.SECONDS)
+    @DisplayName("Find by name with non-existent team should return empty")
     void testFindByName_NotFound() {
-        // When
         Optional<LeagueTeams> found = repository.findByName("Nonexistent Team");
 
-        // Then
-        assertFalse(found.isPresent());
+        assertFalse(found.isPresent(), "Should not find non-existent team");
     }
 
     @Test
+    @Timeout(value = 20, unit = TimeUnit.SECONDS)
+    @DisplayName("Save should persist new team")
     void testSave() {
-        // Given
-        LeagueTeams team = new LeagueTeams(null, "Tottenham", "Tottenham Hotspur Stadium", "logo.png", "TOT");
+        LeagueTeams team = new LeagueTeams(generateId(), "Tottenham", "Tottenham Hotspur Stadium", "logo.png", "TOT");
 
-        // When
         LeagueTeams saved = repository.save(team);
 
-        // Then
-        assertNotNull(saved);
-        assertNotNull(saved.getId());
-        assertEquals("Tottenham", saved.getName());
+        assertNotNull(saved, "Saved team should not be null");
+        assertNotNull(saved.getId(), "Saved team should have ID");
+        assertEquals("Tottenham", saved.getName(), "Name should be preserved");
 
-        // Verify it's actually saved
         Optional<LeagueTeams> found = repository.findById(saved.getId());
-        assertTrue(found.isPresent());
-        assertEquals("Tottenham", found.get().getName());
+        assertTrue(found.isPresent(), "Saved team should be retrievable");
+        assertEquals("Tottenham", found.get().getName(), "Retrieved name should match");
     }
 
     @Test
+    @Timeout(value = 20, unit = TimeUnit.SECONDS)
+    @DisplayName("Update should modify existing team")
     void testUpdate() {
-        // Given - First save a team
-        LeagueTeams team = new LeagueTeams(null, "West Ham", "Old Stadium", "old-logo.png", "WHU");
-        LeagueTeams saved = entityManager.persistAndFlush(team);
-        entityManager.clear(); // Clear to avoid caching issues
+        LeagueTeams team = new LeagueTeams(generateId(), "West Ham", "Old Stadium", "old-logo.png", "WHU");
+        LeagueTeams saved = repository.saveAndFlush(team);
 
-        // When - Fetch and update
         Optional<LeagueTeams> foundTeam = repository.findById(saved.getId());
-        assertTrue(foundTeam.isPresent());
+        assertTrue(foundTeam.isPresent(), "Team should exist before update");
 
         LeagueTeams teamToUpdate = foundTeam.get();
         teamToUpdate.setStadiumName("London Stadium");
         teamToUpdate.setLogoUrl("new-logo.png");
-        LeagueTeams updated = repository.save(teamToUpdate);
+        LeagueTeams updated = repository.saveAndFlush(teamToUpdate);
 
-        // Then
-        assertEquals("London Stadium", updated.getStadiumName());
-        assertEquals("new-logo.png", updated.getLogoUrl());
+        assertEquals("London Stadium", updated.getStadiumName(), "Stadium should be updated");
+        assertEquals("new-logo.png", updated.getLogoUrl(), "Logo should be updated");
 
-        // Verify persistence by fetching again
-        entityManager.clear();
         Optional<LeagueTeams> verifyUpdated = repository.findById(saved.getId());
-        assertTrue(verifyUpdated.isPresent());
-        assertEquals("London Stadium", verifyUpdated.get().getStadiumName());
-        assertEquals("new-logo.png", verifyUpdated.get().getLogoUrl());
+        assertTrue(verifyUpdated.isPresent(), "Updated team should exist");
+        assertEquals("London Stadium", verifyUpdated.get().getStadiumName(), "Stadium update should persist");
+        assertEquals("new-logo.png", verifyUpdated.get().getLogoUrl(), "Logo update should persist");
     }
 
     @Test
+    @Timeout(value = 20, unit = TimeUnit.SECONDS)
+    @DisplayName("Delete should remove team")
     void testDelete() {
-        // Given
-        LeagueTeams team = new LeagueTeams(null, "Brighton", "Amex Stadium", "logo.png", "BHA");
-        LeagueTeams saved = entityManager.persistAndFlush(team);
+        LeagueTeams team = new LeagueTeams(generateId(), "Brighton", "Amex Stadium", "logo.png", "BHA");
+        LeagueTeams saved = repository.saveAndFlush(team);
 
-        // When
         repository.deleteById(saved.getId());
+        repository.flush();
 
-        // Then
         Optional<LeagueTeams> found = repository.findById(saved.getId());
-        assertFalse(found.isPresent());
+        assertFalse(found.isPresent(), "Deleted team should not be found");
     }
 
     @Test
+    @Timeout(value = 20, unit = TimeUnit.SECONDS)
+    @DisplayName("Unique name constraint should prevent duplicate team names")
     void testUniqueNameConstraint() {
-        LeagueTeams team1 = new LeagueTeams(null, "Arsenal", "Emirates Stadium", "logo1.png", "ARS");
-        LeagueTeams team2 = new LeagueTeams(null, "Arsenal", "Different Stadium", "logo2.png", "ARS2");
+        LeagueTeams team1 = new LeagueTeams(generateId(), "Arsenal", "Emirates Stadium", "logo1.png", "ARS");
+        LeagueTeams team2 = new LeagueTeams(generateId(), "Arsenal", "Different Stadium", "logo2.png", "ARS2");
 
-        // Save first team
-        entityManager.persistAndFlush(team1);
+        repository.saveAndFlush(team1);
 
-        // When/Then - Second team with same name should cause constraint violation
         assertThrows(DataIntegrityViolationException.class, () -> {
-            entityManager.persistAndFlush(team2);
-        });
+            repository.saveAndFlush(team2);
+        }, "Duplicate team name should throw constraint violation");
+    }
+
+    @Test
+    @Timeout(value = 20, unit = TimeUnit.SECONDS)
+    @DisplayName("Find all should return empty list when no teams exist")
+    void testFindAll_EmptyDatabase() {
+        List<LeagueTeams> teams = repository.findAll();
+
+        assertNotNull(teams, "Result should not be null");
+        assertTrue(teams.isEmpty(), "Should return empty list");
+    }
+
+    @Test
+    @Timeout(value = 20, unit = TimeUnit.SECONDS)
+    @DisplayName("Save multiple teams and verify count")
+    void testSaveMultipleTeams() {
+        LeagueTeams team1 = new LeagueTeams(generateId(), "Team A", "Stadium A", "logoA.png", "TA");
+        LeagueTeams team2 = new LeagueTeams(generateId(), "Team B", "Stadium B", "logoB.png", "TB");
+        LeagueTeams team3 = new LeagueTeams(generateId(), "Team C", "Stadium C", "logoC.png", "TC");
+
+        repository.save(team1);
+        repository.save(team2);
+        repository.save(team3);
+
+        List<LeagueTeams> allTeams = repository.findAll();
+        assertEquals(3, allTeams.size(), "Should have 3 teams");
     }
 }
