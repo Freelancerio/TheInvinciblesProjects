@@ -41,7 +41,7 @@ const TeamStrength = () => {
   return (
 
     <div className="min-h-screen text-white" style={{
-      background: "linear-gradient(rgba(56, 0, 60, 0.9), rgba(56, 0, 60, 0.95)), url('https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3') center/cover no-repeat fixed"
+      background: "linear-gradient(rgba(56, 0, 60, 0.9), rgba(56, 0, 60, 0.95)), url('https://i.redd.it/93-20-wasnt-just-a-goal-it-was-a-moment-that-defined-an-era-v0-lf3hl9zxrige1.jpg?width=1944&format=pjpg&auto=webp&s=2b4092abd7c43685b90d4399f05d5845684c5a1b') center/cover no-repeat fixed"
     }}>
     <Header/>
     <div className="fixture-content py-8">
