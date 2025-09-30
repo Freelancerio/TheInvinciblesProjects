@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Header from "../components/Header";
+import getBaseUrl from "../api";
 
 const TeamStrength = () => {
   const { teamName } = useParams();
   const [strength, setStrength] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const baseUrl = getBaseUrl();
 
   useEffect(() => {
     const fetchStrength = async () => {
       try {
         const idToken = localStorage.getItem("authToken");
-        const response = await fetch(`http://localhost:8080/api/teamStrength/strength/${teamName}`, {
+        const response = await fetch(`${baseUrl}/api/teamStrength/strength/${teamName}`, {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${idToken}`,
