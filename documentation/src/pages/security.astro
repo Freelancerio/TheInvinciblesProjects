@@ -1,0 +1,85 @@
+---
+layout: '../layouts/Layout.astro'
+title: 'Security Report – Supply Chain Attacks & Vulnerabilities'
+description: 'Overview of supply chain attacks, Snyk scan findings, and protective measures for SmartBet.'
+---
+
+<section class="not-prose mb-6 px-6 max-w-4xl mx-auto">
+  <h1 class="text-3xl font-bold tracking-tight">Security Report</h1>
+  <p class="mt-2 text-slate-600 dark:text-slate-300">
+    This document summarizes recent supply chain attacks on npm, our own Snyk security scan results,
+    and the mitigation strategies we are applying to protect the SmartBet project.
+  </p>
+</section>
+
+<div class="prose prose-slate dark:prose-invert px-6 max-w-4xl mx-auto">
+
+  <h2>Supply Chain Attacks on npm</h2>
+
+  <h3>1. <code>debug</code> & <code>chalk</code> Attack (Aikido report)</h3>
+  <ul>
+    <li><strong>Point of failure:</strong> npm account compromise.</li>
+    <li>Attackers gained access to maintainer accounts and published trojanized versions.</li>
+    <li>Malicious code exfiltrated secrets (env variables, shell history) to an external server.</li>
+    <li>Because these packages were trusted, many developers unknowingly installed the infected versions.</li>
+  </ul>
+
+  <h3>2. <code>@ctrl/tinycolor</code> Attack (Socket report)</h3>
+  <ul>
+    <li><strong>Point of failure:</strong> maintainer account takeover.</li>
+    <li>Malicious script (<code>bundle.js</code>) injected into the package.</li>
+    <li>Payload downloaded TruffleHog, scanned environments & repos for secrets, and exfiltrated via Discord webhook.</li>
+    <li>Created a worm-like propagation, infecting hundreds of downstream packages.</li>
+  </ul>
+
+  <p><strong>Summary:</strong> Both attacks originated from compromised maintainer accounts.  
+  The <code>debug</code>/<code>chalk</code> case leaked secrets directly; the <code>tinycolor</code> case spread aggressively, infecting many dependencies.</p>
+
+  <h2>Snyk Security Scan Report (Frontend)</h2>
+  <p>We ran a Snyk CLI scan on our <code>package-lock.json</code>, testing 1,316 dependencies.  
+  Six vulnerabilities were found, all inherited via <code>create-react-app</code> (<code>react-scripts</code>):</p>
+
+  <ol>
+    <li><strong>inflight@1.0.6</strong> - Missing release of resource after effective lifetime (Medium, no fix available).</li>
+    <li><strong>nth-check@1.0.2</strong> - ReDoS (High, fix in 2.0.1).</li>
+    <li><strong>postcss@7.0.39</strong> - Improper input validation (Medium, fix in 8.4.31).</li>
+    <li><strong>serialize-javascript@4.0.0</strong> - XSS (Medium, fix in 6.0.2).</li>
+    <li><strong>webpack-dev-server@4.15.2</strong> - Origin validation error (High, fix in 5.2.1).</li>
+    <li><strong>webpack-dev-server@4.15.2</strong> - Exposed dangerous method (Medium, fix in 5.2.1).</li>
+  </ol>
+
+  <h3>Limitations with Fixes</h3>
+  <ul>
+    <li>Dependencies are nested inside CRA and cannot be upgraded directly.</li>
+    <li><strong>Short-term:</strong> apply npm overrides for <code>nth-check</code> and <code>serialize-javascript</code>.</li>
+    <li><strong>Long-term:</strong> migrate away from CRA to modern tools (e.g. Vite, Next.js).</li>
+  </ul>
+
+  <h2>Protecting Against Supply Chain Attacks (Upstream)</h2>
+  <ul>
+    <li>Pin exact versions in lockfiles (<code>package-lock.json</code>).</li>
+    <li>Run regular scans (npm audit, Snyk, Socket.dev, Dependabot).</li>
+    <li>Limit number of external libraries; only use reputable, actively maintained ones.</li>
+    <li>Beware of typosquatting; review changelogs before updating.</li>
+    <li>Use private registries or mirrors to host vetted packages.</li>
+    <li>Regular updates and monitoring reduce attack surface.</li>
+  </ul>
+
+  <h2>Protecting Our Own Product (Source-Level Security)</h2>
+  <ul>
+    <li>Enforce MFA on developer accounts.</li>
+    <li>Strict code review on all contributions.</li>
+    <li>Secure CI/CD with least privilege, signed commits, protected branches.</li>
+    <li>Verify published packages with provenance or signing.</li>
+    <li>Deploy runtime monitoring to detect abnormal behavior.</li>
+    <li>Developer training and awareness to prevent mistakes.</li>
+  </ul>
+
+  <h2>Summary</h2>
+  <ul>
+    <li>Our frontend is <strong>not affected</strong> by the recent npm malware (debug, chalk, tinycolor).</li>
+    <li>Snyk scan found 6 inherited vulnerabilities via CRA.</li>
+    <li><strong>Immediate:</strong> patch <code>nth-check</code> and <code>serialize-javascript</code> with overrides.</li>
+    <li><strong>Long-term:</strong> migrate from CRA to Vite or similar to remove outdated dependencies.</li>
+  </ul>
+</div>

@@ -1,129 +1,45 @@
 ---
 layout: '../layouts/Layout.astro'
-title: 'User Testing Scenarios 1-3'
-description: 'Three usability testing scenarios covering simplicity & standings context, recent results for form, and clear date/time & venue near Bet Now.'
+title: 'User Feedback Testing'
+description: 'Collecting structured feedback from users to improve SmartBet.'
 ---
 
 <section class="not-prose mb-6 px-6 max-w-4xl mx-auto">
-  <h1 class="text-3xl font-bold tracking-tight">User Testing Scenarios 1-3</h1>
+  <h1 class="text-3xl font-bold tracking-tight">User Feedback Testing</h1>
   <p class="mt-2 text-slate-600 dark:text-slate-300">
-    Source: internal testing notes (User Testing Scenarios 1-3).
+    To improve the quality of our application, we conduct structured user feedback testing.  
+    This process helps us gather insights from real users about the usability, clarity, and overall
+    experience of SmartBet. Feedback allows us to identify strengths, uncover issues early, and guide 
+    our priorities for future sprints.
+  </p>
+  <p class="mt-2 text-slate-600 dark:text-slate-300">
+    We use Google Forms to collect and manage responses. Below you can find the link for participants 
+    to submit their feedback, as well as an admin-only link for reviewing and managing the collected data.
   </p>
 </section>
 
 <div class="prose prose-slate dark:prose-invert px-6 max-w-4xl mx-auto">
-
-  <h2>Scenario 1 - Simplicity &amp; Standings Context</h2>
-
-  <p><strong>Persona:</strong> Casual Football Fan</p>
-  <p><strong>Profile:</strong> Watches PSL matches occasionally, mainly follows their favorite team. Not a heavy bettor but likes checking fixtures and standings to keep track of performance.</p>
-  <p><strong>Goal:</strong> Test whether the dashboard's clean layout helps users quickly find upcoming matches, and if they feel they have enough contextual information (like team positions in the league table) before deciding to place a bet.</p>
-  
-
-
-  <h3>Observations</h3>
-  <p> At least 2 users added that they would like to have the standings table for the current season to be present on their dashboard as they log in
-   so that they can quickly see each team's postion in the league up until the present</p>
-
-  <h3>Quotes</h3>
-  <blockquote>
-    "The page is very neat. But honestly, I wouldn't bet without knowing where my team is on the table."
-  </blockquote>
-
-  <h3>Pain Points</h3>
+  <h2>Google Forms Links</h2>
   <ul>
-    <li>Lack of standings context disrupted the betting decision.</li>
-    <li>Extra step (opening another site) created frustration.</li>
+    <li>
+      <a 
+        href="https://docs.google.com/forms/d/e/1FAIpQLSfWzQx2pnxt0VhdHieApMG8EC4gzhvn5TMF1bsXhlB_jo9rIA/viewform"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="text-blue-600 hover:underline"
+      >
+        User Feedback Form (Responders)
+      </a>
+    </li>
+    <li>
+      <a 
+        href="https://docs.google.com/forms/d/1O_puQy3_9uG5J66_HwBzh7y3Cg1p6Lkw8Om4Q9ROM-I/edit"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="text-blue-600 hover:underline"
+      >
+        Admin Feedback Form (For Project Team)
+      </a>
+    </li>
   </ul>
-
-  <h3>Design Change</h3>
-  <ul>
-    <li>Added the PSL League Standings Table beneath the upcoming matches section.</li>
-    <li>Highlighted key metrics (Matches Played, Wins, GD, Points).</li>
-  </ul>
-
-  <h3>Outcome</h3>
-  <ul>
-    <li>Positive feedback on visual clarity of standings integration.</li>
-  </ul>
-
-  <hr class="my-8" />
-
-  <h2>Scenario 2 - Recent Match Results for Form</h2>
-
-  <p><strong>Persona:</strong> Regular Bettor</p>
-  <p><strong>Profile:</strong> Places bets weekly. Knows PSL teams well. Makes decisions based on form and recent scores, not just fixtures.</p>
-  <p><strong>Goal:</strong> Evaluate whether users want Recent Match Results on the same page as fixtures to better judge form and make more confident bets.</p>
-  
-
-  <h3>Observations</h3>
-  <p> Users interested in the betting side of the website were frustrated with that fact that they would
-   have to open a new tab to see recent match results so they could see if there were any matches like landslide victories or curshing defeats
-   that are out of the ordinary for a particular team that might influence their betting decision  </p>
-
-  <h3>Quotes</h3>
-  <blockquote>
-    "If I can see the last 3-5 results right here, I don't need to Google anything. That speeds me up a lot."
-  </blockquote>
-
-  <h3>Pain Point</h3>
-  <ul>
-    <li>Context switching to external sites to see recent matches.</li>
-    
-  </ul>
-
-  <h3>Design Change</h3>
-  <ul>
-    <li>Added Recent Match Results panel.</li>
-    <li>Simple layout: Match | Score | Date, with stadium as subtext.</li>
-  </ul>
-
-  <h3>Outcome</h3>
-  <ul>
-    <li>Positive sentiment: bettors felt "everything they needed" was on one page.</li>
-  </ul>
-
-  <hr class="my-8" />
-
-  <h2>Scenario 3 - Emphasis on Date/Time &amp; Venue near "Bet Now"</h2>
-
-  <p><strong>Persona:</strong> New Betting User</p>
-  <p><strong>Profile:</strong> First-time dashboard user, not deeply familiar with teams or stadiums. Relies heavily on interface clarity to avoid mistakes.</p>
-  <p><strong>Goal:</strong> Ensure users can clearly see kick-off time and venue before pressing Bet Now, reducing the chance of accidental or misplaced bets.</p>
-  <h3>Tasks</h3>
-  <ul>
-    <li>Identify a match that fits your schedule.</li>
-    <li>Before betting, read aloud the time and venue.</li>
-    <li>Place the bet.</li>
-  </ul>
-
-  <h3>Observations</h3>
-  We noticed when asking user that have little to no experience that felt rushed by the "Bet Now" button for each specific 
-  upcoming match so they wanted to bet right away without first looking at more information like the statistics, standings table and 
-  recent results tables
-  </ul>
-
-  <h3>Quotes</h3>
-  <blockquote>
-    "I almost clicked Bet straight away. Having the time right above the button makes me double-check."
-  </blockquote>
-
-  <h3>Pain Points</h3>
-  <ul>
-    <li>Important context (time &amp; venue) felt secondary to the action button.</li>
-    <li>Inconsistent positioning of info across cards caused scanning friction.</li>
-  </ul>
-
-  <h3>Design Change</h3>
-  <ul>
-    <li>Standardized match cards: Time &amp; Venue now appear immediately above Bet Now.</li>
-    <li>Increased contrast for time; stadium shown in muted but fixed position.</li>
-    <li>Added "Scheduled" chip to reinforce non-live status.</li>
-  </ul>
-
-  <h3>Outcome</h3>
-  <ul>
-    <li>Users felt less "forced" to make a bet immediately.</li>
-  </ul>
-
 </div>

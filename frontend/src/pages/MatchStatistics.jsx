@@ -39,7 +39,7 @@ const MatchStatistics = () => {
 
   return (
       <div className="min-h-screen text-white" style={{
-      background: "linear-gradient(rgba(56, 0, 60, 0.9), rgba(56, 0, 60, 0.95)), url('https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3') center/cover no-repeat fixed"
+      background: "linear-gradient(rgba(56, 0, 60, 0.9), rgba(56, 0, 60, 0.95)), url('https://library.sportingnews.com/styles/crop_style_16_9_desktop_webp/s3/2021-08/alex-ferguson_1k1npgdzt9khx1lq5xe9mvgozr.jpg.webp?itok=WWMdpycw') center/cover no-repeat fixed"
     }}>
     <Header/>
     <div className="fixture-content py-8">

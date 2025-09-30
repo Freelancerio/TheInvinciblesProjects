@@ -9,7 +9,7 @@ import MatchPrediction from './MatchPrediction';
 const UpcomingMatchDetails = () => {
   return (
     <div className="min-h-screen text-white" style={{
-      background: "linear-gradient(rgba(56, 0, 60, 0.9), rgba(56, 0, 60, 0.95)), url('https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3') center/cover no-repeat fixed"
+      background: "linear-gradient(rgba(56, 0, 60, 0.9), rgba(56, 0, 60, 0.95)), url('https://static.standard.co.uk/2025/07/03/9/15/Diogo-Jota.jpeg?trim=1885,0,2892,0&quality=75&auto=webp&width=960') center/cover no-repeat fixed"
     }}>
     <Header/>
     <div className="fixture-content py-8">

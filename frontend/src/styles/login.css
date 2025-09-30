@@ -16,7 +16,7 @@
         }
 
         .login-page {
-            background: linear-gradient(rgba(56, 0, 60, 0.85), rgba(56, 0, 60, 0.95)), url('https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3') center/cover no-repeat;
+            background: linear-gradient(rgba(56, 0, 60, 0.85), rgba(56, 0, 60, 0.95)), url('https://www.telecomasia.net/upload/iblock/0a9/0a911ac74824875515cbb1a61e92f4fa.jpg') center/cover no-repeat;
             min-height: 100vh;
             display: flex;
             justify-content: center;
