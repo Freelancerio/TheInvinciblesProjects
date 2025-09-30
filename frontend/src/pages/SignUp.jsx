@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { auth, googleProvider } from "../firebase";
 import { createUserWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import "../styles/signup.css";
-import getBaseUrl from "../api";
+import getBaseUrl from "../api.js";
 
 const baseUrl = getBaseUrl();
 

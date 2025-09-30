@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Header from "../components/Header";
-import getBaseUrl from "../api";
+import getBaseUrl from "../api.js";
 
 
 const baseUrl = getBaseUrl();
@@ -95,7 +95,7 @@ const handleCompare = async () => {
 
   return (
     <div className="min-h-screen text-white" style={{
-      background: `linear-gradient(rgba(56,0,60,0.9), rgba(56,0,60,0.95)), url('https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3') center/cover no-repeat fixed`
+      background: `linear-gradient(rgba(56,0,60,0.9), rgba(56,0,60,0.95)), url('https://img.allfootballapp.com/www/M00/54/8A/720x-/-/-/CgAGVmbsPTOAFBgPAAJ32NbG4hg678.jpg') center/cover no-repeat fixed`
     }}>
         <Header/>
       

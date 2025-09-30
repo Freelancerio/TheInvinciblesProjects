@@ -8,7 +8,7 @@ import {
 } from "../firebase";
 import "../styles/login.css";
 import { UserContext } from "../UserContext";
-import getBaseUrl from "../api";
+import getBaseUrl from "../api.js";
 
 const baseUrl = getBaseUrl();
 

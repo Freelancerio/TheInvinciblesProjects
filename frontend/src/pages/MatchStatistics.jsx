@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Header from "../components/Header";
-import getBaseUrl from "../api";
+import getBaseUrl from "../api.js";
 
 const baseUrl = getBaseUrl();
 
@@ -16,7 +16,7 @@ const MatchStatistics = () => {
       try {
         setLoading(true);
         const idToken = localStorage.getItem("authToken");
-        const url = `${baseUrl}/statistics/finished/${matchId}`;
+        const url = `${baseUrl}/api/statistics/finished/${matchId}`;
 
         const response = await fetch(url, {
           method: "GET",
