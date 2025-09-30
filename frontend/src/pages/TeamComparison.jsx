@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import Header from "../components/Header";
-import getBaseUrl from "../api.js";
+import getBaseUrl from "../api";
 
+
+const baseUrl = getBaseUrl();
 
 const teamLogos = {
   Arsenal: "ARS",
@@ -26,7 +28,7 @@ const teamLogos = {
   "West Ham": "WHU",
   Wolves: "WOL",
 };
-
+//helper to get team logo or initials
 
 const getTeamLogo = (teamName) => teamLogos[teamName] || teamName.substring(0, 3).toUpperCase();
 
@@ -38,8 +40,6 @@ const TeamComparison = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [result, setResult] = useState(null);
-
-  const baseUrl = getBaseUrl();
 
   const validateForm = () => {
     if (!team1 || !team2 || !season1 || !season2) return "Please select both teams and seasons";
@@ -59,8 +59,9 @@ const handleCompare = async () => {
   setResult(null);
 
   try {
+    
     const res = await fetch(
-      `${baseUrl}/api/league/compare?team1=${encodeURIComponent(team1)}&season1=${season1}&team2=${encodeURIComponent(team2)}&season2=${season2}`,
+     `${baseUrl}/api/league/compare?team1=${encodeURIComponent(team1)}&season1=${season1}&team2=${encodeURIComponent(team2)}&season2=${season2}`,
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("authToken")}`, // 🔑 include authToken
@@ -94,7 +95,7 @@ const handleCompare = async () => {
 
   return (
     <div className="min-h-screen text-white" style={{
-      background: `linear-gradient(rgba(56,0,60,0.9), rgba(56,0,60,0.95)), url('https://img.allfootballapp.com/www/M00/54/8A/720x-/-/-/CgAGVmbsPTOAFBgPAAJ32NbG4hg678.jpg') center/cover no-repeat fixed`
+      background: `linear-gradient(rgba(56,0,60,0.9), rgba(56,0,60,0.95)), url('https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3') center/cover no-repeat fixed`
     }}>
         <Header/>
       

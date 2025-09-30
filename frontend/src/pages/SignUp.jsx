@@ -2,8 +2,11 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth, googleProvider } from "../firebase";
 import { createUserWithEmailAndPassword, signInWithPopup } from "firebase/auth";
-import "../styles/signup.css"; 
-import getBaseUrl from "../api.js";
+import "../styles/signup.css";
+import getBaseUrl from "../api";
+
+const baseUrl = getBaseUrl();
+
 
 export default function Signup() {
   const navigate = useNavigate();
@@ -13,8 +16,6 @@ export default function Signup() {
   const [confirm, setConfirm] = useState("");
   const [terms, setTerms] = useState(false);
   const [error, setError] = useState("");
-
-  const baseUrl = getBaseUrl();
 
   const handleSignup = async (e) => {
     e.preventDefault();
