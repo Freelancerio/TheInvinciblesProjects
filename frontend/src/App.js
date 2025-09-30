@@ -11,6 +11,9 @@ import FullRecentMatches from "./pages/FullRecentMatches.jsx";
 import MatchDetails from "./pages/MatchDetails.jsx";
 import MatchStatistics from "./pages/MatchStatistics.jsx";
 import TeamStrength from "./pages/TeamStats.jsx";
+import MatchOddsPage from "./pages/MatchOddsPage.jsx";
+import LeaderboardPage from "./pages/LeaderBoardPage.jsx";
+import TeamComparison from "./pages/TeamComparison.jsx";
 import { UserProvider } from "./UserContext.js";
 
 export default function App() {
@@ -29,6 +32,9 @@ export default function App() {
         <Route path="/match/:id" element={<MatchDetails />} />
         <Route path="/matchStatistics/:matchId" element={<MatchStatistics />} />
         <Route path="/teamStats/:teamName" element={<TeamStrength />} />
+        <Route path="/betting" element={<MatchOddsPage/>}/>
+        <Route path="/leaderboards" element={<LeaderboardPage/>}/>
+        <Route path="/comparison" element={<TeamComparison/>}/>
 
       </Routes>
     </Router>

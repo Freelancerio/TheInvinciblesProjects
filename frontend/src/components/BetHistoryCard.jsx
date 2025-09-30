@@ -1,14 +1,48 @@
-import React from "react";
+import React, { useState, useEffect, useContext } from "react";
+import { UserContext } from "../UserContext";
 
 export default function BetHistoryCard() {
-  const bets = [
-    { date: "12/05/23", match: "Arsenal vs Brentford", bet: "Arsenal to win", stake: "£20.00", odds: "1.75", potential: "£35.00", status: "won" },
-    { date: "11/05/23", match: "Chelsea vs Fulham", bet: "Under 2.5 goals", stake: "£15.00", odds: "1.90", potential: "£28.50", status: "won" },
-    { date: "10/05/23", match: "Liverpool vs Wolves", bet: "Liverpool -1.5", stake: "£25.00", odds: "2.10", potential: "£52.50", status: "lost" },
-    { date: "09/05/23", match: "Man City vs Everton", bet: "Man City to win", stake: "£30.00", odds: "1.45", potential: "£43.50", status: "pending" },
-  ];
+  const { user } = useContext(UserContext);
+  const [bets, setBets] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   const statusColors = { won: "#00ff85", lost: "#e90052", pending: "yellow" };
+useEffect(() => {
+  const fetchBets = async () => {
+    try {
+      const token = localStorage.getItem("authToken");
+      if (!token) throw new Error("No auth token found");
+
+      const res = await fetch(`http://localhost:8080/api/bets/user/${user.firebaseId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) throw new Error(`HTTP error ${res.status}`);
+
+      const data = await res.json();
+      console.log(data);
+
+      // Use DTO fields directly
+      setBets(data);
+      setLoading(false);
+    } catch (err) {
+      console.error(err);
+      setError(err.message || "Failed to fetch bets");
+      setLoading(false);
+    }
+  };
+
+  if (user && user.firebaseId) {
+    fetchBets();
+  }
+}, [user]);
+
+
+  if (loading) return <div>Loading betting history...</div>;
+  if (error) return <div className="text-red-500">{error}</div>;
 
   return (
     <div className="bg-white/5 backdrop-blur-md rounded-xl p-6 border border-white/10 col-span-1 lg:col-span-2 overflow-x-auto">
@@ -32,7 +66,12 @@ export default function BetHistoryCard() {
               <td className="py-3 px-4">{bet.stake}</td>
               <td className="py-3 px-4">{bet.odds}</td>
               <td className="py-3 px-4">{bet.potential}</td>
-              <td className="py-3 px-4 font-semibold" style={{ color: statusColors[bet.status] || "white" }}>{bet.status.charAt(0).toUpperCase() + bet.status.slice(1)}</td>
+              <td
+                className="py-3 px-4 font-semibold"
+                style={{ color: statusColors[bet.status] || "white" }}
+              >
+                {bet.status.charAt(0).toUpperCase() + bet.status.slice(1).toLowerCase()}
+              </td>
             </tr>
           ))}
         </tbody>

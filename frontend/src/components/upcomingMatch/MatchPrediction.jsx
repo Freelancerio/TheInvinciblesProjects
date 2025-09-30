@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { useLocation } from "react-router-dom";
+import { UserContext } from "../../UserContext";
 
 const MatchPrediction = () => {
   const location = useLocation();
@@ -68,16 +69,43 @@ const fetchPrediction = async () => {
     }
   };
 
-  const handleSubmitPrediction = () => {
-    if ((homeScore === '' && awayScore === '') || (homeScore === '0' && awayScore === '0')) {
-      alert('Please enter a valid score prediction');
-      return;
-    }
+    const { user } = useContext(UserContext); // get firebaseId from context
+    const handleSubmitPrediction = async () => {
+      if ((homeScore === '' && awayScore === '') || (homeScore === '0' && awayScore === '0')) {
+        alert("Please enter a valid score prediction");
+        return;
+      }
 
-    alert(`Prediction submitted: ${match.homeTeam} ${homeScore || 0} - ${awayScore || 0} ${match.awayTeam}`);
-    setHomeScore('');
-    setAwayScore('');
-  };
+      try {
+        const token = localStorage.getItem("authToken");
+        const payload = {
+          firebaseId: user.firebaseId, // comes from UserContext
+          matchId: match.matchId,      // or match.id if that’s the correct field
+          season: 2025,
+          predHomeScore: parseInt(homeScore || "0"),
+          predAwayScore: parseInt(awayScore || "0"),
+        };
+
+        const res = await fetch("http://localhost:8080/api/predictions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+        });
+
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        alert("Prediction submitted successfully!");
+        setHomeScore("");
+        setAwayScore("");
+      } catch (err) {
+        console.error("Prediction error:", err);
+        alert("Failed to submit prediction");
+      }
+    };
+
+
 
   const calculateConfidence = (a, b) => {
     const diff = Math.abs(a - b);

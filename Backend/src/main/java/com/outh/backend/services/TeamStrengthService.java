@@ -98,7 +98,7 @@ public class TeamStrengthService {
     public TeamStrength getStrengthByTeamName(String teamName) {
         return strengthRepo.findByTeamNameIgnoreCase(teamName).orElse(null);
     }
-
+//
 //    @PostConstruct
 //    public void init() {
 //        calculateAndSaveAllTeamStrengths();

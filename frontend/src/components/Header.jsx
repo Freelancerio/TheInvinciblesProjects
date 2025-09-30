@@ -73,7 +73,7 @@ export default function Header() {
                 Predictions
               </NavLink>
               <NavLink
-                to="/bets"
+                to="/betting"
                 className={({ isActive }) =>
                   `px-3 py-2 rounded font-medium transition ${
                     isActive

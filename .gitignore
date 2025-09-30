@@ -21,4 +21,5 @@ yarn-error.log*
 # System files
 .DS_Store
 Thumbs.db
-firebase-service-account.json
+# Ignore Firebase credentials
+Backend/src/main/resources/config/firebase-service-account.json

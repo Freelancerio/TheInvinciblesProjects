@@ -1,11 +1,9 @@
 package com.outh.backend.controller;
-import com.outh.backend.dto.HeadToHeadResponseDTO;
-import com.outh.backend.dto.MatchPredictionDTO;
-import com.outh.backend.dto.RecentMatchDTO;
-import com.outh.backend.dto.UpcomingFixtureDTO;
+import com.outh.backend.dto.*;
 import com.outh.backend.models.LeagueMatches;
 import com.outh.backend.services.HeadToHeadService;
 import com.outh.backend.services.LeagueMatchesService;
+import com.outh.backend.services.MatchOddsService;
 import com.outh.backend.services.PredictionService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,11 +19,13 @@ public class MatchController {
     private final LeagueMatchesService matchService;
     private final HeadToHeadService headToHeadService;
     private final PredictionService predictionService;
+    private final MatchOddsService matchOddsService;
 
-    public MatchController(LeagueMatchesService matchService,HeadToHeadService headToHeadService,PredictionService predictionService) {
+    public MatchController(LeagueMatchesService matchService, HeadToHeadService headToHeadService, PredictionService predictionService, MatchOddsService matchOddsService) {
         this.matchService = matchService;
         this.headToHeadService = headToHeadService;
         this.predictionService = predictionService;
+        this.matchOddsService = matchOddsService;
     }
 
     @PostMapping("/sync")
@@ -82,6 +82,14 @@ public class MatchController {
         return predictionService.predictScore(teamA, teamB, season);
     }
 
+
+    @GetMapping("/match-odds")
+    public Page<MatchWithOddsDTO> getMatchOdds(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        return matchOddsService.getPaginatedUpcomingMatchOdds(page, size);
+    }
 
 
 }

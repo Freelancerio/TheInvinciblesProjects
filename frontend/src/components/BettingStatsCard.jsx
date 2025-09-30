@@ -1,12 +1,53 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { UserContext } from "../UserContext";
 
 export default function BettingStatsCard() {
-  const stats = [
-    { value: "47", label: "Bets Placed" },
-    { value: "£342.50", label: "Total Profit" },
-    { value: "63.8%", label: "Win Rate" },
-    { value: "£25.80", label: "Average Bet" },
-  ];
+  const { user } = useContext(UserContext);
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      if (!user?.firebaseId) return;
+
+      try {
+        const token = localStorage.getItem("authToken");
+        const res = await fetch(
+          `http://localhost:8080/api/bets/stats/${user.firebaseId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (!res.ok) {
+          throw new Error(`HTTP error ${res.status}`);
+        }
+
+        const data = await res.json();
+        setStats([
+          { value: data.totalBetsPlaced, label: "Bets Placed" },
+          { value: `R${data.totalProfit}`, label: "Total Profit" },
+          { value: `${data.winRate}%`, label: "Win Rate" },
+          { value: `R${data.averageBet}`, label: "Average Bet" },
+        ]);
+      } catch (err) {
+        console.error(err);
+        setError("Failed to load betting stats");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStats();
+  }, [user]);
+
+  if (loading) return <div>Loading stats...</div>;
+  if (error) return <div className="text-red-500">{error}</div>;
+  if (!stats) return null;
 
   return (
     <div className="bg-white/5 backdrop-blur-md rounded-xl p-6 border border-white/10">

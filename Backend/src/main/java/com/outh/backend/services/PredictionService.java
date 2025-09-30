@@ -23,8 +23,8 @@ public class PredictionService {
     public MatchOdds calculateOddsForMatch(LeagueMatches match, Integer season) {
         MatchPredictionDTO prediction = predictScore(match.getHomeTeam(), match.getAwayTeam(), season);
 
-        double lambdaHome = prediction.getPredictedGoalsA();
-        double lambdaAway = prediction.getPredictedGoalsB();
+        double lambdaHome = prediction.getLambdaHome();
+        double lambdaAway = prediction.getLambdaAway();
 
         double homeWinProb = 0.0;
         double drawProb = 0.0;
@@ -91,29 +91,53 @@ public class PredictionService {
     }
 
     public MatchPredictionDTO predictScore(String teamA, String teamB, Integer season) {
-
         // 1. Get season stats
         TeamSeasonStatsDTO statsA = statsService.getTeamSeasonStats(teamA, season);
         TeamSeasonStatsDTO statsB = statsService.getTeamSeasonStats(teamB, season);
 
         // 2. Get last 5 matches (recent form)
         HeadToHeadResponseDTO lastMatchesDTO = headToHeadService.getTeamHeadToHead(teamA, teamB, season);
-        double formScoreA = computeFormScore(lastMatchesDTO.getTeamA(). getLast5Matches(), teamA);
-        double formScoreB = computeFormScore(lastMatchesDTO.getTeamB(). getLast5Matches(), teamB);
+        double formScoreA = computeFormScore(lastMatchesDTO.getTeamA().getLast5Matches(), teamA);
+        double formScoreB = computeFormScore(lastMatchesDTO.getTeamB().getLast5Matches(), teamB);
 
         // 3. Get head-to-head results
         List<LeagueMatches> headToHead = matchesService.getCompletedMatchesBetweenTeams(teamA, teamB);
         double avgH2HA = avgGoalsInHeadToHead(headToHead, teamA);
         double avgH2HB = avgGoalsInHeadToHead(headToHead, teamB);
 
-        // 4. Compute expected goals
-        double expectedA = 0.4*statsA.getAvgGoalsScored() + 0.3*statsB.getAvgGoalsConceded() + 0.2*avgH2HA + 0.1*formScoreA;
-        double expectedB = 0.4*statsB.getAvgGoalsScored() + 0.3*statsA.getAvgGoalsConceded() + 0.2*avgH2HB + 0.1*formScoreB;
+        // 4. Compute expected goals (λ values for Poisson)
+        double lambdaHome = 0.4 * statsA.getAvgGoalsScored() + 0.3 * statsB.getAvgGoalsConceded()
+                + 0.2 * avgH2HA + 0.1 * formScoreA;
+        double lambdaAway = 0.4 * statsB.getAvgGoalsScored() + 0.3 * statsA.getAvgGoalsConceded()
+                + 0.2 * avgH2HB + 0.1 * formScoreB;
 
         double possFactor = (statsA.getAvgPossession() - statsB.getAvgPossession()) / 100.0;
-        expectedA *= 1 + possFactor;
-        expectedB *= 1 - possFactor;
+        lambdaHome *= 1 + possFactor;
+        lambdaAway *= 1 - possFactor;
 
-        return new MatchPredictionDTO(teamA, teamB, (int)Math.round(expectedA), (int)Math.round(expectedB));
+        // 5. Build Poisson distributions
+        PoissonDistribution distHome = new PoissonDistribution(lambdaHome);
+        PoissonDistribution distAway = new PoissonDistribution(lambdaAway);
+
+        int maxGoals = 6;
+        double maxProb = -1.0;
+        int bestHome = 0, bestAway = 0;
+
+        // 6. Find most likely scoreline
+        for (int i = 0; i <= maxGoals; i++) {
+            for (int j = 0; j <= maxGoals; j++) {
+                double p = distHome.probability(i) * distAway.probability(j);
+                if (p > maxProb) {
+                    maxProb = p;
+                    bestHome = i;
+                    bestAway = j;
+                }
+            }
+        }
+
+        // 7. Return most likely score + λ values
+        return new MatchPredictionDTO(teamA, teamB, bestHome, bestAway, lambdaHome, lambdaAway);
     }
+
+
 }

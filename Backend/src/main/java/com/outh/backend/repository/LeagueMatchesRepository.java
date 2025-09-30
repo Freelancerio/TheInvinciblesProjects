@@ -55,4 +55,8 @@ public interface LeagueMatchesRepository extends JpaRepository<LeagueMatches,Lon
                                                            @Param("status") String status,
                                                            @Param("team") String team);
 
+
+    List<LeagueMatches> findBymatchStatus(String status);
+
+
 }

@@ -3,6 +3,7 @@ package com.outh.backend.services;
 import com.outh.backend.dto.LeagueStandingDTO;
 import com.outh.backend.models.LeagueStandings;
 import com.outh.backend.repository.LeagueStandingsRepository;
+import jakarta.annotation.PostConstruct;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -84,4 +85,11 @@ public class LeagueStandingsService {
     public List<LeagueStandings> getStandingsBySeason(Integer season) {
         return standingsRepository.findBySeasonOrderByRankAsc(season);
     }
+
+
+//    @PostConstruct
+//    public void init() {
+//        populateStandingsFromApi(2025);
+//        System.out.println("Team strengths calculated at startup!");
+//    }
 }

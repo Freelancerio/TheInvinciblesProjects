@@ -112,9 +112,7 @@ public class LeagueMatchesService {
 //    public void init() {
 //        int season = 2025;
 //
-//        for(int start = 2023; start <= season; start++){
-//            populateMatchesFromApi(start);
-//        }
+//        populateMatchesFromApi(season);
 //
 //        System.out.println("Team matches at startup!");
 //    }

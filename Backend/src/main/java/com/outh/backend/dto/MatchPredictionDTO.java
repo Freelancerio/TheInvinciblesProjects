@@ -6,9 +6,14 @@ public class MatchPredictionDTO {
     private int predictedGoalsA;
     private int predictedGoalsB;
 
-    public MatchPredictionDTO(String teamA, String teamB, int predictedGoalsA, int predictedGoalsB) {
+    private double lambdaHome;
+    private double lambdaAway;
+
+    public MatchPredictionDTO(String teamA, String teamB, int predictedGoalsA, int predictedGoalsB,double lambdaHome, double lambdaAway) {
         this.teamA = teamA;
         this.teamB = teamB;
+        this.lambdaHome = lambdaHome;
+        this.lambdaAway = lambdaAway;
         this.predictedGoalsA = predictedGoalsA;
         this.predictedGoalsB = predictedGoalsB;
     }
@@ -44,4 +49,7 @@ public class MatchPredictionDTO {
     public void setPredictedGoalsB(int predictedGoalsB) {
         this.predictedGoalsB = predictedGoalsB;
     }
+
+    public double getLambdaHome() { return lambdaHome; }
+    public double getLambdaAway() { return lambdaAway; }
 }
