@@ -146,6 +146,18 @@
     </dependencyManagement>
 
     <build>
+
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*</include>
+                    <include>**/*.json</include>
+                    <include>**/config/*</include>
+                </includes>
+            </resource>
+        </resources>
+
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
