@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import getBaseUrl from "../api.js";
 
 const LeagueTable = ({ topN = 5, season = 2025 }) => {
   const [standings, setStandings] = useState([]);
   const navigate = useNavigate();
+  const baseUrl = getBaseUrl();
 
   useEffect(() => {
     const fetchStandings = async () => {
       try {
         const idToken = localStorage.getItem("authToken");
         const url = topN
-          ? `http://localhost:8080/api/standings/top${topN}?season=${season}`
-          : `http://localhost:8080/api/standings?season=${season}`;
+          ? `${baseUrl}/api/standings/top${topN}?season=${season}`
+          : `${baseUrl}/api/standings?season=${season}`;
 
         const response = await fetch(url, {
           method: "GET",

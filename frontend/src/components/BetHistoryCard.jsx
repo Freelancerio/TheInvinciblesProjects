@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useContext } from "react";
 import { UserContext } from "../UserContext";
+import getBaseUrl from "../api.js";
 
 export default function BetHistoryCard() {
   const { user } = useContext(UserContext);
   const [bets, setBets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const baseUrl = getBaseUrl();
 
   const statusColors = { won: "#00ff85", lost: "#e90052", pending: "yellow" };
 useEffect(() => {
@@ -14,7 +16,7 @@ useEffect(() => {
       const token = localStorage.getItem("authToken");
       if (!token) throw new Error("No auth token found");
 
-      const res = await fetch(`http://localhost:8080/api/bets/user/${user.firebaseId}`, {
+      const res = await fetch(`${baseUrl}/api/bets/user/${user.firebaseId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

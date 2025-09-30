@@ -1,6 +1,7 @@
 // TeamStatistics.jsx
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
+import getBaseUrl from "../../api.js";
 
 const TeamStatistics = () => {
   const location = useLocation();
@@ -8,6 +9,7 @@ const TeamStatistics = () => {
 
   const [stats, setStats] = useState([]);
   const [loading, setLoading] = useState(true);
+  const baseUrl = getBaseUrl();
 
   useEffect(() => {
     if (!match) return;
@@ -17,7 +19,7 @@ const TeamStatistics = () => {
         setLoading(true);
 
         const idToken = localStorage.getItem("authToken");
-        const url = `http://localhost:8080/api/statistics/season-stats?teamA=${match.homeTeam}&teamB=${match.awayTeam}&season=2025`;
+        const url = `${baseUrl}/api/statistics/season-stats?teamA=${match.homeTeam}&teamB=${match.awayTeam}&season=2025`;
 
         const response = await fetch(url, {
           method: "GET",

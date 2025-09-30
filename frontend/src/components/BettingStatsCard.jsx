@@ -1,11 +1,13 @@
 import React, { useContext, useEffect, useState } from "react";
 import { UserContext } from "../UserContext";
+import getBaseUrl from "../api.js";
 
 export default function BettingStatsCard() {
   const { user } = useContext(UserContext);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const baseUrl = getBaseUrl();
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -14,7 +16,7 @@ export default function BettingStatsCard() {
       try {
         const token = localStorage.getItem("authToken");
         const res = await fetch(
-          `http://localhost:8080/api/bets/stats/${user.firebaseId}`,
+          `${baseUrl}/api/bets/stats/${user.firebaseId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

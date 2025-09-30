@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { auth, googleProvider } from "../firebase";
 import { createUserWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import "../styles/signup.css"; 
+import getBaseUrl from "../api.js";
 
 export default function Signup() {
   const navigate = useNavigate();
@@ -12,6 +13,8 @@ export default function Signup() {
   const [confirm, setConfirm] = useState("");
   const [terms, setTerms] = useState(false);
   const [error, setError] = useState("");
+
+  const baseUrl = getBaseUrl();
 
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -41,7 +44,7 @@ export default function Signup() {
 
   const sendTokenToBackend = async (idToken) => {
       try {
-        const response = await fetch("http://localhost:8080/api/me", {
+        const response = await fetch(`${baseUrl}/api/me`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",

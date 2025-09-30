@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import getBaseUrl from "../../api.js";
 
 const HeadToHead = () => {
   const location = useLocation();
@@ -8,6 +9,7 @@ const HeadToHead = () => {
   const [headToHeadData, setHeadToHeadData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const baseUrl = getBaseUrl();
 
   useEffect(() => {
     if (!match?.homeTeam || !match?.awayTeam) return;
@@ -21,7 +23,7 @@ const HeadToHead = () => {
           teamB: match.awayTeam,
         });
 
-        const response = await fetch(`http://localhost:8080/api/matches/between/completed?${params}`, {
+        const response = await fetch(`${baseUrl}/api/matches/between/completed?${params}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",

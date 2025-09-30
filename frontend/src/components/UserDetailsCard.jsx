@@ -1,11 +1,13 @@
 import React, { useState, useContext, useEffect } from "react";
 import { UserContext } from "../UserContext"; // your context file
+import getBaseUrl from "../api.js";
 
 
 
 export default function UserDetailsCard() {
   const { user, setUser } = useContext(UserContext); // get user & setter
   const [username, setUsername] = useState("");
+  const baseUrl = getBaseUrl();
 
   useEffect(() => {
     if (user) {
@@ -16,7 +18,7 @@ export default function UserDetailsCard() {
   const handleSave = async () => {
     try {
       const token = localStorage.getItem("authToken");
-      const response = await fetch("http://localhost:8080/api/me", {
+      const response = await fetch(`${baseUrl}/api/me`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

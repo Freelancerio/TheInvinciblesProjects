@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-
+import getBaseUrl from "../api.js";
 
 const UpcomingMatches = ({
   page = 0,
@@ -12,6 +12,7 @@ const UpcomingMatches = ({
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(page);
   const [loading, setLoading] = useState(true); // loading state
+  const baseUrl = getBaseUrl();
 
   // Reset page to 0 when season changes
   useEffect(() => {
@@ -24,7 +25,7 @@ const UpcomingMatches = ({
       try {
         setLoading(true); // start loading
         const idToken = localStorage.getItem("authToken");
-        const url = `http://localhost:8080/api/matches/upcoming?page=${currentPage}&size=${size}&season=${season}`;
+        const url = `${baseUrl}/api/matches/upcoming?page=${currentPage}&size=${size}&season=${season}`;
 
         const response = await fetch(url, {
           method: "GET",

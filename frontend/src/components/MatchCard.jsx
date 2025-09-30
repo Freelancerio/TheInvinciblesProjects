@@ -1,5 +1,6 @@
 import React, { useState, useContext } from "react";
 import { UserContext } from "../UserContext";
+import getBaseUrl from "../api.js";
 
 const probabilityToDecimal = (prob) =>
   prob && prob > 0 ? (1 / prob).toFixed(2) : "-";
@@ -16,6 +17,7 @@ const MatchCard = ({ match }) => {
   const [betAmount, setBetAmount] = useState("");
   const [selectedOutcome, setSelectedOutcome] = useState("");
   const [error, setError] = useState("");
+  const baseUrl = getBaseUrl();
 
   if (!match) return null;
 
@@ -75,7 +77,7 @@ const MatchCard = ({ match }) => {
 
     try {
       const token = localStorage.getItem("authToken");
-      const res = await fetch("http://localhost:8080/api/bets/place", {
+      const res = await fetch(`${baseUrl}/api/bets/place`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

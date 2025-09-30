@@ -1,6 +1,7 @@
 import { useState, useContext } from 'react';
 import { useLocation } from "react-router-dom";
 import { UserContext } from "../../UserContext";
+import getBaseUrl from '../../api.js';
 
 const MatchPrediction = () => {
   const location = useLocation();
@@ -11,6 +12,7 @@ const MatchPrediction = () => {
   const [error, setError] = useState(null);
   const [homeScore, setHomeScore] = useState('');
   const [awayScore, setAwayScore] = useState('');
+  const baseUrl = getBaseUrl();
 
 const fetchPrediction = async () => {
   if (!match?.homeTeam || !match?.awayTeam) return;
@@ -26,7 +28,7 @@ const fetchPrediction = async () => {
       season: "2025",
     });
 
-    const response = await fetch(`http://localhost:8080/api/matches/predict?${params.toString()}`, {
+    const response = await fetch(`${baseUrl}/api/matches/predict?${params.toString()}`, {
       headers: {
         "Authorization": `Bearer ${token}`,  
         "Content-Type": "application/json",
@@ -86,7 +88,7 @@ const fetchPrediction = async () => {
           predAwayScore: parseInt(awayScore || "0"),
         };
 
-        const res = await fetch("http://localhost:8080/api/predictions", {
+        const res = await fetch(`${baseUrl}/api/predictions`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

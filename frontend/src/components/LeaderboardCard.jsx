@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { UserContext } from "../UserContext";
+import getBaseUrl from "../api.js";
 
 export default function LeaderboardCard() {
   const { user } = useContext(UserContext);
@@ -9,13 +10,14 @@ export default function LeaderboardCard() {
 
   const token = localStorage.getItem("authToken");
   const currentUser = user?.firebaseId;
+  const baseUrl = getBaseUrl();
 
   useEffect(() => {
     const fetchUserPosition = async () => {
       if (!currentUser) return;
       try {
         const res = await fetch(
-          `http://localhost:8080/api/leaderboard/alltime/${currentUser}`,
+          `${baseUrl}/api/leaderboard/alltime/${currentUser}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

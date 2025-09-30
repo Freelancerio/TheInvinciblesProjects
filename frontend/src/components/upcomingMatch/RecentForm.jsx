@@ -1,12 +1,14 @@
 // RecentForm.jsx
 import { useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
+import getBaseUrl from "../../api.js";
 
 const RecentForm = () => {
   const location = useLocation();
   const { match } = location.state || {};
   const [teamForms, setTeamForms] = useState([]);
   const [loading, setLoading] = useState(true);
+  const baseUrl = getBaseUrl();
 
   useEffect(() => {
     if (!match) return;
@@ -15,7 +17,7 @@ const RecentForm = () => {
       try {
         setLoading(true);
         const idToken = localStorage.getItem("authToken");
-        const url = `http://localhost:8080/api/matches/head-to-head?teamA=${match.homeTeam}&teamB=${match.awayTeam}&season=2025`;
+        const url = `${baseUrl}/api/matches/head-to-head?teamA=${match.homeTeam}&teamB=${match.awayTeam}&season=2025`;
 
         const response = await fetch(url, {
           method: "GET",

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Header from "../components/Header";
-import getBaseUrl from "../api";
+import getBaseUrl from "../api.js";
 
 const TeamStrength = () => {
   const { teamName } = useParams();

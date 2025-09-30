@@ -1,17 +1,19 @@
 
 import React, { useState, useEffect } from "react";
+import getBaseUrl from "../api.js";
 
 export default function ProfileCard() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [joined, setJoined] = useState("");
+  const baseUrl = getBaseUrl();
 
   // Load user info from backend or localStorage
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const token = localStorage.getItem("authToken");
-        const response = await fetch("http://localhost:8080/api/me", {
+        const response = await fetch(`${baseUrl}/api/me`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -45,7 +47,7 @@ export default function ProfileCard() {
 
     try {
       const token = localStorage.getItem("authToken");
-      const response = await fetch("http://localhost:8080/api/me", {
+      const response = await fetch(`${getBaseUrl}/api/me`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -73,7 +75,7 @@ export default function ProfileCard() {
 
     try {
       const token = localStorage.getItem("authToken");
-      const response = await fetch("http://localhost:8080/api/teams/sync", {
+      const response = await fetch(`${getBaseUrl}/api/teams/sync`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -98,7 +100,7 @@ export default function ProfileCard() {
 
     try {
       const token = localStorage.getItem("authToken");
-      const response = await fetch("http://localhost:8080/api/matches/sync", {
+      const response = await fetch(`${baseUrl}/api/matches/sync`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -124,7 +126,7 @@ export default function ProfileCard() {
 
     try {
       const token = localStorage.getItem("authToken");
-      const response = await fetch("http://localhost:8080/api/standings/sync", {
+      const response = await fetch(`${getBaseUrl}/api/standings/sync`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -151,7 +153,7 @@ export default function ProfileCard() {
 
     try {
       const token = localStorage.getItem("authToken");
-      const response = await fetch("http://localhost:8080/api/statistics/sync", {
+      const response = await fetch(`${baseUrl}/api/statistics/sync`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

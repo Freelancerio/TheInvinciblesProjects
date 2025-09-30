@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Header from "../components/Header";
+import getBaseUrl from "../api.js"
 
 const MatchStatistics = () => {
   const { matchId } = useParams();
   const [stats, setStats] = useState([]);
   const [loading, setLoading] = useState(true);
+  const baseUrl = getBaseUrl();
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
         setLoading(true);
         const idToken = localStorage.getItem("authToken");
-        const url = `http://localhost:8080/api/statistics/finished/${matchId}`;
+        const url = `${baseUrl}/api/statistics/finished/${matchId}`;
 
         const response = await fetch(url, {
           method: "GET",

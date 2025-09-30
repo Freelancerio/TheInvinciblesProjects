@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import getBaseUrl from "../api.js";
 
 const RecentMatches = ({
   page = 0,
@@ -11,6 +12,7 @@ const RecentMatches = ({
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(page);
   const [loading, setLoading] = useState(true); // loading state
+  const baseUrl = getBaseUrl();
 
   // Reset page when season changes
   useEffect(() => {
@@ -23,7 +25,7 @@ const RecentMatches = ({
       try {
         setLoading(true); // start loading
         const idToken = localStorage.getItem("authToken"); // remove if not needed
-        const url = `http://localhost:8080/api/matches/recent?page=${currentPage}&size=${
+        const url = `${baseUrl}/api/matches/recent?page=${currentPage}&size=${
           paginated ? size : 5
         }&season=${season}`;
 

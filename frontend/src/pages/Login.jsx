@@ -8,6 +8,7 @@ import {
 } from "../firebase";
 import "../styles/login.css";
 import { UserContext } from "../UserContext";
+import getBaseUrl from "../api.js";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -15,10 +16,11 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const baseUrl = getBaseUrl();
 
   const sendTokenToBackend = async (idToken) => {
     try {
-      const response = await fetch("http://localhost:8080/api/me", {
+      const response = await fetch(`${baseUrl}/api/me`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
