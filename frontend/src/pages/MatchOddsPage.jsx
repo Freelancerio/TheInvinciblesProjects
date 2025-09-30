@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import MatchCard from "../components/MatchCard";
 import Header from "../components/Header";
-import getBaseUrl from "../api.js";
+import getBaseUrl from "../api";
+
+const baseUrl = getBaseUrl();
 
 const PAGE_SIZE = 20;
 
@@ -11,7 +13,6 @@ const MatchOddsPage = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [search, setSearch] = useState("");
   const [filterDate, setFilterDate] = useState("");
-  const baseUrl = getBaseUrl();
 
   const fetchMatches = async (page = 0) => {
     try {
@@ -22,7 +23,7 @@ const MatchOddsPage = () => {
 
       const params = new URLSearchParams({ page, size: PAGE_SIZE });
       const response = await fetch(
-        `${baseUrl}/api/matches/match-odds?${params}`,
+        `$${baseUrl}/api/matches/match-odds?${params}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -67,7 +68,7 @@ const MatchOddsPage = () => {
     });
 
   return (
-   <div style={{ background: "linear-gradient(rgba(56,0,60,0.9), rgba(56,0,60,0.95)), url('https://www.arsenal.com/sites/default/files/styles/desktop_16x9/public/images/champions_2004.jpg?h=6dff888f&auto=webp&itok=fV_V3M5o') center/cover no-repeat fixed" }} className="min-h-screen text-white">
+   <div style={{ background: "linear-gradient(rgba(56,0,60,0.9), rgba(56,0,60,0.95)), url('https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3') center/cover no-repeat fixed" }} className="min-h-screen text-white">
       <div className="container mx-auto px-4 py-8">
         <Header />
         {/* Page Header */}
