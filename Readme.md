@@ -4,7 +4,7 @@
 [![codecov](https://codecov.io/gh/Freelancerio/TheInvinciblesProjects/branch/main/graph/badge.svg)](https://codecov.io/gh/Freelancerio/TheInvinciblesProjects)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Freelancerio_TheInvinciblesProjects&metric=alert_status)](https://sonarcloud.io/dashboard?id=Freelancerio_TheInvinciblesProjects)
 [![Java Version](https://img.shields.io/badge/Java-17-orange.svg)](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.0-green.svg)](https://spring.io/projects/spring-boot)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4.0-green.svg)](https://spring.io/projects/spring-boot)
 
 A smart betting platform backend built with Spring Boot, PostgreSQL (Supabase), and Firebase.
 
