@@ -1,202 +1,419 @@
 ---
-/**
- * Simple, static page that renders your Detailed Testing Documentation.
- * Drop this into: documentation/src/pages/testing-documentation.astro
- *
- * Styling is utility-first (Tailwind-like classes). If you don’t use Tailwind,
- * replace the classes with your CSS, or remove them.
- */
-
-type Section = { id: string; title: string; body: string };
-
-const sections: Section[] = [
-  {
-    id: "app-js",
-    title: "App.js",
-    body:
-      "Validated root app render, routing, and provider integration. Ensured initial DOM structure and navigation mounted correctly so the app boots reliably in all environments.",
-  },
-  {
-    id: "header",
-    title: "Header.jsx",
-    body:
-      "Verified navigation and auth controls (e.g., logout flow) work as intended. Mocked navigation to confirm route calls and top-level UX reliability.",
-  },
-  {
-    id: "balance-card",
-    title: "BalanceCard.jsx",
-    body:
-      "Ensured account balances render correctly with valid props and fail safely with missing/invalid data. Covered simple but critical financial display edge cases.",
-  },
-  {
-    id: "bet-history-card",
-    title: "BetHistoryCard.jsx",
-    body:
-      "Checked accurate rendering of historical bets (teams, scores, outcomes) and graceful handling of missing or incomplete data for trustworthy history review.",
-  },
-  {
-    id: "leaderboard-card",
-    title: "LeaderboardCard.jsx",
-    body:
-      "Verified player names, rankings, scores, and conditional styling for top positions to keep the high-visibility leaderboard consistently accurate.",
-  },
-  {
-    id: "profile-page",
-    title: "ProfilePage.jsx",
-    body:
-      "Confirmed profile dashboard integrates subcomponents (details, stats, settings) and updates render as state changes, ensuring a reliable container page.",
-  },
-  {
-    id: "quick-actions",
-    title: "QuickActions.jsx",
-    body:
-      "Tested shortcut buttons trigger correct callbacks/routes (betting, stats, details) and handle edge cases or disabled states for smooth, efficient navigation.",
-  },
-  {
-    id: "welcome-banner",
-    title: "WelcomeBanner.jsx",
-    body:
-      "Verified personalized welcome text renders correctly with user data and remains stable under different prop values.",
-  },
-  {
-    id: "user-details-card",
-    title: "UserDetailsCard.jsx",
-    body:
-      "Covered form inputs, state updates, localStorage persistence, and error handling for robust user detail editing (e.g., username and avatar interactions).",
-  },
-  {
-    id: "recent-matches",
-    title: "RecentMatches.jsx",
-    body:
-      "Validated fetching and rendering of recent fixtures with loading/error states and multiple entries; ensured reliable data flow and pagination behavior.",
-  },
-  {
-    id: "upcoming-matches",
-    title: "UpcomingMatches.jsx",
-    body:
-      "Ensured upcoming fixtures display with correct team info/logos/dates and that empty/error states and navigation (e.g., View All) are handled cleanly.",
-  },
-  {
-    id: "fixture-info",
-    title: "FixtureInfo.jsx",
-    body:
-      "Confirmed fixture metadata (venue, competition, kickoff) renders when provided and fails gracefully when missing.",
-  },
-  {
-    id: "head-to-head",
-    title: "HeadToHead.jsx",
-    body:
-      "Checked historical matchups render accurately (teams/logos/results) and that loading/empty/error cases remain clear for analytical comparisons.",
-  },
-  {
-    id: "match-prediction",
-    title: "MatchPrediction.jsx",
-    body:
-      "Validated prediction output from API (scores/probabilities/recommendations) across success, loading, empty, and error states for user trust.",
-  },
-  {
-    id: "recent-form",
-    title: "RecentForm.jsx",
-    body:
-      "Ensured recent performance sequences (W/D/L) render correctly and handle shorter sequences, with robust loading/error handling.",
-  },
-  {
-    id: "team-statistics",
-    title: "TeamStatistics.jsx",
-    body:
-      "Verified stats (possession, shots, goals, derived metrics) render with correct values and formatting; missing stats don’t break UI.",
-  },
-  {
-    id: "upcoming-match-details",
-    title: "UpcomingMatchDetails.jsx",
-    body:
-      "Checked team names, kickoff, and location render correctly and navigations into detail views integrate cleanly.",
-  },
-  {
-    id: "login",
-    title: "Login.jsx",
-    body:
-      "Tested inputs, validation errors, post-login navigation, and error feedback on invalid credentials for a robust, user-friendly login flow.",
-  },
-  {
-    id: "signup",
-    title: "SignUp.jsx",
-    body:
-      "Verified account creation flow (capture, validate, send), success navigation, error display, and edge cases like mismatched passwords.",
-  },
-  {
-    id: "home",
-    title: "Home.jsx",
-    body:
-      "Validated dashboard composition (QuickActions, BalanceCard, WelcomeBanner) and internal links; ensures reliable first-impression experience.",
-  },
-  {
-    id: "profile",
-    title: "Profile.jsx",
-    body:
-      "Ensured user info renders consistently and integrates subcomponents (UserDetailsCard, BetHistoryCard) with correct state updates.",
-  },
-  {
-    id: "landing-page",
-    title: "LandingPage.jsx",
-    body:
-      "Checked unauthenticated entry point: marketing text, login/signup CTAs, links, and interactions navigate correctly for smooth onboarding.",
-  },
-];
+const title = "Frontend Testing Overview";
 ---
 
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Detailed Testing Documentation</title>
-    <meta name="description" content="Component-by-component testing overview." />
+    <title>{title} | Smartbet</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      :root {
+        --bg: #ffffffff;
+        --panel: #0f172a;
+        --panel-2: #111827;
+        --text: #7d8086ff;
+        --muted: #9ca3af;
+        --accent: #60a5fa;
+        --border: rgba(255,255,255,0.08);
+        --code: #3e4663ff;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+        background: radial-gradient(1200px 700px at 20% -10%, #13203c 0%, transparent 70%), var(--bg);
+        color: var(--text);
+        line-height: 1.6;
+      }
+      .wrap {
+        max-width: 1050px;
+        margin: 0 auto;
+        padding: 2.5rem 1.25rem 4rem;
+      }
+      .title {
+        font-size: clamp(1.8rem, 1.6rem + 1.2vw, 2.6rem);
+        font-weight: 800;
+        letter-spacing: 0.2px;
+        margin: 0 0 1rem;
+      }
+      .lede {
+        color: var(--muted);
+        margin: 0 0 2rem;
+        font-size: 1.05rem;
+      }
+      .card {
+        background: linear-gradient(180deg, var(--panel) 0%, var(--panel-2) 100%);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.25rem 1.25rem 0.25rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      }
+      .toc {
+        display: grid;
+        gap: 0.35rem;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        margin: 0 0 2rem;
+      }
+      .toc a {
+        display: block;
+        color: var(--text);
+        text-decoration: none;
+        border: 1px dashed var(--border);
+        background: rgba(255,255,255,0.02);
+        border-radius: 10px;
+        padding: 0.55rem 0.7rem;
+        font-size: 0.95rem;
+      }
+      .toc a:hover {
+        border-style: solid;
+        border-color: rgba(96,165,250,0.35);
+        background: rgba(96,165,250,0.06);
+      }
+      h2 {
+        margin: 2rem 0 0.5rem;
+        font-size: 1.35rem;
+      }
+      h3 {
+        margin: 1.25rem 0 0.35rem;
+        font-size: 1.05rem;
+        color: var(--muted);
+        font-weight: 600;
+      }
+      .section {
+        padding: 1.2rem 1.2rem 0.6rem;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        margin-bottom: 1rem;
+        background: rgba(255,255,255,0.02);
+      }
+      .badge {
+        display: inline-block;
+        font-size: 0.8rem;
+        padding: 0.12rem 0.5rem;
+        border-radius: 999px;
+        background: rgba(96,165,250,0.12);
+        color: #cfe5ff;
+        border: 1px solid rgba(96,165,250,0.35);
+      }
+      .note {
+        border-left: 3px solid rgba(96,165,250,0.45);
+        padding: 0.6rem 0.8rem;
+        background: rgba(96,165,250,0.06);
+        border-radius: 8px;
+        margin: 0.65rem 0 0.25rem;
+        font-size: 0.95rem;
+        color: var(--text);
+      }
+      .foot {
+        margin-top: 2rem;
+        color: var(--muted);
+        font-size: 0.9rem;
+        border-top: 1px dashed var(--border);
+        padding-top: 1rem;
+      }
+      code, .code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        background: var(--code);
+        color: #dbeafe;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 0.05rem 0.35rem;
+        font-size: 0.9rem;
+      }
+      a.inline { color: var(--accent); text-decoration: none; }
+      a.inline:hover { text-decoration: underline; }
+    </style>
   </head>
-  <body class="bg-white text-slate-800 dark:bg-slate-950 dark:text-slate-100">
-    <main class="mx-auto max-w-5xl px-5 py-10">
-      <header class="mb-10">
-        <h1 class="text-3xl font-bold tracking-tight">Detailed Testing Documentation</h1>
-        <p class="mt-2 text-slate-600 dark:text-slate-300">
-          A concise, component-by-component summary of what we validated in tests and why it matters.
+  <body>
+    <main class="wrap">
+      <h1 class="title">Frontend Testing Overview</h1>
+      <p class="lede">
+        This page documents what was tested, why it was tested, and how it was validated across the Smartbet frontend.
+        Each section explains state handling, mock strategy, and the user-visible behaviors we verified.
+      </p>
+
+      <div class="card" aria-label="Table of contents">
+        <h3>Quick Navigation</h3>
+        <div class="toc">
+          <a href="#app">App.js</a>
+          <a href="#header">Header.jsx</a>
+          <a href="#balance-card">BalanceCard.jsx</a>
+          <a href="#bet-history-card">BetHistoryCard.jsx</a>
+          <a href="#leaderboard-card">LeaderboardCard.jsx</a>
+          <a href="#profile-page">ProfilePage.jsx</a>
+          <a href="#quick-actions">QuickActions.jsx</a>
+          <a href="#welcome-banner">WelcomeBanner.jsx</a>
+          <a href="#user-details-card">UserDetailsCard.jsx</a>
+          <a href="#recent-matches">RecentMatches.jsx</a>
+          <a href="#upcoming-matches">UpcomingMatches.jsx</a>
+          <a href="#fixture-info">FixtureInfo.jsx</a>
+          <a href="#head-to-head">HeadToHead.jsx</a>
+          <a href="#match-prediction">MatchPrediction.jsx</a>
+          <a href="#recent-form">RecentForm.jsx</a>
+          <a href="#team-statistics">TeamStatistics.jsx</a>
+          <a href="#upcoming-match-details">UpcomingMatchDetails.jsx</a>
+          <a href="#login">Login.jsx</a>
+          <a href="#signup">SignUp.jsx</a>
+          <a href="#home">Home.jsx</a>
+          <a href="#profile">Profile.jsx</a>
+          <a href="#landing-page">LandingPage.jsx</a>
+        </div>
+      </div>
+
+      <!-- App.js -->
+      <section id="app" class="section">
+        <h2>App.js <span class="badge">integration</span></h2>
+        <p>
+          We validated the root application render with all providers (notably context and routing)
+          to ensure the initial UI mounts cleanly and navigation is wired. The test checks that
+          the expected DOM skeleton appears and that route transitions don’t crash. We also confirm
+          that global state (via UserContext) is readable at startup, giving us confidence that
+          the app boots reliably across environments. This serves as a smoke-test for the entire
+          frontend.
         </p>
+      </section>
 
-
-        <h1 class="text-3xl font-bold tracking-tight">How to run test cases locally</h1>
-        <p class="mt-2 text-slate-600 dark:text-slate-300">
-          After coning the repostiory, on can change directory to the frontend directory and run mpm install then follwed by npm test to see the result of all the test case.
-          Additionally if theey code coverage want to be seen the code npm run test: coverage can be run, still in the frontedn directory
+      <!-- Header.jsx -->
+      <section id="header" class="section">
+        <h2>Header.jsx <span class="badge">unit + navigation</span></h2>
+        <p>
+          The header’s nav and auth controls were verified with mocked navigation to confirm that
+          links change routes and the logout control clears user state before redirecting. We
+          explicitly tested conditional render logic (showing “Login” vs “Logout”) to guarantee a
+          consistent and secure top-level UX. This protects the most frequently visible component
+          from regressions in auth flows.
         </p>
+      </section>
 
-        <!-- Compact TOC -->
-        <nav class="mt-6 rounded-xl border border-slate-200/70 p-4 dark:border-slate-800">
-          <h2 class="mb-3 text-sm font-semibold uppercase tracking-wider text-slate-500">
-            On this page
-          </h2>
-          <ul class="grid gap-2 sm:grid-cols-2 md:grid-cols-3">
-            {sections.map((s) => (
-              <li><a href={`#${s.id}`} class="text-sky-600 hover:underline dark:text-sky-400">{s.title}</a></li>
-            ))}
-          </ul>
-        </nav>
-      </header>
+      <!-- BalanceCard.jsx -->
+      <section id="balance-card" class="section">
+        <h2>BalanceCard.jsx <span class="badge">unit</span></h2>
+        <p>
+          We checked that the numeric balance renders with correct formatting and that missing or
+          invalid values don’t break the UI. The test emphasizes defensive display logic for
+          financial data—ensuring safe fallbacks and stable visuals even when props are incomplete.
+          This keeps the money display trustworthy and resilient.
+        </p>
+      </section>
 
-      <article class="prose prose-slate max-w-none dark:prose-invert">
-        {sections.map((s) => (
-          <section id={s.id} class="scroll-mt-24">
-            <h2 class="mt-10">{s.title}</h2>
-            <p>{s.body}</p>
-          </section>
-        ))}
-      </article>
+      <!-- BetHistoryCard.jsx -->
+      <section id="bet-history-card" class="section">
+        <h2>BetHistoryCard.jsx <span class="badge">unit</span></h2>
+        <p>
+          Historical rows (teams, odds, outcomes, dates) were validated for accuracy and alignment.
+          We also confirmed that partial records or empty datasets yield a clear fallback rather than
+          rendering errors. This ensures the history panel remains reliable when backend data is
+          delayed or inconsistent.
+        </p>
+      </section>
 
-      <footer class="mt-12 border-t border-slate-200/70 pt-6 text-sm text-slate-500 dark:border-slate-800">
-        Source: internal “Detailed Testing Documentation” summary. 
-      </footer>
+      <!-- LeaderboardCard.jsx -->
+      <section id="leaderboard-card" class="section">
+        <h2>LeaderboardCard.jsx <span class="badge">unit</span></h2>
+        <p>
+          We verified names, ranks, and points along with conditional highlighting for top positions.
+          Sorting/ordering expectations were asserted so the board reflects competitive standings
+          accurately. This gives confidence in a high-visibility component where correctness matters.
+        </p>
+      </section>
+
+      <!-- ProfilePage.jsx -->
+      <section id="profile-page" class="section">
+        <h2>ProfilePage.jsx <span class="badge">integration</span></h2>
+        <p>
+          This test validated composition of child panels (details, history, stats) and reactivity to
+          state updates. We confirmed that changes in user data are immediately reflected without page
+          reloads and without prop drilling issues. It guards the container page that coordinates most
+          profile interactions.
+        </p>
+      </section>
+
+      <!-- QuickActions.jsx -->
+      <section id="quick-actions" class="section">
+        <h2>QuickActions.jsx <span class="badge">unit + navigation</span></h2>
+        <p>
+          Each shortcut (e.g., “Place Bet”, “View Stats”) was clicked to verify the correct callback
+          or route is invoked. Disabled states and edge cases were covered to guarantee the component
+          remains intuitive and informative even when actions are unavailable. This improves perceived
+          responsiveness and flow through the app.
+        </p>
+      </section>
+
+      <!-- WelcomeBanner.jsx -->
+      <section id="welcome-banner" class="section">
+        <h2>WelcomeBanner.jsx <span class="badge">unit</span></h2>
+        <p>
+          Personalized greeting text was asserted against user context, with graceful fallbacks when
+          the name is missing. We checked for stable layout and consistent typography to avoid layout
+          jank on the first screen. The result is a polished, low-risk component that still feels
+          personal.
+        </p>
+      </section>
+
+      <!-- UserDetailsCard.jsx -->
+      <section id="user-details-card" class="section">
+        <h2>UserDetailsCard.jsx <span class="badge">unit + state</span></h2>
+        <p>
+          We simulated edits to fields (e.g., username, avatar) and verified two things: local state
+          updates as the user types, and persistence where applicable (localStorage). Error and
+          validation messages were checked for invalid input. These tests ensure users can safely edit
+          their info with immediate, predictable feedback.
+        </p>
+      </section>
+
+      <!-- RecentMatches.jsx -->
+      <section id="recent-matches" class="section">
+        <h2>RecentMatches.jsx <span class="badge">data + async</span></h2>
+        <p>
+          Using mocked <span class="code">fetch</span>, we validated transitions across loading,
+          error, and success states, then asserted the correct rendering of multiple recent fixtures
+          in order. Where applicable, pagination or “view more” behaviors were exercised. This gives
+          confidence in the component’s ability to render dynamic, API-driven content reliably.
+        </p>
+        <div class="note">
+          API calls were mocked with <span class="code">global.fetch = jest.fn(() =&gt; Promise.resolve(&#123;...&#125;))</span> and
+          resolved with controlled payloads to cover success, empty, and failure paths.
+        </div>
+      </section>
+
+      <!-- UpcomingMatches.jsx -->
+      <section id="upcoming-matches" class="section">
+        <h2>UpcomingMatches.jsx <span class="badge">data + async + navigation</span></h2>
+        <p>
+          We mocked upcoming-fixtures responses and asserted team names, logos, and kickoff times
+          render correctly. Empty lists show a friendly message; network failures surface an error
+          state instead of crashing. The “View All” affordance was also tested to confirm routing is
+          wired. This component demonstrates robust async handling plus user flow coverage.
+        </p>
+      </section>
+
+      <!-- FixtureInfo.jsx -->
+      <section id="fixture-info" class="section">
+        <h2>FixtureInfo.jsx <span class="badge">unit</span></h2>
+        <p>
+          Fixture metadata (competition, venue, kickoff) was asserted for presence and formatting.
+          Missing fields were tested to ensure placeholders appear and layout remains stable. This
+          protects a supporting component that frequently receives partial data in real-world APIs.
+        </p>
+      </section>
+
+      <!-- HeadToHead.jsx -->
+      <section id="head-to-head" class="section">
+        <h2>HeadToHead.jsx <span class="badge">data + async</span></h2>
+        <p>
+          Past-matchups were mocked to verify correct team logos, scores, and dates, with coverage for
+          loading, error, and empty states. Assertions focused on analytical clarity—e.g., the score
+          line and ordering of results. This ensures reliability for a comparison-heavy view that users
+          rely on for decisions.
+        </p>
+        <div class="note">
+          We used <span class="code">MemoryRouter</span> to provide route context and mocked
+          <span class="code">useLocation</span> where needed to feed the component the selected teams.
+        </div>
+      </section>
+
+      <!-- MatchPrediction.jsx -->
+      <section id="match-prediction" class="section">
+        <h2>MatchPrediction.jsx <span class="badge">data + async</span></h2>
+        <p>
+          Prediction payloads (expected scores, probabilities, recommendations) were simulated to
+          confirm each element renders and updates through loading → success or error. Empty payloads
+          show an explicit “no prediction” state rather than an ambiguous blank panel. This helps
+          preserve trust in a data-driven feature.
+        </p>
+      </section>
+
+      <!-- RecentForm.jsx -->
+      <section id="recent-form" class="section">
+        <h2>RecentForm.jsx <span class="badge">data + async</span></h2>
+        <p>
+          We validated rendering of recent W/D/L sequences and resilience to short or partial form
+          histories. Loading and error states were explicitly covered to ensure the panel communicates
+          clearly during network delays. This keeps trend visuals informative without being brittle.
+        </p>
+      </section>
+
+      <!-- TeamStatistics.jsx -->
+      <section id="team-statistics" class="section">
+        <h2>TeamStatistics.jsx <span class="badge">unit</span></h2>
+        <p>
+          Numeric stat blocks (possession, shots, goals, derived metrics) were asserted for presence,
+          formatting, and precision. We verified that missing fields fall back to safe placeholders so
+          the layout doesn’t shift or fail. This protects a number-heavy component from subtle errors.
+        </p>
+      </section>
+
+      <!-- UpcomingMatchDetails.jsx -->
+      <section id="upcoming-match-details" class="section">
+        <h2>UpcomingMatchDetails.jsx <span class="badge">integration</span></h2>
+        <p>
+          We checked that the detailed view composes team labels, kickoff, and location consistently,
+          and that navigation affordances (e.g., “Back”, “Full Stats”) route correctly. The goal was
+          to ensure deep-link stability and seamless movement into and out of the detail page without
+          prop or context errors.
+        </p>
+      </section>
+
+      <!-- Login.jsx -->
+      <section id="login" class="section">
+        <h2>Login.jsx <span class="badge">form + async</span></h2>
+        <p>
+          We simulated entering credentials and clicking “Login,” then asserted navigation on success.
+          Authentication calls were mocked to verify both success and failure flows without touching
+          real services. Validation errors (missing fields, invalid formats) were covered so users get
+          immediate feedback instead of silent failures.
+        </p>
+      </section>
+
+      <!-- SignUp.jsx -->
+      <section id="signup" class="section">
+        <h2>SignUp.jsx <span class="badge">form + async</span></h2>
+        <p>
+          Account creation was exercised end-to-end in tests: input capture, client-side validation,
+          submit, and success navigation. We explicitly covered common errors like mismatched
+          passwords and missing fields. This ensures onboarding remains clear, recoverable, and
+          user-friendly.
+        </p>
+      </section>
+
+      <!-- Home.jsx -->
+      <section id="home" class="section">
+        <h2>Home.jsx <span class="badge">integration</span></h2>
+        <p>
+          We validated that the dashboard composes <span class="code">QuickActions</span>,
+          <span class="code">BalanceCard</span>, and <span class="code">WelcomeBanner</span> and that
+          internal links work. The test also watches for layout stability under different user states.
+          This protects the first impression and overall navigation hub of the app.
+        </p>
+      </section>
+
+      <!-- Profile.jsx -->
+      <section id="profile" class="section">
+        <h2>Profile.jsx <span class="badge">integration</span></h2>
+        <p>
+          The profile container was tested for correct rendering of subcomponents and for state updates
+          propagating to the UI. This gives us confidence that profile-related changes (e.g., details,
+          history) remain synchronized without needing a hard refresh.
+        </p>
+      </section>
+
+      <!-- LandingPage.jsx -->
+      <section id="landing-page" class="section">
+        <h2>LandingPage.jsx <span class="badge">navigation</span></h2>
+        <p>
+          We verified that unauthenticated entry content renders and that the primary CTAs (Login,
+          Sign Up) route to the correct pages. The tests focus on clarity and correctness of the
+          onboarding flow—ensuring users always have a working path into the app.
+        </p>
+      </section>
+
+      <p class="foot">
+        Note on mocks: Network calls were stubbed with <span class="code">global.fetch</span> using Jest
+        to deterministically cover success, failure, and empty payloads. Router behavior used
+        <span class="code">MemoryRouter</span> with optional <span class="code">useLocation</span> mocks
+        to simulate navigation context without a real browser environment.
+      </p>
     </main>
-
-    <img
-      src="code_coverage.jpeg"
-      alt="Jira workflow diagram showing issue states, review loops, and hotfix lane"
-      class="mx-auto block max-w-full h-auto"
-    />
   </body>
 </html>
