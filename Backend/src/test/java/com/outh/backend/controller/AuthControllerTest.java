@@ -92,7 +92,7 @@ class AuthControllerTest {
 
     @Test
     void updateUsername_WithEmptyUsername_ShouldReturnBadRequest() {
-        // Given
+        // Giveng
         Map<String, String> request = Map.of("username", "   ");
 
         // When
