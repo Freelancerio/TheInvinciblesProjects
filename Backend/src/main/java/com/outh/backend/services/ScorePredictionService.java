@@ -1,6 +1,7 @@
 package com.outh.backend.services;
 
 import com.outh.backend.dto.LeaderboardEntryDTO;
+import com.outh.backend.dto.ExposedApiDTO;
 import com.outh.backend.dto.ScorePredictionRequest;
 import com.outh.backend.models.*;
 import com.outh.backend.repository.*;
@@ -278,20 +279,69 @@ public class ScorePredictionService {
 
 
     // exposed
-    public List<ScorePrediction> getAllPredictions() {
-        return scorePredictionRepository.findAll();
+    // public List<ScorePrediction> getAllPredictions() {
+    //     return scorePredictionRepository.findAll();
+    // }
+
+    // public List<ScorePrediction> getPredictionsByTeam(String teamName) {
+    //     return scorePredictionRepository.findByMatch_HomeTeamOrMatch_AwayTeam(teamName, teamName);
+    // }
+
+    // public List<ScorePrediction> getPredictionsBySeason(Integer season) {
+    //     return scorePredictionRepository.findBySeason(season);
+    // }
+
+    // public List<ScorePrediction> getPredictionsByMatch(Long matchId) {
+    //     return scorePredictionRepository.findByMatch_MatchId(matchId);
+    // }
+
+    // Helper method to map entity to DTO
+    private ExposedApiDTO mapToDTO(ScorePrediction prediction) {
+        var match = prediction.getMatch();
+        return new ExposedApiDTO(
+            match.getMatchId(),
+            match.getHomeTeam(),
+            match.getAwayTeam(),
+            match.getMatchStatus(),
+            prediction.getSeason(),
+            match.getLeagueRound(),
+            match.getDateTime(),
+            match.getVenue(),
+            match.getHomeLogo(),
+            match.getAwayLogo(),
+            prediction.getPredHomeScore(),
+            prediction.getPredAwayScore(),
+            match.getHomeScore(),
+            match.getAwayScore()
+        );
     }
 
-    public List<ScorePrediction> getPredictionsByTeam(String teamName) {
-        return scorePredictionRepository.findByMatch_HomeTeamOrMatch_AwayTeam(teamName, teamName);
+    public List<ExposedApiDTO> getAllPredictions() {
+        return scorePredictionRepository.findAll()
+                .stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
     }
 
-    public List<ScorePrediction> getPredictionsBySeason(Integer season) {
-        return scorePredictionRepository.findBySeason(season);
+    public List<ExposedApiDTO> getPredictionsByTeam(String teamName) {
+        return scorePredictionRepository.findByMatch_HomeTeamOrMatch_AwayTeam(teamName, teamName)
+                .stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
     }
 
-    public List<ScorePrediction> getPredictionsByMatch(Long matchId) {
-        return scorePredictionRepository.findByMatch_MatchId(matchId);
+    public List<ExposedApiDTO> getPredictionsBySeason(Integer season) {
+        return scorePredictionRepository.findBySeason(season)
+                .stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<ExposedApiDTO> getPredictionsByMatch(Long matchId) {
+        return scorePredictionRepository.findByMatch_MatchId(matchId)
+                .stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
     }
 
 
