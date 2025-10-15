@@ -1,4 +1,4 @@
-package com.outh.backend.controllers;
+package com.outh.backend.controller;
 
 import com.outh.backend.dto.ScorePredictionRequest;
 import com.outh.backend.models.ScorePrediction;
