@@ -3,6 +3,7 @@ package com.outh.backend.controller;
 import com.outh.backend.models.ScorePrediction;
 import com.outh.backend.services.ScorePredictionService;
 import org.springframework.web.bind.annotation.*;
+import com.outh.backend.dto.ExposedApiDTO;
 
 import java.util.List;
 
@@ -18,25 +19,25 @@ public class ExposedController {
 
     // 1. All predictions
     @GetMapping
-    public List<ScorePrediction> getAllPredictions() {
+    public List<ExposedApiDTO> getAllPredictions() {
         return predictionService.getAllPredictions();
     }
 
     // 2. Predictions involving one team
     @GetMapping("/team/{teamName}")
-    public List<ScorePrediction> getPredictionsByTeam(@PathVariable String teamName) {
+    public List<ExposedApiDTO> getPredictionsByTeam(@PathVariable String teamName) {
         return predictionService.getPredictionsByTeam(teamName);
     }
 
     // 3. Predictions for a season
     @GetMapping("/season/{season}")
-    public List<ScorePrediction> getPredictionsBySeason(@PathVariable Integer season) {
+    public List<ExposedApiDTO> getPredictionsBySeason(@PathVariable Integer season) {
         return predictionService.getPredictionsBySeason(season);
     }
 
     // 4. Predictions for a specific match
     @GetMapping("/match/{matchId}")
-    public List<ScorePrediction> getPredictionsByMatch(@PathVariable Long matchId) {
+    public List<ExposedApiDTO> getPredictionsByMatch(@PathVariable Long matchId) {
         return predictionService.getPredictionsByMatch(matchId);
     }
 }
