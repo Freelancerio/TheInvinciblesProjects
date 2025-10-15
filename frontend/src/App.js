@@ -14,6 +14,7 @@ import TeamStrength from "./pages/TeamStats.jsx";
 import MatchOddsPage from "./pages/MatchOddsPage.jsx";
 import LeaderboardPage from "./pages/LeaderBoardPage.jsx";
 import TeamComparison from "./pages/TeamComparison.jsx";
+import PredictedStandings from "./pages/PredictedStandings.jsx";
 import { UserProvider } from "./UserContext.js";
 
 export default function App() {
@@ -35,6 +36,7 @@ export default function App() {
         <Route path="/betting" element={<MatchOddsPage/>}/>
         <Route path="/leaderboards" element={<LeaderboardPage/>}/>
         <Route path="/comparison" element={<TeamComparison/>}/>
+        <Route path="/predictions" element={<PredictedStandings/>}/>
 
       </Routes>
     </Router>
