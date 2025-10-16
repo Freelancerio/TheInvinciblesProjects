@@ -33,10 +33,10 @@ jobs:
         cd Backend
         mvn clean verify -Dspring.profiles.active=ci
       env:
-        SPRING_PROFILES_ACTIVE: test
+        SPRING_PROFILES_ACTIVE: ci
     
     - name: Upload Backend coverage to Codecov
-      uses: codecov/codecov-action@v4
+      uses: codecov/codecov-action@e28ff129e5465c2c0dcc6f003fc735cb6ae0c673 # v4.5.0
       with:
         files: ./Backend/target/site/jacoco/jacoco.xml
         flags: backend
@@ -62,7 +62,7 @@ jobs:
         npm run test:coverage
     
     - name: Upload Frontend coverage to Codecov
-      uses: codecov/codecov-action@v4
+      uses: codecov/codecov-action@e28ff129e5465c2c0dcc6f003fc735cb6ae0c673 # v4.5.0
       with:
         files: ./Frontend/coverage/lcov.info
         flags: frontend
