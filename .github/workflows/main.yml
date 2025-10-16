@@ -4,10 +4,8 @@ on:
     branches: [ main, auth-feature ]
   pull_request:
     branches: [ main, auth-feature ]
-
 permissions:
   contents: read
-
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -67,17 +65,16 @@ jobs:
     
     - name: Run Frontend tests with coverage
       run: |
-        cd Frontend
+        cd frontend
         npm run test:coverage
     
     - name: Upload Frontend coverage to Codecov
       uses: codecov/codecov-action@e28ff129e5465c2c0dcc6f003fc735cb6ae0c673 # v4.5.0
       with:
-        files: ./Frontend/coverage/lcov.info
+        files: ./frontend/coverage/lcov.info
         flags: frontend
         name: frontend-coverage
         token: ${{ secrets.CODECOV_TOKEN }}
-
   deploy:
     needs: test
     runs-on: ubuntu-latest
