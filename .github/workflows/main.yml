@@ -22,11 +22,10 @@ jobs:
         distribution: 'temurin'
         cache: 'maven' 
     
-    - name: Create Firebase service account file (mock)
+    - name: Create Firebase service account file
       run: |
         mkdir -p Backend/src/main/resources/config
-        echo '{"type":"service_account","project_id":"test","private_key_id":"test","private_key":"-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC7W8jYbF8x9vKq\n-----END PRIVATE KEY-----","client_email":"test@test.iam.gserviceaccount.com","client_id":"test"}' \
-          > Backend/src/main/resources/config/firebase-service-account.json
+        echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" > Backend/src/main/resources/config/firebase-service-account.json
     
     - name: Run Backend tests with coverage
       run: |
