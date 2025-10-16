@@ -263,18 +263,14 @@ public class ScorePredictionService {
     }
 
 
-
-
-
-    @PostConstruct
     public void init() {
-        int season = 2025;
+        //int season = 2025;
 
         updatePointsForFinishedMatches();
         updateSeasonLeaderboard();
         updateAllTimeLeaderboard();
 
-        System.out.println("Team matches at startup!");
+        //System.out.println("Team matches at startup!");
     }
 
 
