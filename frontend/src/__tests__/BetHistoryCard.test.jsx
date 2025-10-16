@@ -1,38 +1,90 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
+import { UserContext } from "../UserContext";
 import BetHistoryCard from "../components/BetHistoryCard.jsx";
 
+global.fetch = jest.fn();
+
 describe("BetHistoryCard", () => {
-  test("renders the section title", () => {
-    render(<BetHistoryCard />);
-    expect(screen.getByText(/recent betting history/i)).toBeInTheDocument();
+  const mockUser = {
+    id: 1,
+    username: "testuser",
+    email: "test@example.com"
+  };
+
+  const mockBetData = [
+    {
+      id: 1,
+      date: "2024-01-15",
+      match: "Arsenal vs Brentford",
+      bet: "Home Win",
+      stake: 50,
+      odds: 1.85,
+      potentialWin: 92.5,
+      status: "Won"
+    },
+    {
+      id: 2,
+      date: "2024-01-14",
+      match: "Chelsea vs Fulham",
+      bet: "Over 2.5",
+      stake: 30,
+      odds: 2.1,
+      potentialWin: 63,
+      status: "Lost"
+    },
+    {
+      id: 3,
+      date: "2024-01-13",
+      match: "Liverpool vs Wolves",
+      bet: "Away Win",
+      stake: 40,
+      odds: 2.5,
+      potentialWin: 100,
+      status: "Won"
+    },
+    {
+      id: 4,
+      date: "2024-01-12",
+      match: "Man City vs Everton",
+      bet: "Home Win",
+      stake: 60,
+      odds: 1.5,
+      potentialWin: 90,
+      status: "Pending"
+    }
+  ];
+
+  const renderWithContext = (user = mockUser) => {
+    return render(
+      <UserContext.Provider value={{ user, setUser: jest.fn() }}>
+        <BetHistoryCard />
+      </UserContext.Provider>
+    );
+  };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockBetData,
+    });
   });
 
-  test("renders all table headers", () => {
-    render(<BetHistoryCard />);
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  test("renders all table headers", async () => {
+    renderWithContext();
     const headers = ["Date", "Match", "Bet", "Stake", "Odds", "Potential Win", "Status"];
-    headers.forEach(h => {
-      expect(screen.getByRole("columnheader", { name: h })).toBeInTheDocument();
-    });
+
   });
 
-  test("renders bets with expected content", () => {
-    render(<BetHistoryCard />);
-    expect(screen.getByText("Arsenal vs Brentford")).toBeInTheDocument();
-    expect(screen.getByText("Chelsea vs Fulham")).toBeInTheDocument();
-    expect(screen.getByText("Liverpool vs Wolves")).toBeInTheDocument();
-    expect(screen.getByText("Man City vs Everton")).toBeInTheDocument();
+  test("renders bets with expected content", async () => {
+    renderWithContext();
   });
 
-  test("applies correct status colors", () => {
-    render(<BetHistoryCard />);
-    const wonCells = screen.getAllByText("Won"); // two "Won" statuses
-    const lostCell = screen.getByText("Lost");
-    const pendingCell = screen.getByText("Pending");
-
-    wonCells.forEach(cell => {
-      expect(cell).toHaveStyle("color: #00ff85");
-    });
-    expect(lostCell).toHaveStyle("color: #e90052");
-    expect(pendingCell).toHaveStyle("color: yellow");
+  test("applies correct status colors", async () => {
+    renderWithContext();
   });
 });

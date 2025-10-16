@@ -1,11 +1,12 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import SignUp from "../pages/SignUp";
 import { MemoryRouter } from "react-router-dom";
+import { UserContext } from "../UserContext";
 
-// Mocks
 const mockNavigate = jest.fn();
 const mockCreateUser = jest.fn();
 const mockSignInWithPopup = jest.fn();
+const mockLoginUser = jest.fn();
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
@@ -22,20 +23,36 @@ jest.mock("firebase/auth", () => ({
   signInWithPopup: (...args) => mockSignInWithPopup(...args),
 }));
 
+global.fetch = jest.fn();
+
+const mockContextValue = {
+  loginUser: mockLoginUser,
+};
+
+const renderWithContext = (component) => {
+  return render(
+    <MemoryRouter>
+      <UserContext.Provider value={mockContextValue}>
+        {component}
+      </UserContext.Provider>
+    </MemoryRouter>
+  );
+};
+
 describe("SignUp Page", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     localStorage.clear();
-    // Mock alert
     window.alert = jest.fn();
+    global.fetch.mockClear();
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   test("renders signup form elements", () => {
-    render(
-      <MemoryRouter>
-        <SignUp />
-      </MemoryRouter>
-    );
+    renderWithContext(<SignUp />);
 
     expect(screen.getByText(/create account/i)).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/enter your email/i)).toBeInTheDocument();
@@ -45,11 +62,7 @@ describe("SignUp Page", () => {
   });
 
   test("shows error when passwords do not match", async () => {
-    render(
-      <MemoryRouter>
-        <SignUp />
-      </MemoryRouter>
-    );
+    renderWithContext(<SignUp />);
 
     fireEvent.change(screen.getByPlaceholderText(/enter your email/i), {
       target: { value: "test@example.com" },
@@ -68,11 +81,7 @@ describe("SignUp Page", () => {
   });
 
   test("shows error for short password", async () => {
-    render(
-      <MemoryRouter>
-        <SignUp />
-      </MemoryRouter>
-    );
+    renderWithContext(<SignUp />);
 
     fireEvent.change(screen.getByPlaceholderText(/enter your email/i), {
       target: { value: "test@example.com" },
@@ -93,11 +102,7 @@ describe("SignUp Page", () => {
   });
 
   test("shows error when terms are not accepted", async () => {
-    render(
-      <MemoryRouter>
-        <SignUp />
-      </MemoryRouter>
-    );
+    renderWithContext(<SignUp />);
 
     fireEvent.change(screen.getByPlaceholderText(/enter your email/i), {
       target: { value: "test@example.com" },
@@ -120,11 +125,7 @@ describe("SignUp Page", () => {
   test("successful signup calls Firebase and navigates", async () => {
     mockCreateUser.mockResolvedValueOnce({});
 
-    render(
-      <MemoryRouter>
-        <SignUp />
-      </MemoryRouter>
-    );
+    renderWithContext(<SignUp />);
 
     fireEvent.change(screen.getByPlaceholderText(/enter your email/i), {
       target: { value: "test@example.com" },
@@ -135,11 +136,10 @@ describe("SignUp Page", () => {
     fireEvent.change(screen.getByPlaceholderText(/confirm your password/i), {
       target: { value: "password123" },
     });
-    
-    // Click the checkbox directly by its role
-    const checkbox = screen.getByRole('checkbox');
+
+    const checkbox = screen.getByRole("checkbox");
     fireEvent.click(checkbox);
-    
+
     fireEvent.click(screen.getByText(/create account/i));
 
     await waitFor(() => {
@@ -152,11 +152,7 @@ describe("SignUp Page", () => {
   test("failed signup shows error", async () => {
     mockCreateUser.mockRejectedValueOnce(new Error("Signup failed"));
 
-    render(
-      <MemoryRouter>
-        <SignUp />
-      </MemoryRouter>
-    );
+    renderWithContext(<SignUp />);
 
     fireEvent.change(screen.getByPlaceholderText(/enter your email/i), {
       target: { value: "test@example.com" },
@@ -167,11 +163,10 @@ describe("SignUp Page", () => {
     fireEvent.change(screen.getByPlaceholderText(/confirm your password/i), {
       target: { value: "password123" },
     });
-    
-    // Click the checkbox directly by its role
-    const checkbox = screen.getByRole('checkbox');
+
+    const checkbox = screen.getByRole("checkbox");
     fireEvent.click(checkbox);
-    
+
     fireEvent.click(screen.getByText(/create account/i));
 
     await waitFor(() => {
@@ -186,36 +181,31 @@ describe("SignUp Page", () => {
     };
     mockSignInWithPopup.mockResolvedValueOnce({ user: fakeUser });
 
-    global.fetch = jest.fn(() =>
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve({ username: "GoogleUser" }),
-      })
-    );
+    global.fetch.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve({ username: "GoogleUser" }),
+    });
 
-    render(
-      <MemoryRouter>
-        <SignUp />
-      </MemoryRouter>
-    );
+    renderWithContext(<SignUp />);
 
     fireEvent.click(screen.getByText(/sign up with google/i));
 
     await waitFor(() => {
       expect(localStorage.getItem("authToken")).toBe("fake-token");
-      expect(localStorage.getItem("user-name")).toBe("GoogleUser");
-      expect(mockNavigate).toHaveBeenCalledWith("/profile");
+      expect(mockLoginUser).toHaveBeenCalledWith(
+        expect.objectContaining({
+          email: "google@example.com",
+          username: "GoogleUser",
+        })
+      );
+      expect(mockNavigate).toHaveBeenCalledWith("/home");
     });
   });
 
   test("google signup fails gracefully", async () => {
     mockSignInWithPopup.mockRejectedValueOnce(new Error("Google login failed"));
 
-    render(
-      <MemoryRouter>
-        <SignUp />
-      </MemoryRouter>
-    );
+    renderWithContext(<SignUp />);
 
     fireEvent.click(screen.getByText(/sign up with google/i));
 
@@ -227,11 +217,7 @@ describe("SignUp Page", () => {
   });
 
   test("clicking login link navigates to login page", () => {
-    render(
-      <MemoryRouter>
-        <SignUp />
-      </MemoryRouter>
-    );
+    renderWithContext(<SignUp />);
 
     fireEvent.click(screen.getByText(/log in/i));
     expect(mockNavigate).toHaveBeenCalledWith("/login");
