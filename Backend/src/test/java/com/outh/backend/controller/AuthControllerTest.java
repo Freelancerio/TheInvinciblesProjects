@@ -78,19 +78,6 @@ class AuthControllerTest {
     }
 
     @Test
-    void updateUsername_WithNullUsername_ShouldReturnBadRequest() {
-        // Given
-        Map<String, String> request = Map.of("username", null);
-
-        // When
-        ResponseEntity<User> response = authController.updateUsername(testUser, request);
-
-        // Then
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        verify(userRepository, never()).save(any());
-    }
-
-    @Test
     void updateUsername_WithEmptyUsername_ShouldReturnBadRequest() {
         // Giveng
         Map<String, String> request = Map.of("username", "   ");

@@ -4,7 +4,6 @@ import Header from "../components/Header";
 import getBaseUrl from "../api.js";
 
 const baseUrl = getBaseUrl();
-
 const PAGE_SIZE = 20;
 
 const MatchOddsPage = () => {
@@ -13,13 +12,16 @@ const MatchOddsPage = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [search, setSearch] = useState("");
   const [filterDate, setFilterDate] = useState("");
+  const [loading, setLoading] = useState(false); // <-- added
+  const [error, setError] = useState(null); // optional: to show if fetch fails
 
   const fetchMatches = async (page = 0) => {
     try {
+      setLoading(true);
+      setError(null);
+
       const token = localStorage.getItem("authToken");
-      if (!token) {
-        throw new Error("No auth token found");
-      }
+      if (!token) throw new Error("No auth token found");
 
       const params = new URLSearchParams({ page, size: PAGE_SIZE });
       const response = await fetch(
@@ -42,6 +44,9 @@ const MatchOddsPage = () => {
       setTotalPages(data.totalPages);
     } catch (error) {
       console.error("Error fetching matches:", error);
+      setError(error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -68,12 +73,18 @@ const MatchOddsPage = () => {
     });
 
   return (
-   <div style={{ background: "linear-gradient(rgba(56,0,60,0.9), rgba(56,0,60,0.95)), url('https://www.arsenal.com/sites/default/files/styles/desktop_16x9/public/images/champions_2004.jpg?h=6dff888f&auto=webp&itok=fV_V3M5o') center/cover no-repeat fixed" }} className="min-h-screen text-white">
+    <div
+      style={{
+        background:
+          "linear-gradient(rgba(56,0,60,0.9), rgba(56,0,60,0.95)), url('https://www.arsenal.com/sites/default/files/styles/desktop_16x9/public/images/champions_2004.jpg?h=6dff888f&auto=webp&itok=fV_V3M5o') center/cover no-repeat fixed",
+      }}
+      className="min-h-screen text-white"
+    >
+      <Header />
       <div className="container mx-auto px-4 py-8">
-        <Header />
-        {/* Page Header */}
+        
         <h1 className="text-3xl font-bold text-center text-green-400 mb-2">
-          Match Odds
+          Match Betting
         </h1>
         <p className="text-center mb-6 opacity-70">
           Upcoming Premier League matches with win probabilities
@@ -102,47 +113,60 @@ const MatchOddsPage = () => {
           </div>
         </div>
 
-        {/* Matches Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredMatches.length > 0 ? (
-            filteredMatches.map((match) => (
+        {/* Loading */}
+        {loading ? (
+          <div className="flex flex-col justify-center items-center py-12 text-green-400">
+            <i className="fas fa-spinner fa-spin fa-2x mb-3"></i>
+            <p>Loading matches...</p>
+          </div>
+        ) : error ? (
+          <div className="text-center text-red-400 py-12">
+            <i className="fas fa-exclamation-triangle fa-2x mb-3"></i>
+            <p>Failed to load matches: {error}</p>
+          </div>
+        ) : filteredMatches.length > 0 ? (
+          /* Matches Grid */
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredMatches.map((match) => (
               <MatchCard key={match.matchId} match={match} />
-            ))
-          ) : (
-            <div className="col-span-full text-center opacity-70 py-12">
-              <i className="fas fa-futbol fa-2x mb-2"></i>
-              <h3>No matches found</h3>
-            </div>
-          )}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div className="col-span-full text-center opacity-70 py-12">
+            <i className="fas fa-futbol fa-2x mb-2"></i>
+            <h3>No matches found</h3>
+          </div>
+        )}
 
         {/* Pagination */}
-        <div className="flex justify-center items-center gap-3 mt-8">
-          <button
-            className={`px-4 py-2 rounded-md bg-white/10 hover:bg-green-400 text-white ${
-              currentPage === 0 && "opacity-50 cursor-not-allowed"
-            }`}
-            disabled={currentPage === 0}
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
-          >
-            Previous
-          </button>
-          <span>
-            Page {currentPage + 1} of {totalPages}
-          </span>
-          <button
-            className={`px-4 py-2 rounded-md bg-white/10 hover:bg-green-400 text-white ${
-              currentPage + 1 === totalPages &&
-              "opacity-50 cursor-not-allowed"
-            }`}
-            disabled={currentPage + 1 === totalPages}
-            onClick={() =>
-              setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1))
-            }
-          >
-            Next
-          </button>
-        </div>
+        {!loading && !error && (
+          <div className="flex justify-center items-center gap-3 mt-8">
+            <button
+              className={`px-4 py-2 rounded-md bg-white/10 hover:bg-green-400 text-white ${
+                currentPage === 0 && "opacity-50 cursor-not-allowed"
+              }`}
+              disabled={currentPage === 0}
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
+            >
+              Previous
+            </button>
+            <span>
+              Page {currentPage + 1} of {totalPages}
+            </span>
+            <button
+              className={`px-4 py-2 rounded-md bg-white/10 hover:bg-green-400 text-white ${
+                currentPage + 1 === totalPages &&
+                "opacity-50 cursor-not-allowed"
+              }`}
+              disabled={currentPage + 1 === totalPages}
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1))
+              }
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
