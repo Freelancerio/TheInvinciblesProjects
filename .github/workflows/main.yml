@@ -27,8 +27,16 @@ jobs:
     - name: Create Firebase service account file (mock)
       run: |
         mkdir -p Backend/src/main/resources/config
-        echo '{"type":"service_account","project_id":"test","private_key_id":"test","private_key":"-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC7W8jYbF8x9vKq\n-----END PRIVATE KEY-----","client_email":"test@test.iam.gserviceaccount.com","client_id":"test"}' \
-          > Backend/src/main/resources/config/firebase-service-account.json
+        cat > Backend/src/main/resources/config/firebase-service-account.json << 'EOF'
+        {
+          "type": "service_account",
+          "project_id": "mock-project",
+          "private_key_id": "mock-key-id-123",
+          "private_key": "-----BEGIN PRIVATE KEY-----\nMOCK_PRIVATE_KEY_FOR_TESTING_ONLY\n-----END PRIVATE KEY-----",
+          "client_email": "mock-service-account@mock-project.iam.gserviceaccount.com",
+          "client_id": "123456789"
+        }
+        EOF
     
     - name: Run Backend tests with coverage
       run: |
@@ -50,12 +58,11 @@ jobs:
       uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
       with:
         node-version: '20'
-        cache: 'npm'
-        cache-dependency-path: Frontend/package-lock.json
     
     - name: Install Frontend dependencies
       run: |
         cd Frontend
+        npm install react-scripts
         npm ci
     
     - name: Run Frontend tests with coverage
