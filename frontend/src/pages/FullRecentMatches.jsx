@@ -41,4 +41,3 @@ const FullRecentMatches = () => {
 };
 
 export default FullRecentMatches;
-//complete
