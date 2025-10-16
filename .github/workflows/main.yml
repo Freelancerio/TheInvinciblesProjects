@@ -61,7 +61,7 @@ jobs:
     
     - name: Install Frontend dependencies
       run: |
-        cd Frontend
+        cd frontend
         npm install react-scripts
         npm ci
     
