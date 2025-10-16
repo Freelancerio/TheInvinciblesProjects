@@ -33,7 +33,7 @@ jobs:
         cd Backend
         mvn clean verify -Dspring.profiles.active=ci
       env:
-        SPRING_PROFILES_ACTIVE: ci
+        SPRING_PROFILES_ACTIVE: test
     
     - name: Upload Backend coverage to Codecov
       uses: codecov/codecov-action@e28ff129e5465c2c0dcc6f003fc735cb6ae0c673 # v4.5.0
