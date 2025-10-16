@@ -9,7 +9,9 @@ public class MatchWithOddsDTO {
 
     private Long matchId;
     private String homeTeam;
+    private String homeLogo;
     private String awayTeam;
+    private String awayLogo;
     private String status;
     private LocalDateTime matchDate;
 
@@ -20,7 +22,9 @@ public class MatchWithOddsDTO {
     public MatchWithOddsDTO(LeagueMatches match, MatchOdds odds) {
         this.matchId = match.getMatchId();
         this.homeTeam = match.getHomeTeam();
+        this.homeLogo = match.getHomeLogo();
         this.awayTeam = match.getAwayTeam();
+        this.awayLogo = match.getAwayLogo();
         this.status = match.getMatchStatus();
         this.matchDate = match.getDateTime(); // adjust to your date type
 
@@ -33,6 +37,8 @@ public class MatchWithOddsDTO {
     public Long getMatchId() { return matchId; }
     public String getHomeTeam() { return homeTeam; }
     public String getAwayTeam() { return awayTeam; }
+    public String getHomeLogo() { return homeLogo; }
+    public String getAwayLogo() { return awayLogo; }
     public String getStatus() { return status; }
     public LocalDateTime getMatchDate() { return matchDate; }
     public Double getHomeWinProbability() { return homeWinProbability; }

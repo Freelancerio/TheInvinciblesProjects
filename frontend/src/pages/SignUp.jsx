@@ -1,15 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth, googleProvider } from "../firebase";
 import { createUserWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import "../styles/signup.css";
 import getBaseUrl from "../api.js";
+import { UserContext } from "../UserContext";
 
 const baseUrl = getBaseUrl();
 
 
 export default function Signup() {
   const navigate = useNavigate();
+  const { loginUser } = useContext(UserContext);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -66,24 +68,46 @@ export default function Signup() {
       }
     };
   
+    // const handleGoogleSignup = async () => {
+    //   try {
+    //     const result = await signInWithPopup(auth, googleProvider);
+    //     const idToken = await result.user.getIdToken();
+  
+    //     localStorage.setItem("email", result.user.email);
+  
+    //     const backendResponse = await sendTokenToBackend(idToken);
+    //     if (backendResponse) {
+    //       localStorage.setItem("authToken", idToken);
+    //       localStorage.setItem("user-name", backendResponse.username);
+    //       navigate("/profile");
+    //     }
+    //   } catch (err) {
+    //     console.error(err);
+    //     setError("Google login failed. Try again.");
+    //   }
+    // };
+
     const handleGoogleSignup = async () => {
-      try {
-        const result = await signInWithPopup(auth, googleProvider);
-        const idToken = await result.user.getIdToken();
-  
-        localStorage.setItem("email", result.user.email);
-  
-        const backendResponse = await sendTokenToBackend(idToken);
-        if (backendResponse) {
-          localStorage.setItem("authToken", idToken);
-          localStorage.setItem("user-name", backendResponse.username);
-          navigate("/profile");
+        try {
+          const result = await signInWithPopup(auth, googleProvider);
+          const idToken = await result.user.getIdToken();
+    
+          //localStorage.setItem("email", result.user.email);
+    
+          const backendResponse = await sendTokenToBackend(idToken);
+          if (backendResponse) {
+            localStorage.setItem("authToken", idToken);
+             loginUser({
+              email: result.user.email,
+              ...backendResponse, // merge backend fields into user object
+            });
+            navigate("/home");
+          }
+        } catch (err) {
+          console.error(err);
+          setError("Google login failed. Try again.");
         }
-      } catch (err) {
-        console.error(err);
-        setError("Google login failed. Try again.");
-      }
-    };
+      };
 
   return (
     <div className="signup-page">
