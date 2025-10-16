@@ -3,6 +3,8 @@ package com.outh.backend.controller;
 import com.outh.backend.dto.LeagueStandingDTO;
 import com.outh.backend.models.LeagueStandings;
 import com.outh.backend.services.LeagueStandingsService;
+import com.outh.backend.services.PredictionService;
+import com.outh.backend.services.StandingsPredictionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -16,11 +18,13 @@ class StandingsControllerTest {
 
     private LeagueStandingsService leagueStandingsService;
     private StandingsController standingsController;
+    private StandingsPredictionService standingsPredictionService;
 
     @BeforeEach
     void setUp() {
         leagueStandingsService = Mockito.mock(LeagueStandingsService.class);
-        standingsController = new StandingsController(leagueStandingsService);
+        standingsPredictionService =  Mockito.mock(StandingsPredictionService.class);
+        standingsController = new StandingsController(leagueStandingsService,standingsPredictionService);
     }
 
     @Test

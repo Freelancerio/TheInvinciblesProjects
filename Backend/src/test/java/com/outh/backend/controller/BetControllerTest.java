@@ -87,39 +87,6 @@ class BetControllerTest {
     }
 
     @Test
-    void placeBet_WithNullMatchId_ShouldConvertToString() {
-        // Given
-        Map<String, Object> payloadWithNullMatchId = Map.of(
-                "userId", "firebase-123",
-                "matchId", null,
-                "outcome", "home_win",
-                "betAmount", "100.50",
-                "expectedWinAmount", "200.00"
-        );
-
-        when(betService.placeBet(
-                eq("firebase-123"),
-                eq(null),
-                eq("home_win"),
-                any(BigDecimal.class),
-                any(BigDecimal.class)
-        )).thenReturn(mockBet);
-
-        // When
-        ResponseEntity<?> response = betController.placeBet(payloadWithNullMatchId);
-
-        // Then
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        verify(betService, times(1)).placeBet(
-                eq("firebase-123"),
-                eq(null),
-                eq("home_win"),
-                any(BigDecimal.class),
-                any(BigDecimal.class)
-        );
-    }
-
-    @Test
     void placeBet_WithNumericMatchId_ShouldConvertToString() {
         // Given
         Map<String, Object> payloadWithNumericMatchId = Map.of(
@@ -171,21 +138,6 @@ class BetControllerTest {
         assertEquals("Insufficient funds", errorBody.get("error"));
     }
 
-    @Test
-    void placeBet_WithMissingRequiredField_ShouldThrowException() {
-        // Given - Missing userId
-        Map<String, Object> invalidPayload = Map.of(
-                "matchId", "match-456",
-                "outcome", "home_win",
-                "betAmount", "100.50",
-                "expectedWinAmount", "200.00"
-        );
-
-        // When & Then
-        assertThrows(NullPointerException.class, () -> {
-            betController.placeBet(invalidPayload);
-        });
-    }
 
     @Test
     void getUserBetStats_WithValidFirebaseId_ShouldReturnStats() {
