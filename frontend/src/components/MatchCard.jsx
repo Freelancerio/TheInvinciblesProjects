@@ -136,7 +136,6 @@ const MatchCard = ({ match }) => {
         <div className="flex justify-between items-center mb-4">
           <div className="flex flex-col items-center w-5/12">
             <div className="w-12 h-12 bg-white text-purple-900 rounded-full flex items-center justify-center mb-1 font-bold">
-              {homeTeam?.substring(0, 3)}
               <img
                 src={homeLogo}
                 alt={homeLogo}
