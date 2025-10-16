@@ -24,13 +24,17 @@ const MatchCard = ({ match }) => {
   const {
     matchId,
     homeTeam,
+    homeLogo,
     awayTeam,
+    awayLogo,
     status,
     matchDate,
     homeWinProbability,
     drawProbability,
     awayWinProbability,
   } = match;
+
+  console.log(match);
 
   const formattedDate = matchDate
     ? new Date(matchDate).toLocaleDateString()
@@ -133,13 +137,23 @@ const MatchCard = ({ match }) => {
           <div className="flex flex-col items-center w-5/12">
             <div className="w-12 h-12 bg-white text-purple-900 rounded-full flex items-center justify-center mb-1 font-bold">
               {homeTeam?.substring(0, 3)}
+              <img
+                src={homeLogo}
+                alt={homeLogo}
+                className="w-full h-full object-contain"
+              />
+              
             </div>
             <div className="text-center font-semibold">{homeTeam}</div>
           </div>
           <div className="text-xl font-bold text-green-400">VS</div>
           <div className="flex flex-col items-center w-5/12">
             <div className="w-12 h-12 bg-white text-purple-900 rounded-full flex items-center justify-center mb-1 font-bold">
-              {awayTeam?.substring(0, 3)}
+              <img
+                src={awayLogo}
+                alt={awayLogo}
+                className="w-full h-full object-contain"
+              />
             </div>
             <div className="text-center font-semibold">{awayTeam}</div>
           </div>
