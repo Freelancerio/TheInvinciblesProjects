@@ -3,7 +3,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import TeamStrength from "../pages/TeamStats";
 
-// Mock Header so we don’t need to render its internals
+// Mock Header so we don't need to render its internals
 jest.mock("../components/Header", () => () => <div>Mock Header</div>);
 
 describe("TeamStrength", () => {
@@ -50,19 +50,17 @@ describe("TeamStrength", () => {
 
     await waitFor(() => {
       expect(screen.getByText(/Liverpool Strength/i)).toBeInTheDocument();
-      
-      // Check that the values appear somewhere in the document
       expect(screen.getByText("1.25")).toBeInTheDocument();
       expect(screen.getByText("0.95")).toBeInTheDocument();
       expect(screen.getByText("1.10")).toBeInTheDocument();
       expect(screen.getByText("1.05")).toBeInTheDocument();
-      
-      // Check that the labels are present
       expect(screen.getByText(/Attack Strength:/i)).toBeInTheDocument();
       expect(screen.getByText(/Midfield Strength:/i)).toBeInTheDocument();
       expect(screen.getByText(/Defense Strength:/i)).toBeInTheDocument();
       expect(screen.getByText(/Squad Strength:/i)).toBeInTheDocument();
     });
+
+    global.fetch.mockClear();
   });
 
   test("renders error state when fetch fails", async () => {
@@ -79,6 +77,8 @@ describe("TeamStrength", () => {
     await waitFor(() => {
       expect(screen.getByText(/error:/i)).toBeInTheDocument();
     });
+
+    global.fetch.mockClear();
   });
 
   test("renders no data when API returns null", async () => {
@@ -100,9 +100,10 @@ describe("TeamStrength", () => {
     await waitFor(() => {
       expect(screen.getByText(/no strength data found/i)).toBeInTheDocument();
     });
+
+    global.fetch.mockClear();
   });
 
-  // Alternative approach: Test the specific text content more precisely
   test("renders team strength with correct formatting", async () => {
     const mockData = {
       teamName: "Liverpool",
@@ -128,31 +129,31 @@ describe("TeamStrength", () => {
     );
 
     await waitFor(() => {
-      // Get all paragraphs and check their content
       const paragraphs = screen.getAllByText((content, element) => {
-        return element.tagName.toLowerCase() === 'p';
+        return element.tagName.toLowerCase() === "p";
       });
 
-      // Find the specific paragraph containing attack strength
-      const attackParagraph = paragraphs.find(p => 
-        p.textContent.includes('Attack Strength:')
+      const attackParagraph = paragraphs.find((p) =>
+        p.textContent.includes("Attack Strength:")
       );
-      expect(attackParagraph).toHaveTextContent('Attack Strength: 1.25');
+      expect(attackParagraph).toHaveTextContent("Attack Strength: 1.25");
 
-      const midfieldParagraph = paragraphs.find(p => 
-        p.textContent.includes('Midfield Strength:')
+      const midfieldParagraph = paragraphs.find((p) =>
+        p.textContent.includes("Midfield Strength:")
       );
-      expect(midfieldParagraph).toHaveTextContent('Midfield Strength: 0.95');
+      expect(midfieldParagraph).toHaveTextContent("Midfield Strength: 0.95");
 
-      const defenseParagraph = paragraphs.find(p => 
-        p.textContent.includes('Defense Strength:')
+      const defenseParagraph = paragraphs.find((p) =>
+        p.textContent.includes("Defense Strength:")
       );
-      expect(defenseParagraph).toHaveTextContent('Defense Strength: 1.10');
+      expect(defenseParagraph).toHaveTextContent("Defense Strength: 1.10");
 
-      const squadParagraph = paragraphs.find(p => 
-        p.textContent.includes('Squad Strength:')
+      const squadParagraph = paragraphs.find((p) =>
+        p.textContent.includes("Squad Strength:")
       );
-      expect(squadParagraph).toHaveTextContent('Squad Strength: 1.05');
+      expect(squadParagraph).toHaveTextContent("Squad Strength: 1.05");
     });
+
+    global.fetch.mockClear();
   });
 });
