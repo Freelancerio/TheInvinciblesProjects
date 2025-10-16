@@ -3,6 +3,7 @@ package com.outh.backend.controller;
 import com.outh.backend.dto.LeagueStandingDTO;
 import com.outh.backend.models.LeagueStandings;
 import com.outh.backend.services.LeagueStandingsService;
+import com.outh.backend.services.StandingsPredictionService; // Add this import
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -15,12 +16,14 @@ import static org.mockito.Mockito.*;
 class StandingsControllerTest {
 
     private LeagueStandingsService leagueStandingsService;
+    private StandingsPredictionService standingsPredictionService; // Add this
     private StandingsController standingsController;
 
     @BeforeEach
     void setUp() {
         leagueStandingsService = Mockito.mock(LeagueStandingsService.class);
-        standingsController = new StandingsController(leagueStandingsService);
+        standingsPredictionService = Mockito.mock(StandingsPredictionService.class); // Create mock
+        standingsController = new StandingsController(leagueStandingsService, standingsPredictionService); // Add second parameter
     }
 
     @Test
@@ -66,5 +69,4 @@ class StandingsControllerTest {
         assertEquals("Team A", result.get(0).getTeamName());
         verify(leagueStandingsService, times(1)).getTop5Standings(2025);
     }
-
 }
