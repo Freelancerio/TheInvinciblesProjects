@@ -43,14 +43,6 @@ jobs:
       env:
         SPRING_PROFILES_ACTIVE: test
     
-    - name: Upload Backend coverage to Codecov
-      uses: codecov/codecov-action@e28ff129e5465c2c0dcc6f003fc735cb6ae0c673 # v4.5.0
-      with:
-        files: ./Backend/target/site/jacoco/jacoco.xml
-        flags: backend
-        name: backend-coverage
-        token: ${{ secrets.CODECOV_TOKEN }}
-    
     # Frontend Testing
     - name: Set up Node.js
       uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
@@ -71,13 +63,15 @@ jobs:
       env:
         CI: true
     
-    - name: Upload Frontend coverage to Codecov
+    # Combined Coverage Upload
+    - name: Upload combined coverage to Codecov
       uses: codecov/codecov-action@e28ff129e5465c2c0dcc6f003fc735cb6ae0c673 # v4.5.0
       with:
-        files: ./frontend/coverage/lcov.info
-        flags: frontend
-        name: frontend-coverage
+        files: ./Backend/target/site/jacoco/jacoco.xml,./frontend/coverage/lcov.info
+        flags: backend,frontend
+        name: combined-coverage
         token: ${{ secrets.CODECOV_TOKEN }}
+  
   deploy:
     needs: test
     runs-on: ubuntu-latest
