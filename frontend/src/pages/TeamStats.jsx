@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Header from "../components/Header";
+import LoadingPage from "../components/LoadingPage.jsx";
 import getBaseUrl from "../api.js";
 
 const TeamStrength = () => {
@@ -36,9 +37,11 @@ const TeamStrength = () => {
     fetchStrength();
   }, [teamName]);
 
-  if (loading) return <p>Loading team strength...</p>;
-  if (error) return <p>Error: {error}</p>;
-  if (!strength) return <p>No strength data found.</p>;
+  // 🌀 Show your animated loader while fetching
+  if (loading) return <LoadingPage />;
+
+  if (error) return <p className="text-center text-red-500 mt-10">Error: {error}</p>;
+  if (!strength) return <p className="text-center text-gray-400 mt-10">No strength data found.</p>;
 
   return (
 

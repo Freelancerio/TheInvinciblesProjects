@@ -4,7 +4,7 @@ import { NavLink } from "react-router-dom";
 
 const QuickActions = () => {
   const actionLinks = [
-    { to: "/deposit", icon: "fa-money-bill-wave", label: "Deposit Funds" },
+    { to: "/profile", icon: "fa-money-bill-wave", label: "Deposit Funds" },
     { to: "/comparison", icon: "fa-chart-line", label: "Stats Analysis" },
     { to: "/leaderboards", icon: "fa-trophy", label: "Leaderboard" },
     { to: "/profile", icon: "fa-history", label: "Bet History" },
