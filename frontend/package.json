@@ -15,7 +15,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "jest",
-    "test:ci": "jest --coverage --watchAll=false",
+    "test:ci": "jest --ci --coverage --maxWorkers=2",
     "test:coverage": "jest --coverage --watchAll=false",
     "eject": "react-scripts eject"
   },
