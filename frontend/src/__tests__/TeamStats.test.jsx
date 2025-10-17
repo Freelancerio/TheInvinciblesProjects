@@ -13,16 +13,18 @@ describe("TeamStrength", () => {
   });
 
   test("renders loading state", () => {
-    render(
-      <MemoryRouter initialEntries={["/team/Liverpool"]}>
-        <Routes>
-          <Route path="/team/:teamName" element={<TeamStrength />} />
-        </Routes>
-      </MemoryRouter>
-    );
+  render(
+    <MemoryRouter initialEntries={["/team/Liverpool"]}>
+      <Routes>
+        <Route path="/team/:teamName" element={<TeamStrength />} />
+      </Routes>
+    </MemoryRouter>
+  );
 
-    expect(screen.getByText(/loading team strength/i)).toBeInTheDocument();
-  });
+  // Change this line to match what LoadingPage actually renders
+  expect(screen.getByText(/loading/i)).toBeInTheDocument();
+  expect(screen.getByText(/please wait while we prepare your content/i)).toBeInTheDocument();
+});
 
   test("renders team strength on success", async () => {
     const mockData = {
