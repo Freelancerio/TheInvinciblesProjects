@@ -162,7 +162,6 @@ public class BetService {
         }).collect(Collectors.toList());
     }
 
-    @PostConstruct
     public void init() {
 
         settlePendingBets();
