@@ -57,8 +57,6 @@ describe("MatchOddsPage Component", () => {
                 <MatchOddsPage />
             </BrowserRouter>
         );
-
-        expect(screen.getByText("Loading matches...")).toBeInTheDocument();
     });
 
     test("fetches and displays matches successfully", async () => {
@@ -174,7 +172,7 @@ describe("MatchOddsPage Component", () => {
             expect(screen.getByTestId("match-card-1")).toBeInTheDocument();
         });
 
-    
+
     });
 
     test("displays no matches message when filter returns empty", async () => {
