@@ -39,17 +39,19 @@ jobs:
     - name: Run Backend tests with coverage
       run: |
         cd Backend
-        mvn clean verify -Dspring.profiles.active=test
+        mvn clean verify -Dspring.profiles.active=test -DargLine="-Dfile.encoding=UTF-8"
       env:
         SPRING_PROFILES_ACTIVE: test
     
-    - name: Upload Backend coverage to Codecov
-      uses: codecov/codecov-action@e28ff129e5465c2c0dcc6f003fc735cb6ae0c673 # v4.5.0
-      with:
-        files: ./Backend/target/site/jacoco/jacoco.xml
-        flags: backend
-        name: backend-coverage
-        token: ${{ secrets.CODECOV_TOKEN }}
+    - name: Verify backend coverage file exists
+      run: |
+        if [ -f Backend/target/site/jacoco/jacoco.xml ]; then
+          echo "✅ Backend coverage file found"
+          ls -lh Backend/target/site/jacoco/jacoco.xml
+        else
+          echo "❌ Backend coverage file NOT found"
+          find Backend -name "jacoco.xml" -o -name "*.xml" | head -20
+        fi
     
     # Frontend Testing
     - name: Set up Node.js
@@ -71,13 +73,55 @@ jobs:
       env:
         CI: true
     
+    - name: Verify frontend coverage file exists
+      run: |
+        if [ -f frontend/coverage/lcov.info ]; then
+          echo "✅ Frontend coverage file found"
+          ls -lh frontend/coverage/lcov.info
+        else
+          echo "❌ Frontend coverage file NOT found"
+          find frontend -name "lcov.info" -o -name "*.json" | head -20
+        fi
+    
+    # Convert JaCoCo to Cobertura format (optional but recommended)
+    - name: Convert JaCoCo to Cobertura XML
+      run: |
+        cd Backend
+        mvn jacoco:report-aggregate
+      continue-on-error: true
+    
+    # Upload to Codecov with proper configuration
+    - name: Upload Backend coverage to Codecov
+      uses: codecov/codecov-action@e28ff129e5465c2c0dcc6f003fc735cb6ae0c673 # v4.5.0
+      with:
+        files: ./Backend/target/site/jacoco/jacoco.xml
+        flags: backend,java,spring-boot
+        name: backend-coverage
+        token: ${{ secrets.CODECOV_TOKEN }}
+        fail_ci_if_error: false
+        verbose: true
+    
     - name: Upload Frontend coverage to Codecov
       uses: codecov/codecov-action@e28ff129e5465c2c0dcc6f003fc735cb6ae0c673 # v4.5.0
       with:
         files: ./frontend/coverage/lcov.info
-        flags: frontend
+        flags: frontend,javascript,react
         name: frontend-coverage
         token: ${{ secrets.CODECOV_TOKEN }}
+        fail_ci_if_error: false
+        verbose: true
+    
+    # Final combined upload for averaging
+    - name: Upload combined coverage reports
+      uses: codecov/codecov-action@e28ff129e5465c2c0dcc6f003fc735cb6ae0c673 # v4.5.0
+      with:
+        files: ./Backend/target/site/jacoco/jacoco.xml,./frontend/coverage/lcov.info
+        flags: combined
+        name: combined-coverage-report
+        token: ${{ secrets.CODECOV_TOKEN }}
+        verbose: true
+        fail_ci_if_error: false
+  
   deploy:
     needs: test
     runs-on: ubuntu-latest

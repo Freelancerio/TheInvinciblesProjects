@@ -107,7 +107,7 @@ describe("LeagueTable", () => {
   });
 
   test("handles fetch failure gracefully", async () => {
-    const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+    const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => { });
     fetch.mockResolvedValueOnce({ ok: false });
 
     render(

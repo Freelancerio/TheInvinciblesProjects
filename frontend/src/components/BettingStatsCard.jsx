@@ -12,7 +12,7 @@ export default function BettingStatsCard() {
   useEffect(() => {
     const fetchStats = async () => {
       if (!user?.firebaseId) return;
-
+ 
       try {
         const token = localStorage.getItem("authToken");
         const res = await fetch(

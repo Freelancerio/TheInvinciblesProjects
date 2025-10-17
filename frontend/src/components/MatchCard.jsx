@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { UserContext } from "../UserContext";
 import getBaseUrl from "../api.js";
 
@@ -17,7 +17,22 @@ const MatchCard = ({ match }) => {
   const [betAmount, setBetAmount] = useState("");
   const [selectedOutcome, setSelectedOutcome] = useState("");
   const [error, setError] = useState("");
+  const [bettingLocked, setBettingLocked] = useState(false);
+  const [countdown, setCountdown] = useState(0);
+
   const baseUrl = getBaseUrl();
+
+  // Countdown effect
+  useEffect(() => {
+    if (countdown > 0) {
+      const timer = setTimeout(() => {
+        setCountdown(countdown - 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    } else if (countdown === 0 && bettingLocked) {
+      setBettingLocked(false);
+    }
+  }, [countdown, bettingLocked]);
 
   if (!match) return null;
 
@@ -34,8 +49,6 @@ const MatchCard = ({ match }) => {
     awayWinProbability,
   } = match;
 
-  console.log(match);
-
   const formattedDate = matchDate
     ? new Date(matchDate).toLocaleDateString()
     : "TBD";
@@ -47,17 +60,20 @@ const MatchCard = ({ match }) => {
   ];
 
   const handlePlaceBet = async () => {
+    if (bettingLocked) {
+      setError(`Please wait ${countdown} seconds before placing another bet`);
+      return;
+    }
+
     const amount = parseFloat(betAmount);
     if (isNaN(amount) || amount <= 0) {
       setError("Enter a valid bet amount");
       return;
     }
-
     if (amount > user.account_balance) {
       setError("Insufficient balance");
       return;
     }
-
     if (!selectedOutcome) {
       setError("Select an outcome to bet on");
       return;
@@ -68,7 +84,6 @@ const MatchCard = ({ match }) => {
       draw: drawProbability,
       awaywin: awayWinProbability,
     };
-
     const payout = (amount / oddsMap[selectedOutcome]).toFixed(2);
 
     const payload = {
@@ -98,7 +113,10 @@ const MatchCard = ({ match }) => {
       setUser(updatedUser);
       localStorage.setItem("user-data", JSON.stringify(updatedUser));
 
-      alert(`Bet placed successfully! Potential payout: ${payout}`);
+      // Lock betting for 7 seconds
+      setBettingLocked(true);
+      setCountdown(7);
+
       setIsModalOpen(false);
       setBetAmount("");
       setSelectedOutcome("");
@@ -119,19 +137,29 @@ const MatchCard = ({ match }) => {
     <>
       {/* Card */}
       <div
-        className="bg-white/5 backdrop-blur-md rounded-lg p-4 border border-white/10 hover:shadow-lg hover:scale-105 transition-transform cursor-pointer"
-        onClick={() => setIsModalOpen(true)}
+        className={`bg-white/5 backdrop-blur-md rounded-lg p-4 border border-white/10 hover:shadow-lg hover:scale-105 transition-transform ${bettingLocked ? "cursor-not-allowed opacity-60" : "cursor-pointer"
+          }`}
+        onClick={() => !bettingLocked && setIsModalOpen(true)}
       >
         <div className="flex justify-between items-center mb-4 border-b border-white/20 pb-2">
           <div className="text-sm opacity-70">{formattedDate}</div>
           <div
-            className={`px-3 py-1 rounded-full text-xs font-semibold ${
-              statusStyles[status] || "bg-green-400 text-purple-900"
-            }`}
+            className={`px-3 py-1 rounded-full text-xs font-semibold ${statusStyles[status] || "bg-green-400 text-purple-900"
+              }`}
           >
             {status === "NS" ? "Upcoming" : status}
           </div>
         </div>
+
+        {/* Betting Locked Indicator */}
+        {bettingLocked && (
+          <div className="bg-yellow-500/20 border border-yellow-500 rounded-md p-2 mb-3 text-center">
+            <i className="fas fa-lock mr-2"></i>
+            <span className="text-sm font-semibold">
+              Betting locked for {countdown}s
+            </span>
+          </div>
+        )}
 
         <div className="flex justify-between items-center mb-4">
           <div className="flex flex-col items-center w-5/12">
@@ -141,7 +169,6 @@ const MatchCard = ({ match }) => {
                 alt={homeLogo}
                 className="w-full h-full object-contain"
               />
-              
             </div>
             <div className="text-center font-semibold">{homeTeam}</div>
           </div>
@@ -157,7 +184,6 @@ const MatchCard = ({ match }) => {
             <div className="text-center font-semibold">{awayTeam}</div>
           </div>
         </div>
-
         <div>
           <div className="text-center text-sm opacity-70 mb-2">
             Win Probabilities
@@ -192,13 +218,13 @@ const MatchCard = ({ match }) => {
               ✕
             </button>
             <h2 className="text-xl font-bold mb-4">Place Your Bet</h2>
-
             <div className="mb-4">
               <label className="block mb-2">Select Outcome:</label>
               <select
                 className="w-full p-2 rounded text-black"
                 value={selectedOutcome}
                 onChange={(e) => setSelectedOutcome(e.target.value)}
+                disabled={bettingLocked}
               >
                 <option value="">-- Select --</option>
                 {outcomes.map((o) => (
@@ -208,7 +234,6 @@ const MatchCard = ({ match }) => {
                 ))}
               </select>
             </div>
-
             <div className="mb-4">
               <label className="block mb-2">
                 Bet Amount (Balance: {user.account_balance})
@@ -218,22 +243,24 @@ const MatchCard = ({ match }) => {
                 className="w-full p-2 rounded text-black"
                 value={betAmount}
                 onChange={(e) => setBetAmount(e.target.value)}
+                disabled={bettingLocked}
               />
             </div>
-
             {selectedOutcome && betAmount && (
               <div className="mb-4">
                 Potential Payout: {calculatePayout()}
               </div>
             )}
-
             {error && <div className="text-red-500 mb-2">{error}</div>}
-
             <button
-              className="w-full bg-green-400 text-purple-900 font-bold py-2 rounded hover:bg-green-500 transition-colors"
+              className={`w-full font-bold py-2 rounded transition-colors ${bettingLocked
+                ? "bg-gray-500 cursor-not-allowed"
+                : "bg-green-400 text-purple-900 hover:bg-green-500"
+                }`}
               onClick={handlePlaceBet}
+              disabled={bettingLocked}
             >
-              Place Bet
+              {bettingLocked ? `Wait ${countdown}s` : "Place Bet"}
             </button>
           </div>
         </div>

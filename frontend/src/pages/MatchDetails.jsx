@@ -9,4 +9,4 @@ const MatchDetails = () => {
   );
 };
 
-export default MatchDetails;
+export default MatchDetails; 
