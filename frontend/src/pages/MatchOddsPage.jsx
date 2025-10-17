@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import MatchCard from "../components/MatchCard";
 import Header from "../components/Header";
+import LoadingPage from "../components/LoadingPage"; // Import LoadingPage
 import getBaseUrl from "../api.js";
 
 const baseUrl = getBaseUrl();
@@ -12,8 +13,9 @@ const MatchOddsPage = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [search, setSearch] = useState("");
   const [filterDate, setFilterDate] = useState("");
-  const [loading, setLoading] = useState(false); // <-- added
-  const [error, setError] = useState(null); // optional: to show if fetch fails
+  const [loading, setLoading] = useState(true); // Start with true for initial load
+  const [error, setError] = useState(null);
+  const [initialLoad, setInitialLoad] = useState(true); // Track initial load
 
   const fetchMatches = async (page = 0) => {
     try {
@@ -42,9 +44,11 @@ const MatchOddsPage = () => {
       setMatches(data.content || []);
       setCurrentPage(data.number);
       setTotalPages(data.totalPages);
+      setInitialLoad(false); // Mark initial load as complete
     } catch (error) {
       console.error("Error fetching matches:", error);
       setError(error.message);
+      setInitialLoad(false);
     } finally {
       setLoading(false);
     }
@@ -71,6 +75,11 @@ const MatchOddsPage = () => {
         .split("T")[0];
       return matchDateOnly === filterDate;
     });
+
+  // Show LoadingPage during initial load
+  if (initialLoad && loading) {
+    return <LoadingPage />;
+  }
 
   return (
     <div
@@ -113,8 +122,8 @@ const MatchOddsPage = () => {
           </div>
         </div>
 
-        {/* Loading */}
-        {loading ? (
+        {/* Loading for pagination changes */}
+        {loading && !initialLoad ? (
           <div className="flex flex-col justify-center items-center py-12 text-green-400">
             <i className="fas fa-spinner fa-spin fa-2x mb-3"></i>
             <p>Loading matches...</p>

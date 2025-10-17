@@ -46,6 +46,7 @@ public class FirebaseConfig {
     private InputStream getServiceAccountStream() throws IOException {
         // FIRST: Try environment variable (for Render)
         String firebaseConfigJson = System.getenv("FIREBASE_SERVICE_ACCOUNT_JSON");
+
         if (firebaseConfigJson != null && !firebaseConfigJson.trim().isEmpty()) {
             logger.info("Loading Firebase config from environment variable");
             return new ByteArrayInputStream(firebaseConfigJson.getBytes());
@@ -54,7 +55,7 @@ public class FirebaseConfig {
         // SECOND: Try file path (for local development)
         logger.info("Loading Firebase config from classpath file");
         InputStream fileStream = getClass().getClassLoader()
-                .getResourceAsStream("config/firebase-service-account.json");
+                .getResourceAsStream("firebase-service-account.json");
 
         if (fileStream == null) {
             throw new IOException(

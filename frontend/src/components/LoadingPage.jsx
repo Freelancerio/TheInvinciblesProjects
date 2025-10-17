@@ -25,9 +25,10 @@ export default function LoadingPage() {
                         {/* Loading Text */}
                         <div className="space-y-3">
                             <h2 className="text-[#00ff88]">Loading</h2>
-                            <p className="text-gray-300">
+                            <p className="text-white">
                                 Please wait while we prepare your content...
                             </p>
+
                         </div>
 
                         {/* Loading Progress Indicator */}
