@@ -1,110 +1,156 @@
+import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
-import { BrowserRouter } from "react-router-dom";
 import { UserContext } from "../UserContext";
 import ProfilePage from "../components/ProfilePage.jsx";
 
-global.fetch = jest.fn();
+// --- child stubs so we don't pull in their JSX ---
+jest.mock("../components/Header", () => () => <div data-testid="header" />);
+jest.mock("../components/UserDetailsCard", () => () => <div data-testid="user-details" />);
+jest.mock("../components/BalanceCard", () => () => <div data-testid="balance" />);
+jest.mock("../components/BettingStatsCard", () => () => <div data-testid="stats" />);
+jest.mock("../components/LeaderboardCard", () => () => <div data-testid="leaderboard" />);
+jest.mock("../components/BetHistoryCard", () => () => <div data-testid="history" />);
+jest.mock("../components/LoadingPage", () => () => <div data-testid="loading" />);
 
-function renderWithProviders(user = { username: "TestUser", account_balance: 500 }) {
-  return render(
-    <BrowserRouter>
-      <UserContext.Provider value={{ user, logoutUser: jest.fn() }}>
-        <ProfilePage />
-      </UserContext.Provider>
-    </BrowserRouter>
+// base-URL util
+jest.mock("../api.js", () => ({ __esModule: true, default: () => "http://test-base-url" }));
+
+const renderWithUser = (user = { firebaseId: "uid-123" }) =>
+  render(
+    <UserContext.Provider value={{ user, setUser: jest.fn() }}>
+      <ProfilePage />
+    </UserContext.Provider>
   );
-}
 
-describe("ProfilePage", () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
+beforeEach(() => {
+  // Clear localStorage and set up auth token for tests
+  localStorage.clear();
+  localStorage.setItem("authToken", "test-token-123");
+  
+  global.fetch = jest.fn();
+});
 
-    // Mock multiple fetches for child components
-    global.fetch = jest.fn()
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
-          teamA: {
-            teamName: "Liverpool",
-            avgGoalsScored: 2.3,
-            avgGoalsConceded: 1.2,
-            avgPossession: 60,
-          },
-          teamB: {
-            teamName: "Spurs",
-            avgGoalsScored: 1.7,
-            avgGoalsConceded: 1.5,
-            avgPossession: 55,
-          },
-        }),
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ([
-          {
-            id: 1,
-            date: "2024-01-15",
-            match: "Arsenal vs Brentford",
-            bet: "Home Win",
-            stake: 50,
-            odds: 1.85,
-            potentialWin: 92.5,
-            status: "Won"
-          },
-        ]),
-      })
-      .mockResolvedValue({
-        ok: true,
-        json: async () => ({}),
-      });
-  });
+afterEach(() => {
+  jest.clearAllMocks();
+});
 
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
+// ────────────────────────────────────────────────
+test("renders LoadingPage while fetching", async () => {
+  // fetch promises never resolve yet
+  global.fetch.mockReturnValue(new Promise(() => {}));
+  
+  renderWithUser();
+  
+  // Should show loading initially
+  expect(screen.getByTestId("loading")).toBeInTheDocument();
+});
 
-  test("renders the profile page title", async () => {
-    renderWithProviders();
-    await waitFor(() => {
-      expect(screen.getByRole("heading", { name: /user profile/i })).toBeInTheDocument();
+test("loads data successfully and displays all cards", async () => {
+  const mockData = {
+    bets: [],
+    stats: { wins: 5, losses: 3 },
+    leaderboard: { position: 10 }
+  };
+
+  global.fetch
+    .mockResolvedValueOnce({ 
+      ok: true, 
+      json: async () => mockData.bets 
+    })
+    .mockResolvedValueOnce({ 
+      ok: true, 
+      json: async () => mockData.stats 
+    })
+    .mockResolvedValueOnce({ 
+      ok: true, 
+      json: async () => mockData.leaderboard 
     });
-  });
 
-  test("renders header with site name", async () => {
-    renderWithProviders();
-    await waitFor(() => {
-      const headerText = screen.queryByText(/epl smartbet/i);
-      if (headerText) {
-        expect(headerText).toBeInTheDocument();
-      }
-    });
-  });
+  renderWithUser();
 
-  test("renders with different user context", async () => {
-    const customUser = { username: "CustomUser", account_balance: 1000 };
-    renderWithProviders(customUser);
-    await waitFor(() => {
-      expect(screen.getByRole("heading", { name: /user profile/i })).toBeInTheDocument();
-    });
-  });
+  // All 3 fetch calls made
+  await waitFor(() => expect(global.fetch).toHaveBeenCalledTimes(3));
 
-  test("applies correct styling and layout", async () => {
-    const { container } = renderWithProviders();
-    await waitFor(() => {
-      const mainElement = container.querySelector("main");
-      if (mainElement) {
-        expect(mainElement).toHaveClass("max-w-7xl");
-      }
-    });
-  });
+  // Eventually loading disappears and cards appear
+  await waitFor(() => expect(screen.queryByTestId("loading")).not.toBeInTheDocument());
+  
+  expect(screen.getByTestId("header")).toBeInTheDocument();
+  expect(screen.getByTestId("user-details")).toBeInTheDocument();
+  expect(screen.getByTestId("balance")).toBeInTheDocument();
+  expect(screen.getByTestId("stats")).toBeInTheDocument();
+  expect(screen.getByTestId("leaderboard")).toBeInTheDocument();
+  expect(screen.getByTestId("history")).toBeInTheDocument();
 
-  test("renders grid layout for responsive design", async () => {
-    const { container } = renderWithProviders();
-    await waitFor(() => {
-      const grid = container.querySelector(".grid");
-      if (grid) {
-        expect(grid).toHaveClass("grid-cols-1");
-      }
-    });
+  // Verify URLs and headers
+  const calls = global.fetch.mock.calls;
+  expect(calls).toHaveLength(3);
+  
+  const urls = calls.map(([url]) => url);
+  expect(urls).toEqual([
+    "http://test-base-url/api/bets/user/uid-123",
+    "http://test-base-url/api/bets/stats/uid-123", 
+    "http://test-base-url/api/leaderboard/alltime/uid-123"
+  ]);
+
+  // Verify auth headers
+  calls.forEach(([, options]) => {
+    expect(options.headers.Authorization).toBe("Bearer test-token-123");
   });
+});
+
+test("handles missing user without crashing", async () => {
+  renderWithUser(null);
+  
+  await waitFor(() => {
+    expect(screen.queryByTestId("loading")).not.toBeInTheDocument();
+  });
+  
+  // Should still render the page frame even if no fetch occurs
+  expect(global.fetch).not.toHaveBeenCalled();
+  expect(screen.getByText(/User Profile/i)).toBeInTheDocument();
+});
+
+test("handles failed fetch gracefully (error path)", async () => {
+  // One of the fetches fails
+  global.fetch
+    .mockResolvedValueOnce({ 
+      ok: true, 
+      json: async () => [] 
+    })
+    .mockResolvedValueOnce({ 
+      ok: false, 
+      status: 500 
+    })
+    .mockResolvedValueOnce({ 
+      ok: true, 
+      json: async () => [] 
+    });
+
+  renderWithUser();
+
+  // Wait for all fetch calls to complete
+  await waitFor(() => expect(global.fetch).toHaveBeenCalledTimes(3));
+  
+  // After error it should recover and render page, not stay stuck
+  await waitFor(() => expect(screen.queryByTestId("loading")).not.toBeInTheDocument());
+  
+  expect(screen.getByTestId("header")).toBeInTheDocument();
+  expect(screen.getByTestId("user-details")).toBeInTheDocument();
+  expect(screen.getByTestId("balance")).toBeInTheDocument();
+  expect(screen.getByTestId("stats")).toBeInTheDocument();
+  expect(screen.getByTestId("leaderboard")).toBeInTheDocument();
+  expect(screen.getByTestId("history")).toBeInTheDocument();
+});
+
+test("handles missing auth token gracefully", async () => {
+  // Remove auth token for this test
+  localStorage.removeItem("authToken");
+  
+  renderWithUser();
+
+  // Should handle the error and stop loading
+  await waitFor(() => expect(screen.queryByTestId("loading")).not.toBeInTheDocument());
+  
+  // Page should still render
+  expect(screen.getByTestId("header")).toBeInTheDocument();
 });
