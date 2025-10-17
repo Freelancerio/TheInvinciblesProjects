@@ -1,6 +1,9 @@
 import React, { useContext, useState } from "react";
 import { UserContext } from "../UserContext";
+import getBaseUrl from "../api.js";
 
+
+const baseUrl = getBaseUrl();
 export default function BalanceCard() {
   const { user } = useContext(UserContext);
   const [showModal, setShowModal] = useState(false);
@@ -8,26 +11,39 @@ export default function BalanceCard() {
 
   if (!user) return null;
 
-  const handleDeposit = async () => {
+ const handleDeposit = async () => {
     if (!amount || isNaN(amount) || Number(amount) <= 0) {
       alert("Please enter a valid amount");
       return;
     }
 
-    // Call backend to create Stripe checkout session
-    const token = localStorage.getItem("authToken");
-    const response = await fetch("/create-checkout-session", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ amount: Number(amount) * 100 }), // convert to cents
-    });
+    try {
+      const token = localStorage.getItem("authToken");
+      const response = await fetch(`${baseUrl}/api/payment/create-checkout-session`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId: user.firebaseId,
+                               amount: Number(amount) * 100, 
+                              }),
+      });
 
-    const data = await response.json();
-    window.location.href = data.url; // redirect to Stripe checkout
-  };
+      if (!response.ok) throw new Error("Failed to create checkout session");
+
+      const data = await response.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        alert("Something went wrong. Please try again.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Network error. Please try again later.");
+    }
+};
+
 
   return (
     <div className="bg-white/5 backdrop-blur-md rounded-xl p-6 border border-white/10 text-center">
@@ -50,35 +66,104 @@ export default function BalanceCard() {
           Withdraw Money
         </button>
       </div>
+{showModal && (
+  <div
+    className="fixed inset-0 flex items-center justify-center z-50 p-4 bg-black/60 backdrop-blur-sm transition-opacity duration-300"
+    onClick={() => setShowModal(false)} // close when clicking outside
+  >
+    <div
+      className="bg-[#1b0026] border border-white/10 rounded-2xl p-8 w-full max-w-md relative transform scale-90 opacity-0 animate-modalIn"
+      onClick={(e) => e.stopPropagation()} // prevent closing when clicking inside
+    >
+      {/* Close Button */}
+      <button
+        onClick={() => setShowModal(false)}
+        className="absolute top-4 right-4 text-white/70 hover:text-white transition-colors"
+      >
+        <i className="fas fa-times text-xl"></i>
+      </button>
 
-     {showModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-          <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-6 w-80 md:w-96 text-center">
-            <h3 className="text-[#00ff85] text-xl font-semibold mb-4">Enter Deposit Amount</h3>
-            <input
-              type="number"
-              placeholder="Amount in R"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              className="w-full p-3 mb-4 rounded-lg border border-white/10 bg-white/5 text-[#00ff85] font-semibold focus:outline-none focus:ring-2 focus:ring-[#00ff85]"
-            />
-            <div className="flex justify-between gap-4">
-              <button
-                className="flex-1 py-3 rounded-lg bg-gray-700 hover:bg-gray-600 text-white font-semibold transition"
-                onClick={() => setShowModal(false)}
-              >
-                Cancel
-              </button>
-              <button
-                className="flex-1 py-3 rounded-lg bg-[#00ff85] hover:bg-[#00d46e] text-[#38003c] font-semibold transition"
-                onClick={handleDeposit}
-              >
-                Deposit
-              </button>
-            </div>
+      {/* Modal Content */}
+      <div className="text-center">
+        <div className="w-16 h-16 bg-secondary rounded-full flex items-center justify-center mx-auto mb-4">
+          <i className="fas fa-wallet text-primary text-xl"></i>
+        </div>
+
+        <h3 className="text-secondary text-2xl font-semibold mb-2">Deposit Funds</h3>
+        <p className="text-white/80 mb-6">Enter the amount you want to deposit</p>
+
+        {/* Amount Input */}
+        <div className="relative mb-6">
+          <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/60">
+            <span className="font-semibold">R</span>
+          </div>
+          <input
+            type="number"
+            placeholder="0.00"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            className="w-full p-4 pl-12 rounded-xl border border-white/20 bg-white/5 text-white text-xl font-semibold focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all"
+            min="1"
+            step="0.01"
+          />
+        </div>
+
+        {/* Quick Amount Buttons */}
+        <div className="grid grid-cols-3 gap-3 mb-6">
+          {[100, 500, 1000].map((quickAmount) => (
+            <button
+              key={quickAmount}
+              onClick={() => setAmount(quickAmount.toString())}
+              className="py-2 rounded-lg border border-white/20 bg-white/5 text-white hover:bg-white/10 hover:border-secondary transition-all duration-200"
+            >
+              R {quickAmount}
+            </button>
+          ))}
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex gap-4">
+          <button
+            className="flex-1 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold border border-white/20 transition-all duration-200"
+            onClick={() => setShowModal(false)}
+          >
+            Cancel
+          </button>
+          <button
+            className="flex-1 py-3 rounded-xl bg-secondary hover:bg-[#00d46e] text-primary font-semibold transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50"
+            onClick={handleDeposit}
+            disabled={!amount || Number(amount) <= 0}
+          >
+            <i className="fas fa-lock"></i>
+            Deposit
+          </button>
+        </div>
+
+        {/* Security Note */}
+        <div className="mt-6 pt-4 border-t border-white/10">
+          <div className="flex items-center justify-center gap-2 text-white/60 text-sm">
+            <i className="fas fa-shield-alt"></i>
+            <span>Secure payment powered by Stripe</span>
           </div>
         </div>
-      )}
+      </div>
+    </div>
+
+    {/* Animation CSS */}
+    <style>
+      {`
+        @keyframes modalIn {
+          0% { opacity: 0; transform: scale(0.9); }
+          100% { opacity: 1; transform: scale(1); }
+        }
+        .animate-modalIn {
+          animation: modalIn 0.25s ease-out forwards;
+        }
+      `}
+    </style>
+  </div>
+)}
+
 
     </div>
   );
