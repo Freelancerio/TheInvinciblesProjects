@@ -1,0 +1,98 @@
+coverage:
+  precision: 2
+  round: down
+  range:
+    - 70
+    - 100
+  status:
+    # Overall project coverage
+    project:
+      default:
+        target: 75
+        threshold: 5
+        base: auto
+    # Patch coverage (changed files)
+    patch:
+      default:
+        target: 80
+        threshold: 5
+    # Changes coverage (diff only)
+    changes:
+      default:
+        target: 80
+        threshold: 5
+
+# Flag specific settings for backend and frontend
+flags:
+  backend:
+    paths:
+      - Backend/src/main/java
+    carryforward: true
+    
+  frontend:
+    paths:
+      - frontend/src
+    carryforward: true
+  
+  combined:
+    paths:
+      - Backend/src/main/java
+      - frontend/src
+    carryforward: true
+
+# Component settings for better organization
+component_management:
+  individual_components:
+    - component_id: backend-java
+      component_name: Backend (Java)
+      paths:
+        - Backend/src/main/java
+      statuses:
+        - type: project
+          target: 75
+          threshold: 5
+    
+    - component_id: frontend-react
+      component_name: Frontend (React)
+      paths:
+        - frontend/src
+      statuses:
+        - type: project
+          target: 75
+          threshold: 5
+
+# Comment settings
+comment:
+  layout: "reach,diff,files,footer"
+  behavior: default
+  require_changes: false
+  require_base: false
+  show_carryforward_flags: true
+
+# Ignore paths that shouldn't count toward coverage
+ignore:
+  - "Backend/src/test"
+  - "Backend/target"
+  - "frontend/node_modules"
+  - "frontend/coverage"
+  - "**/*.config.js"
+  - "**/*.d.ts"
+  - "**/index.ts"
+  - "**/types.ts"
+  - "Backend/src/main/java/**/config/**"
+  - "Backend/src/main/java/**/entity/**"
+
+# Archive settings
+archive:
+  uploads: 30
+  
+# Require status checks
+require:
+  - changes
+  - patch
+  - project
+
+# Allow PR comments
+pr:
+  comments: true
+  behavior: default
