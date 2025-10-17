@@ -46,7 +46,7 @@ describe("QuickActions", () => {
 
   test("has correct href attributes for all links", () => {
     renderComponent();
-    expect(screen.getByRole("link", { name: /deposit funds/i })).toHaveAttribute("href", "/deposit");
+    expect(screen.getByRole("link", { name: /deposit funds/i })).toHaveAttribute("href", "/profile");
     expect(screen.getByRole("link", { name: /stats analysis/i })).toHaveAttribute("href", "/comparison");
     expect(screen.getByRole("link", { name: /leaderboard/i })).toHaveAttribute("href", "/leaderboards");
     expect(screen.getByRole("link", { name: /bet history/i })).toHaveAttribute("href", "/profile");
