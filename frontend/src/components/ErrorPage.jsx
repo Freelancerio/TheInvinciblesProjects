@@ -1,7 +1,15 @@
-import { AlertCircle } from 'lucide-react';
-import { Button } from './ui/button';
+import React from 'react';
+import { AlertCircle, Home, RefreshCw } from 'lucide-react';
 
 export default function ErrorPage() {
+  const handleGoHome = () => {
+    window.location.href = '/';
+  };
+
+  const handleTryAgain = () => {
+    window.location.reload();
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#1a0b2e] via-[#2d1b4e] to-[#1a0b2e] flex items-center justify-center px-4">
       <div className="max-w-md w-full">
@@ -17,40 +25,41 @@ export default function ErrorPage() {
 
             {/* Error Title */}
             <div className="space-y-2">
-              <h1 className="text-[#00ff88]">Oops! Something went wrong</h1>
+              <h1 className="text-3xl font-bold text-[#00ff88]">404 - Page Not Found</h1>
               <p className="text-gray-300">
-                We encountered an unexpected error. Don't worry, we're on it!
+                Oops! The page you're looking for doesn't exist.
               </p>
             </div>
 
-            {/* Error Details (Optional) */}
+            {/* Error Details */}
             <div className="w-full bg-[#1a0b2e]/60 rounded-lg p-4 border border-[#4a2f6e]">
               <p className="text-sm text-gray-400">
-                Error Code: <span className="text-[#00ff88]">500</span>
+                Error Code: <span className="text-[#00ff88] font-semibold">404</span>
               </p>
             </div>
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-3 w-full pt-2">
-              <Button
-                onClick={() => window.location.reload()}
-                className="flex-1 bg-[#00ff88] hover:bg-[#00dd77] text-[#1a0b2e] transition-all duration-200"
+              <button
+                onClick={handleTryAgain}
+                className="flex-1 flex items-center justify-center gap-2 bg-[#00ff88] hover:bg-[#00dd77] text-[#1a0b2e] font-semibold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105"
               >
+                <RefreshCw className="w-5 h-5" />
                 Try Again
-              </Button>
-              <Button
-                onClick={() => window.location.href = '/'}
-                variant="outline"
-                className="flex-1 border-[#00ff88] text-[#00ff88] hover:bg-[#00ff88]/10 transition-all duration-200"
+              </button>
+              <button
+                onClick={handleGoHome}
+                className="flex-1 flex items-center justify-center gap-2 border-2 border-[#00ff88] text-[#00ff88] hover:bg-[#00ff88]/10 font-semibold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105"
               >
+                <Home className="w-5 h-5" />
                 Go Home
-              </Button>
+              </button>
             </div>
           </div>
         </div>
 
         {/* Footer Text */}
-        <p className="text-center text-gray-500 mt-6">
+        <p className="text-center text-gray-500 mt-6 text-sm">
           If this problem persists, please contact support
         </p>
       </div>
