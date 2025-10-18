@@ -2,10 +2,11 @@ import { useState, useContext } from 'react';
 import { useLocation } from "react-router-dom";
 import { UserContext } from "../../UserContext";
 import getBaseUrl from '../../api.js';
+import toast from 'react-hot-toast';
 
 const MatchPrediction = () => {
   const location = useLocation();
-  const { match } = location.state || {}; // match object passed from previous page
+  const { match } = location.state || {};
   const [showPrediction, setShowPrediction] = useState(false);
   const [prediction, setPrediction] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -13,53 +14,56 @@ const MatchPrediction = () => {
   const [homeScore, setHomeScore] = useState('');
   const [awayScore, setAwayScore] = useState('');
   const baseUrl = getBaseUrl();
+  const { user } = useContext(UserContext);
 
-const fetchPrediction = async () => {
-  if (!match?.homeTeam || !match?.awayTeam) return;
-  setLoading(true);
-  setError(null);
-
-  try {
-    const token = localStorage.getItem("authToken"); // adjust key to match your login storage
-
-    const params = new URLSearchParams({
-      teamA: match.homeTeam,
-      teamB: match.awayTeam,
-      season: "2025",
-    });
-
-    const response = await fetch(`${baseUrl}/api/matches/predict?${params.toString()}`, {
-      headers: {
-        "Authorization": `Bearer ${token}`,  
-        "Content-Type": "application/json",
-      },
-    });
-
-    const text = await response.text(); 
-    console.log("Prediction raw response:", text);
-
-    if (!response.ok) {
-      throw new Error(`HTTP error ${response.status}: ${text}`);
-    }
+  const fetchPrediction = async () => {
+    if (!match?.homeTeam || !match?.awayTeam) return;
+    setLoading(true);
+    setError(null);
 
     try {
-      const data = JSON.parse(text);
-      setPrediction(data);
-    } catch (parseErr) {
-      console.error("Failed to parse prediction JSON:", parseErr);
-      setError("Server did not return valid JSON.");
+      const token = localStorage.getItem("authToken");
+
+      const params = new URLSearchParams({
+        teamA: match.homeTeam,
+        teamB: match.awayTeam,
+        season: "2025",
+      });
+
+      const response = await fetch(`${baseUrl}/api/matches/predict?${params.toString()}`, {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      const text = await response.text();
+      console.log("Prediction raw response:", text);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error ${response.status}: ${text}`);
+      }
+
+      try {
+        const data = JSON.parse(text);
+        setPrediction(data);
+      } catch (parseErr) {
+        console.error("Failed to parse prediction JSON:", parseErr);
+        setError("Server did not return valid JSON.");
+        toast.error("Server returned invalid data.");
+      }
+    } catch (err) {
+      console.error("Error fetching prediction:", err);
+      setError("Failed to fetch prediction.");
+      toast.error("Failed to load AI prediction.");
+    } finally {
+      setLoading(false);
     }
-  } catch (err) {
-    console.error("Error fetching prediction:", err);
-    setError("Failed to fetch prediction.");
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   const handlePredictClick = () => {
     if (!showPrediction) {
-      fetchPrediction(); // only fetch when first opened
+      fetchPrediction();
     }
     setShowPrediction(!showPrediction);
   };
@@ -71,47 +75,45 @@ const fetchPrediction = async () => {
     }
   };
 
-    const { user } = useContext(UserContext); // get firebaseId from context
-    const handleSubmitPrediction = async () => {
-      if ((homeScore === '' && awayScore === '') || (homeScore === '0' && awayScore === '0')) {
-        alert("Please enter a valid score prediction");
-        return;
-      }
+  const handleSubmitPrediction = async () => {
+    if ((homeScore === '' && awayScore === '') || (homeScore === '0' && awayScore === '0')) {
+      toast.error("Please enter a valid score prediction");
+      return;
+    }
 
-      try {
-        const token = localStorage.getItem("authToken");
-        const payload = {
-          firebaseId: user.firebaseId, // comes from UserContext
-          matchId: match.matchId,      // or match.id if that’s the correct field
-          season: 2025,
-          predHomeScore: parseInt(homeScore || "0"),
-          predAwayScore: parseInt(awayScore || "0"),
-        };
+    try {
+      const token = localStorage.getItem("authToken");
+      const payload = {
+        firebaseId: user.firebaseId,
+        matchId: match.matchId,
+        season: 2025,
+        predHomeScore: parseInt(homeScore || "0"),
+        predAwayScore: parseInt(awayScore || "0"),
+      };
 
-        const res = await fetch(`${baseUrl}/api/predictions`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(payload),
-        });
+      const res = await fetch(`${baseUrl}/api/predictions`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
 
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        alert("Prediction submitted successfully!");
-        setHomeScore("");
-        setAwayScore("");
-      } catch (err) {
-        console.error("Prediction error:", err);
-        alert("Failed to submit prediction");
-      }
-    };
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-
+      toast.success("Prediction submitted successfully!");
+      setHomeScore("");
+      setAwayScore("");
+    } catch (err) {
+      console.error("Prediction error:", err);
+      toast.error("Failed to submit prediction");
+    }
+  };
 
   const calculateConfidence = (a, b) => {
     const diff = Math.abs(a - b);
-    return 60 + diff * 10; // simple formula: closer games => lower confidence
+    return 60 + diff * 10;
   };
 
   return (
