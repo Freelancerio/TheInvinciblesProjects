@@ -46,7 +46,7 @@ public class LeagueComparisonService {
     /**
      * Simple strength calculation
      */
-    private double calculateStrength(LeagueStandings team) {
+    double calculateStrength(LeagueStandings team) {
         // Customize the formula as needed
         double formScore = 0;
         if (team.getForm() != null) {
