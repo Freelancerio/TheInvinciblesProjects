@@ -91,7 +91,7 @@ public class ScorePredictionService {
      *  - Correct outcome (win/draw/loss) but wrong score → 1 point
      *  - Wrong outcome → 0 points
      */
-    private int calculatePoints(int predHome, int predAway, int actualHome, int actualAway) {
+    int calculatePoints(int predHome, int predAway, int actualHome, int actualAway) {
         // Exact score
         if (predHome == actualHome && predAway == actualAway) {
             return 5;
