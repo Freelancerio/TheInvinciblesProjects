@@ -3,15 +3,15 @@ import "../styles/LandingPage.css";
 import { useNavigate } from "react-router-dom";
 
 export default function LandingPage() {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
+
   useEffect(() => {
-    // Equivalent of <script> in React
     const loginBtn = document.querySelector(".btn-login");
     const primaryCta = document.querySelector(".primary-cta");
     const secondaryCta = document.querySelector(".secondary-cta");
 
     loginBtn?.addEventListener("click", () => {
-        navigate("/login");
+      navigate("/login");
     });
 
     primaryCta?.addEventListener("click", () => {
@@ -19,9 +19,9 @@ export default function LandingPage() {
     });
 
     secondaryCta?.addEventListener("click", () => {
-      alert("Learn more about the app features!");
+      navigate("/login"); // replaced alert
     });
-  }, []);
+  }, [navigate]);
 
   return (
     <>

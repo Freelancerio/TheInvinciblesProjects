@@ -1,17 +1,16 @@
 import React, { useState, useContext, useEffect } from "react";
-import { UserContext } from "../UserContext"; // your context file
+import { UserContext } from "../UserContext";
 import getBaseUrl from "../api.js";
-
-
+import toast, { Toaster } from "react-hot-toast";
 
 export default function UserDetailsCard() {
-  const { user, setUser } = useContext(UserContext); // get user & setter
+  const { user, setUser } = useContext(UserContext);
   const [username, setUsername] = useState("");
   const baseUrl = getBaseUrl();
 
   useEffect(() => {
     if (user) {
-      setUsername(user.username); // initialize with context data
+      setUsername(user.username);
     }
   }, [user]);
 
@@ -30,21 +29,20 @@ export default function UserDetailsCard() {
       if (!response.ok) throw new Error("Failed to update username");
 
       const updatedUser = await response.json();
-      console.log("Updated user:", updatedUser);
-
-      // Correctly update context + localStorage
-      setUser(prevUser => {
+      setUser((prevUser) => {
         const newUser = { ...prevUser, ...updatedUser };
         localStorage.setItem("user-data", JSON.stringify(newUser));
         return newUser;
       });
+
+      toast.success("Username updated successfully!");
     } catch (err) {
       console.error("Error updating username:", err);
+      toast.error("Failed to update username. Please try again.");
     }
   };
 
-
-  if (!user) return null; // optionally render nothing if user is not loaded
+  if (!user) return null;
 
   const joinedDate = new Date(user.joined).toLocaleDateString("en-US", {
     day: "2-digit",
@@ -54,6 +52,7 @@ export default function UserDetailsCard() {
 
   return (
     <div className="bg-white/5 backdrop-blur-md rounded-xl p-6 border border-white/10 text-center">
+      <Toaster position="top-right" reverseOrder={false} />
       <div className="flex justify-between items-center border-b border-white/10 pb-4 mb-4">
         <h2 className="text-[#00ff85] text-xl font-semibold">User Details</h2>
       </div>
@@ -61,7 +60,7 @@ export default function UserDetailsCard() {
         <i className="fas fa-user"></i>
         <div
           className="absolute bottom-0 right-0 w-7 h-7 rounded-full bg-[#38003c] border-2 border-[#00ff85] flex items-center justify-center cursor-pointer"
-          onClick={() => alert("Avatar editing modal would open here")}
+          onClick={() => toast("Avatar editing modal would open here")}
         >
           <i className="fas fa-pencil-alt text-sm"></i>
         </div>
