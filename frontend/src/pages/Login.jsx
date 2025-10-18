@@ -9,6 +9,8 @@ import {
 import "../styles/login.css";
 import { UserContext } from "../UserContext";
 import getBaseUrl from "../api.js";
+import { toast } from "react-toastify";
+
 
 const baseUrl = getBaseUrl();
 
@@ -64,33 +66,36 @@ export default function Login() {
     }
   };
 
-  const handleEmailLogin = async (e) => {
-    e.preventDefault();
-    try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      const idToken = await userCredential.user.getIdToken();
+const handleEmailLogin = async (e) => {
+  e.preventDefault();
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const idToken = await userCredential.user.getIdToken();
 
-      //localStorage.setItem("email", userCredential.user.email);
-
-      const backendResponse = await sendTokenToBackend(idToken);
-      if (backendResponse) {
-        localStorage.setItem("authToken", idToken);
-         loginUser({
-          email: userCredential.user.email,
-          ...backendResponse,
-        });
-
-        navigate("/home");
-      }
-    } catch (err) {
-      console.error(err);
-      setError("Email/password login failed. Check your credentials.");
+    const backendResponse = await sendTokenToBackend(idToken);
+    if (backendResponse) {
+      localStorage.setItem("authToken", idToken);
+      loginUser({
+        email: userCredential.user.email,
+        ...backendResponse,
+      });
+      navigate("/home");
     }
-  };
+  } catch (err) {
+    console.error(err);
+
+    if (err.code === "auth/user-not-found") {
+      toast.error("User not found. Please sign up first or use Google.");
+    } else if (err.code === "auth/wrong-password") {
+      toast.error("Incorrect password. Please try again.");
+    } else {
+      toast.error("Email/password login failed. Check your credentials.");
+    }
+
+    setError("Email/password login failed. Check your credentials.");
+  }
+};
+
 
   return (
     <div className="login-page">
