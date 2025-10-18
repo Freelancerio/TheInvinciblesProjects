@@ -9,19 +9,19 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
-    
+
     steps:
     - name: Checkout code
-      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-    
+      uses: actions/checkout@v4
+
     # Backend Testing
     - name: Set up JDK 17
-      uses: actions/setup-java@8df1039502a15bceb9433410b1a100fbe190c53b # v4.5.0
+      uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
         cache: 'maven'
-    
+
     - name: Create Firebase service account file (mock)
       run: |
         mkdir -p Backend/src/main/resources/config
@@ -35,14 +35,14 @@ jobs:
           "client_id": "123456789"
         }
         EOF
-    
+
     - name: Run Backend tests with coverage
       run: |
         cd Backend
         mvn clean verify -Dspring.profiles.active=test -DargLine="-Dfile.encoding=UTF-8"
       env:
         SPRING_PROFILES_ACTIVE: test
-    
+
     - name: Verify backend coverage file exists
       run: |
         if [ -f Backend/target/site/jacoco/jacoco.xml ]; then
@@ -52,27 +52,27 @@ jobs:
           echo "❌ Backend coverage file NOT found"
           find Backend -name "jacoco.xml" -o -name "*.xml" | head -20
         fi
-    
+
     # Frontend Testing
     - name: Set up Node.js
-      uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+      uses: actions/setup-node@v4
       with:
         node-version: '20'
         cache: 'npm'
         cache-dependency-path: frontend/package-lock.json
-    
+
     - name: Install Frontend dependencies
       run: |
         cd frontend
         npm ci
-    
+
     - name: Run Frontend tests with coverage
       run: |
         cd frontend
         npm run test:ci
       env:
         CI: true
-    
+
     - name: Verify frontend coverage file exists
       run: |
         if [ -f frontend/coverage/lcov.info ]; then
@@ -82,50 +82,50 @@ jobs:
           echo "❌ Frontend coverage file NOT found"
           find frontend -name "lcov.info" -o -name "*.json" | head -20
         fi
-    
-    # Convert JaCoCo to Cobertura format (optional but recommended)
+
+    # Convert JaCoCo to Cobertura format (optional)
     - name: Convert JaCoCo to Cobertura XML
       run: |
         cd Backend
         mvn jacoco:report-aggregate
       continue-on-error: true
-    
-    # Upload to Codecov with proper configuration
-    - name: Upload Backend coverage to Codecov
-      uses: codecov/codecov-action@e28ff129e5465c2c0dcc6f003fc735cb6ae0c673 # v4.5.0
+
+    # Upload Backend coverage to Codecov
+    - name: Upload Backend coverage
+      uses: codecov/codecov-action@v4
       with:
         files: ./Backend/target/site/jacoco/jacoco.xml
-        flags: backend,java,spring-boot
+        flags: backend
         name: backend-coverage
         token: ${{ secrets.CODECOV_TOKEN }}
         fail_ci_if_error: false
         verbose: true
-    
-    - name: Upload Frontend coverage to Codecov
-      uses: codecov/codecov-action@e28ff129e5465c2c0dcc6f003fc735cb6ae0c673 # v4.5.0
+
+    # Upload Frontend coverage to Codecov
+    - name: Upload Frontend coverage
+      uses: codecov/codecov-action@v4
       with:
         files: ./frontend/coverage/lcov.info
-        flags: frontend,javascript,react
+        flags: frontend
         name: frontend-coverage
         token: ${{ secrets.CODECOV_TOKEN }}
         fail_ci_if_error: false
         verbose: true
-    
-    # Final combined upload for averaging
-    - name: Upload combined coverage reports
-      uses: codecov/codecov-action@e28ff129e5465c2c0dcc6f003fc735cb6ae0c673 # v4.5.0
+
+    # Upload combined coverage report
+    - name: Upload Combined coverage
+      uses: codecov/codecov-action@v4
       with:
         files: ./Backend/target/site/jacoco/jacoco.xml,./frontend/coverage/lcov.info
         flags: combined
         name: combined-coverage-report
         token: ${{ secrets.CODECOV_TOKEN }}
-        verbose: true
         fail_ci_if_error: false
-  
+        verbose: true
+
   deploy:
     needs: test
     runs-on: ubuntu-latest
-    # Only deploy on push to main or auth-feature (not on PRs)
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/auth-feature')
     
     steps:
