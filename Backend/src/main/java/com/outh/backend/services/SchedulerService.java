@@ -36,7 +36,7 @@ public class SchedulerService {
 
     // Run every 6 hours
     // seconds - minutes - hours - day of month - month - day of week
-    @Scheduled(cron = "0 5 0 * * *", zone = "Africa/Johannesburg")
+    @Scheduled(cron = "0 25 0 * * *", zone = "Africa/Johannesburg")
     public void runAllScheduledTasks() {
         logger.info("===== Starting scheduled tasks =====");
 
