@@ -2,11 +2,19 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import SignUp from "../pages/SignUp";
 import { MemoryRouter } from "react-router-dom";
 import { UserContext } from "../UserContext";
+import { toast } from "react-toastify";
 
 const mockNavigate = jest.fn();
 const mockCreateUser = jest.fn();
 const mockSignInWithPopup = jest.fn();
 const mockLoginUser = jest.fn();
+
+jest.mock("react-toastify", () => ({
+  toast: {
+    success: jest.fn(),
+    error: jest.fn(),
+  },
+}));
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
@@ -143,10 +151,10 @@ describe("SignUp Page", () => {
     fireEvent.click(screen.getByText(/create account/i));
 
     await waitFor(() => {
-      expect(mockCreateUser).toHaveBeenCalled();
-      expect(window.alert).toHaveBeenCalledWith("Account created successfully!");
-      expect(mockNavigate).toHaveBeenCalledWith("/login");
-    });
+    expect(mockCreateUser).toHaveBeenCalled();
+    expect(toast.success).toHaveBeenCalledWith("Account created successfully!");
+    expect(mockNavigate).toHaveBeenCalledWith("/login");
+  });
   });
 
   test("failed signup shows error", async () => {

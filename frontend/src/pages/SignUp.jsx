@@ -5,6 +5,8 @@ import { createUserWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import "../styles/signup.css";
 import getBaseUrl from "../api.js";
 import { UserContext } from "../UserContext";
+import { toast } from "react-toastify";
+
 
 const baseUrl = getBaseUrl();
 
@@ -20,30 +22,35 @@ export default function Signup() {
   const [error, setError] = useState("");
 
   const handleSignup = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    // simple validations
-  
-    if (password !== confirm) {
-      return setError("Passwords do not match");
-    }
-    if (password.length < 8) {
-      return setError("Password must be at least 8 characters");
-    }
-    if (!terms) {
-      return setError("You must agree to the terms");
+  if (password !== confirm) {
+    return setError("Passwords do not match");
+  }
+  if (password.length < 8) {
+    return setError("Password must be at least 8 characters");
+  }
+  if (!terms) {
+    return setError("You must agree to the terms");
+  }
+
+  try {
+    await createUserWithEmailAndPassword(auth, email, password);
+    toast.success("Account created successfully!");
+    navigate("/login");
+  } catch (err) {
+    console.error(err);
+
+    if (err.code === "auth/email-already-in-use") {
+      toast.error("User already exists. Please log in instead.");
+    } else {
+      toast.error("Signup failed. Please try again.");
     }
 
-    try {
-      // create firebase user
-      await createUserWithEmailAndPassword(auth, email, password);
-      alert("Account created successfully!");
-      navigate("/login");
-    } catch (err) {
-      console.error(err);
-      setError(err.message);
-    }
-  };
+    setError(err.message);
+  }
+};
+
 
   const sendTokenToBackend = async (idToken) => {
       try {

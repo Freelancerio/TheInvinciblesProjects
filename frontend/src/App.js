@@ -18,6 +18,9 @@ import PredictedStandings from "./pages/PredictedStandings.jsx";
 import PaymentSuccess from "./pages/PaymentSuccess.jsx";
 import PaymentCanceled from "./pages/PaymentCanceled.jsx";
 import { UserProvider } from "./UserContext.js";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 export default function App() {
   return (
@@ -41,8 +44,8 @@ export default function App() {
         <Route path="/predictions" element={<PredictedStandings/>}/>
         <Route path="/success" element={<PaymentSuccess/>}/>
         <Route path="/canceled" element={<PaymentCanceled/>}/>
-
       </Routes>
+      <ToastContainer position="top-center" autoClose={3000} />
     </Router>
     </UserProvider>
   );
