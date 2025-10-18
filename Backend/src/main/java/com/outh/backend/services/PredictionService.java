@@ -60,7 +60,7 @@ public class PredictionService {
         );
     }
 
-    private double computeFormScore(List<LeagueMatches> lastMatches, String teamName) {
+    double computeFormScore(List<LeagueMatches> lastMatches, String teamName) {
         double score = 0.0;
         for (LeagueMatches m : lastMatches) {
             boolean isHome = teamName.equals(m.getHomeTeam());
@@ -73,7 +73,7 @@ public class PredictionService {
         return lastMatches.isEmpty() ? 0 : score / lastMatches.size();
     }
 
-    private double avgGoalsInHeadToHead(List<LeagueMatches> headToHead, String teamName) {
+    double avgGoalsInHeadToHead(List<LeagueMatches> headToHead, String teamName) {
         double totalGoals = 0;
         for (LeagueMatches m : headToHead) {
             totalGoals += teamName.equals(m.getHomeTeam()) ? m.getHomeScore() : m.getAwayScore();
