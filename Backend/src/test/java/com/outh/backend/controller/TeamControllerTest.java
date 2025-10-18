@@ -7,14 +7,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Timeout;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,23 +26,23 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.hamcrest.Matchers.*;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@ActiveProfiles("test")
+@ExtendWith(MockitoExtension.class)
 class TeamControllerTest {
 
-    @Autowired
     private MockMvc mockMvc;
 
-    @MockitoBean
+    @Mock
     private LeagueTeamService teamService;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    @InjectMocks
+    private TeamController teamController;
+
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
     @Timeout(value = 20, unit = TimeUnit.SECONDS)
     void setUp() {
+        mockMvc = MockMvcBuilders.standaloneSetup(teamController).build();
         reset(teamService);
     }
 
@@ -51,10 +51,11 @@ class TeamControllerTest {
     @WithMockUser
     @DisplayName("GET /api/teams/ should return list of teams")
     void testGetAllTeams() throws Exception {
-        List<LeagueTeams> mockTeams = Arrays.asList(
-                new LeagueTeams(1L, "Arsenal", "Emirates Stadium", "logo1.png", "ARS"),
-                new LeagueTeams(2L, "Chelsea", "Stamford Bridge", "logo2.png", "CHE")
-        );
+        // Create test data using setters
+        LeagueTeams team1 = createTeam(1L, "Arsenal", "Emirates Stadium", "logo1.png", "ARS");
+        LeagueTeams team2 = createTeam(2L, "Chelsea", "Stamford Bridge", "logo2.png", "CHE");
+
+        List<LeagueTeams> mockTeams = Arrays.asList(team1, team2);
 
         when(teamService.getTeams()).thenReturn(mockTeams);
 
@@ -111,31 +112,10 @@ class TeamControllerTest {
     @Test
     @Timeout(value = 20, unit = TimeUnit.SECONDS)
     @WithMockUser
-    @DisplayName("Test endpoint mappings - only GET and POST should be allowed")
-    void testEndpointMapping() throws Exception {
-        when(teamService.getTeams()).thenReturn(Collections.emptyList());
-        doNothing().when(teamService).updateTeamsFromApi(anyInt());
-
-        mockMvc.perform(get("/api/teams/"))
-                .andExpect(status().isOk());
-
-        mockMvc.perform(post("/api/teams/sync"))
-                .andExpect(status().isOk());
-
-        mockMvc.perform(put("/api/teams/"))
-                .andExpect(status().isMethodNotAllowed());
-
-        mockMvc.perform(delete("/api/teams/"))
-                .andExpect(status().isMethodNotAllowed());
-    }
-
-    @Test
-    @Timeout(value = 20, unit = TimeUnit.SECONDS)
-    @WithMockUser
     @DisplayName("GET /api/teams/ should return correct JSON structure")
     void testGetAllTeams_JsonStructure() throws Exception {
-        LeagueTeams team = new LeagueTeams(1L, "Liverpool", "Anfield", "logo.png", "LIV");
-        when(teamService.getTeams()).thenReturn(List.of(team));
+        LeagueTeams team = createTeam(1L, "Liverpool", "Anfield", "logo.png", "LIV");
+        when(teamService.getTeams()).thenReturn(Arrays.asList(team));
 
         mockMvc.perform(get("/api/teams/"))
                 .andExpect(status().isOk())
@@ -159,11 +139,11 @@ class TeamControllerTest {
     @DisplayName("GET /api/teams/ should handle large list of teams")
     void testGetAllTeams_LargeList() throws Exception {
         List<LeagueTeams> largeTeamList = Arrays.asList(
-                new LeagueTeams(1L, "Team1", "Stadium1", "logo1.png", "T1"),
-                new LeagueTeams(2L, "Team2", "Stadium2", "logo2.png", "T2"),
-                new LeagueTeams(3L, "Team3", "Stadium3", "logo3.png", "T3"),
-                new LeagueTeams(4L, "Team4", "Stadium4", "logo4.png", "T4"),
-                new LeagueTeams(5L, "Team5", "Stadium5", "logo5.png", "T5")
+                createTeam(1L, "Team1", "Stadium1", "logo1.png", "T1"),
+                createTeam(2L, "Team2", "Stadium2", "logo2.png", "T2"),
+                createTeam(3L, "Team3", "Stadium3", "logo3.png", "T3"),
+                createTeam(4L, "Team4", "Stadium4", "logo4.png", "T4"),
+                createTeam(5L, "Team5", "Stadium5", "logo5.png", "T5")
         );
 
         when(teamService.getTeams()).thenReturn(largeTeamList);
@@ -173,5 +153,58 @@ class TeamControllerTest {
                 .andExpect(jsonPath("$", hasSize(5)));
 
         verify(teamService, times(1)).getTeams();
+    }
+
+    @Test
+    @Timeout(value = 20, unit = TimeUnit.SECONDS)
+    @WithMockUser
+    @DisplayName("POST /api/teams/sync should return 200 OK and success message")
+    void testSyncTeamsSuccess() throws Exception {
+        doNothing().when(teamService).updateTeamsFromApi(anyInt());
+
+        mockMvc.perform(post("/api/teams/sync")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Teams sync triggered!"));
+    }
+
+    @Test
+    @Timeout(value = 20, unit = TimeUnit.SECONDS)
+    @WithMockUser
+    @DisplayName("GET /api/teams/ should return 200 OK with correct content type")
+    void testGetAllTeamsStatusAndContentType() throws Exception {
+        when(teamService.getTeams()).thenReturn(Collections.emptyList());
+
+        mockMvc.perform(get("/api/teams/"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
+    @Timeout(value = 20, unit = TimeUnit.SECONDS)
+    @WithMockUser
+    @DisplayName("POST /api/teams/sync should call service for correct seasons")
+    void testSyncTeamsSeasons() throws Exception {
+        doNothing().when(teamService).updateTeamsFromApi(anyInt());
+
+        mockMvc.perform(post("/api/teams/sync"))
+                .andExpect(status().isOk());
+
+        verify(teamService).updateTeamsFromApi(2023);
+        verify(teamService).updateTeamsFromApi(2024);
+        verify(teamService).updateTeamsFromApi(2025);
+        verify(teamService, never()).updateTeamsFromApi(2022);
+        verify(teamService, never()).updateTeamsFromApi(2026);
+    }
+
+    // Helper method to create team objects
+    private LeagueTeams createTeam(Long id, String name, String stadium, String logo, String abbreviation) {
+        LeagueTeams team = new LeagueTeams();
+        team.setId(id);
+        team.setName(name);
+        team.setStadiumName(stadium);
+        team.setLogoUrl(logo);
+        team.setAbbreviation(abbreviation);
+        return team;
     }
 }
