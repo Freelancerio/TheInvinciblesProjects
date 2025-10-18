@@ -200,6 +200,11 @@ describe("BettingStatsCard Component", () => {
 
         renderWithContext();
 
+        await waitFor(() => {
+            expect(screen.getByText("0")).toBeInTheDocument();
+            expect(screen.getAllByText("R0")).toHaveLength(2);
+            expect(screen.getByText("0%")).toBeInTheDocument();
+        });
     });
 
     test("handles negative profit correctly", async () => {
