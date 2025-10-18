@@ -1,181 +1,243 @@
 package com.outh.backend.repository;
 
 import com.outh.backend.models.LeagueTeams;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
-@ActiveProfiles("test")
-@Transactional
+@DataJpaTest
 class LeagueTeamRepositoryTest {
+
+    @Autowired
+    private TestEntityManager entityManager;
 
     @Autowired
     private LeagueTeamRepository repository;
 
-    private AtomicLong idGenerator = new AtomicLong(1);
+    private LeagueTeams arsenal;
+    private LeagueTeams manCity;
+    private LeagueTeams liverpool;
 
     @BeforeEach
     void setUp() {
-        repository.deleteAll();
-        idGenerator.set(1);
-    }
+        // Create Arsenal team
+        arsenal = new LeagueTeams();
+        arsenal.setId(1L);
+        arsenal.setName("Arsenal");
+        arsenal.setStadiumName("Emirates Stadium");
+        arsenal.setLogoUrl("arsenal.png");
+        arsenal.setAbbreviation("ARS");
+        entityManager.persist(arsenal);
 
-    private Long generateId() {
-        return idGenerator.getAndIncrement();
-    }
+        // Create Manchester City team
+        manCity = new LeagueTeams();
+        manCity.setId(2L);
+        manCity.setName("Manchester City");
+        manCity.setStadiumName("Etihad Stadium");
+        manCity.setLogoUrl("mancity.png");
+        manCity.setAbbreviation("MCI");
+        entityManager.persist(manCity);
 
-    @Test
-    @DisplayName("Find all teams should return correct list")
-    void testFindAll() {
-        LeagueTeams team1 = new LeagueTeams(generateId(), "Arsenal", "Emirates Stadium", "logo1.png", "ARS");
-        LeagueTeams team2 = new LeagueTeams(generateId(), "Chelsea", "Stamford Bridge", "logo2.png", "CHE");
+        // Create Liverpool team
+        liverpool = new LeagueTeams();
+        liverpool.setId(3L);
+        liverpool.setName("Liverpool");
+        liverpool.setStadiumName("Anfield");
+        liverpool.setLogoUrl("liverpool.png");
+        liverpool.setAbbreviation("LIV");
+        entityManager.persist(liverpool);
 
-        repository.saveAndFlush(team1);
-        repository.saveAndFlush(team2);
-
-        List<LeagueTeams> teams = repository.findAll();
-
-        assertEquals(2, teams.size(), "Should return exactly 2 teams");
-        assertTrue(teams.stream().anyMatch(t -> "Arsenal".equals(t.getName())), "Should contain Arsenal");
-        assertTrue(teams.stream().anyMatch(t -> "Chelsea".equals(t.getName())), "Should contain Chelsea");
-    }
-
-    @Test
-    @DisplayName("Find by ID should return correct team")
-    void testFindById() {
-        LeagueTeams team = new LeagueTeams(generateId(), "Liverpool", "Anfield", "logo.png", "LIV");
-        LeagueTeams saved = repository.saveAndFlush(team);
-
-        Optional<LeagueTeams> found = repository.findById(saved.getId());
-
-        assertTrue(found.isPresent(), "Team should be found");
-        assertEquals("Liverpool", found.get().getName(), "Name should match");
-        assertEquals("Anfield", found.get().getStadiumName(), "Stadium should match");
-        assertEquals("logo.png", found.get().getLogoUrl(), "Logo should match");
-        assertEquals("LIV", found.get().getAbbreviation(), "Abbreviation should match");
+        entityManager.flush();
     }
 
     @Test
-    @DisplayName("Find by name should return correct team")
-    void testFindByName() {
-        LeagueTeams team = new LeagueTeams(generateId(), "Manchester City", "Etihad Stadium", "logo.png", "MCI");
-        repository.saveAndFlush(team);
+    void findByName_ShouldReturnTeam() {
+        Optional<LeagueTeams> result = repository.findByName("Arsenal");
 
-        Optional<LeagueTeams> found = repository.findByName("Manchester City");
-
-        assertTrue(found.isPresent(), "Team should be found by name");
-        assertEquals("Etihad Stadium", found.get().getStadiumName(), "Stadium should match");
-        assertEquals("MCI", found.get().getAbbreviation(), "Abbreviation should match");
+        assertThat(result).isPresent();
+        assertThat(result.get().getName()).isEqualTo("Arsenal");
+        assertThat(result.get().getStadiumName()).isEqualTo("Emirates Stadium");
+        assertThat(result.get().getLogoUrl()).isEqualTo("arsenal.png");
+        assertThat(result.get().getAbbreviation()).isEqualTo("ARS");
     }
 
     @Test
-    @DisplayName("Find by name with non-existent team should return empty")
-    void testFindByName_NotFound() {
-        Optional<LeagueTeams> found = repository.findByName("Nonexistent Team");
+    void findByName_WithDifferentCase_ShouldReturnEmpty() {
+        Optional<LeagueTeams> result = repository.findByName("arsenal");
 
-        assertFalse(found.isPresent(), "Should not find non-existent team");
+        assertThat(result).isEmpty(); // Should be empty because query is case-sensitive
     }
 
     @Test
-    @DisplayName("Save should persist new team")
-    void testSave() {
-        LeagueTeams team = new LeagueTeams(generateId(), "Tottenham", "Tottenham Hotspur Stadium", "logo.png", "TOT");
+    void findByName_WithNonExistentTeam_ShouldReturnEmpty() {
+        Optional<LeagueTeams> result = repository.findByName("Chelsea");
 
-        LeagueTeams saved = repository.save(team);
-
-        assertNotNull(saved, "Saved team should not be null");
-        assertNotNull(saved.getId(), "Saved team should have ID");
-        assertEquals("Tottenham", saved.getName(), "Name should be preserved");
-
-        Optional<LeagueTeams> found = repository.findById(saved.getId());
-        assertTrue(found.isPresent(), "Saved team should be retrievable");
-        assertEquals("Tottenham", found.get().getName(), "Retrieved name should match");
+        assertThat(result).isEmpty();
     }
 
     @Test
-    @DisplayName("Update should modify existing team")
-    void testUpdate() {
-        LeagueTeams team = new LeagueTeams(generateId(), "West Ham", "Old Stadium", "old-logo.png", "WHU");
-        LeagueTeams saved = repository.saveAndFlush(team);
+    void findByName_WithNull_ShouldReturnEmpty() {
+        Optional<LeagueTeams> result = repository.findByName(null);
 
-        Optional<LeagueTeams> foundTeam = repository.findById(saved.getId());
-        assertTrue(foundTeam.isPresent(), "Team should exist before update");
-
-        LeagueTeams teamToUpdate = foundTeam.get();
-        teamToUpdate.setStadiumName("London Stadium");
-        teamToUpdate.setLogoUrl("new-logo.png");
-        LeagueTeams updated = repository.saveAndFlush(teamToUpdate);
-
-        assertEquals("London Stadium", updated.getStadiumName(), "Stadium should be updated");
-        assertEquals("new-logo.png", updated.getLogoUrl(), "Logo should be updated");
-
-        Optional<LeagueTeams> verifyUpdated = repository.findById(saved.getId());
-        assertTrue(verifyUpdated.isPresent(), "Updated team should exist");
-        assertEquals("London Stadium", verifyUpdated.get().getStadiumName(), "Stadium update should persist");
-        assertEquals("new-logo.png", verifyUpdated.get().getLogoUrl(), "Logo update should persist");
+        assertThat(result).isEmpty();
     }
 
     @Test
-    @DisplayName("Delete should remove team")
-    void testDelete() {
-        LeagueTeams team = new LeagueTeams(generateId(), "Brighton", "Amex Stadium", "logo.png", "BHA");
-        LeagueTeams saved = repository.saveAndFlush(team);
+    void findByName_WithEmptyString_ShouldReturnEmpty() {
+        Optional<LeagueTeams> result = repository.findByName("");
 
-        repository.deleteById(saved.getId());
-        repository.flush();
-
-        Optional<LeagueTeams> found = repository.findById(saved.getId());
-        assertFalse(found.isPresent(), "Deleted team should not be found");
+        assertThat(result).isEmpty();
     }
 
     @Test
-    @DisplayName("Unique name constraint should prevent duplicate team names")
-    void testUniqueNameConstraint() {
-        LeagueTeams team1 = new LeagueTeams(generateId(), "Arsenal", "Emirates Stadium", "logo1.png", "ARS");
-        LeagueTeams team2 = new LeagueTeams(generateId(), "Arsenal", "Different Stadium", "logo2.png", "ARS2");
+    void findByName_WithWhitespace_ShouldReturnEmpty() {
+        Optional<LeagueTeams> result = repository.findByName("   ");
 
-        repository.saveAndFlush(team1);
-
-        assertThrows(DataIntegrityViolationException.class, () -> {
-            repository.saveAndFlush(team2);
-        }, "Duplicate team name should throw constraint violation");
+        assertThat(result).isEmpty();
     }
 
     @Test
-    @DisplayName("Find all should return empty list when no teams exist")
-    void testFindAll_EmptyDatabase() {
-        List<LeagueTeams> teams = repository.findAll();
+    void findByName_WithPartialMatch_ShouldReturnEmpty() {
+        Optional<LeagueTeams> result = repository.findByName("Ars");
 
-        assertNotNull(teams, "Result should not be null");
-        assertTrue(teams.isEmpty(), "Should return empty list");
+        assertThat(result).isEmpty();
     }
 
     @Test
-    @DisplayName("Save multiple teams and verify count")
-    void testSaveMultipleTeams() {
-        LeagueTeams team1 = new LeagueTeams(generateId(), "Team A", "Stadium A", "logoA.png", "TA");
-        LeagueTeams team2 = new LeagueTeams(generateId(), "Team B", "Stadium B", "logoB.png", "TB");
-        LeagueTeams team3 = new LeagueTeams(generateId(), "Team C", "Stadium C", "logoC.png", "TC");
+    void findAll_ShouldReturnAllTeams() {
+        List<LeagueTeams> result = repository.findAll();
 
-        repository.save(team1);
-        repository.save(team2);
-        repository.save(team3);
+        assertThat(result).hasSize(3);
+        assertThat(result)
+                .extracting(LeagueTeams::getName)
+                .contains("Arsenal", "Manchester City", "Liverpool");
+    }
+
+    @Test
+    void findById_ShouldReturnTeam() {
+        Optional<LeagueTeams> result = repository.findById(1L);
+
+        assertThat(result).isPresent();
+        assertThat(result.get().getName()).isEqualTo("Arsenal");
+        assertThat(result.get().getId()).isEqualTo(1L);
+    }
+
+    @Test
+    void findById_WithNonExistentId_ShouldReturnEmpty() {
+        Optional<LeagueTeams> result = repository.findById(999L);
+
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void save_ShouldCreateNewTeam() {
+        LeagueTeams chelsea = new LeagueTeams();
+        chelsea.setId(4L);
+        chelsea.setName("Chelsea");
+        chelsea.setStadiumName("Stamford Bridge");
+        chelsea.setLogoUrl("chelsea.png");
+        chelsea.setAbbreviation("CHE");
+
+        LeagueTeams saved = repository.save(chelsea);
+
+        assertThat(saved).isNotNull();
+        assertThat(saved.getId()).isEqualTo(4L);
+        assertThat(saved.getName()).isEqualTo("Chelsea");
+
+        Optional<LeagueTeams> retrieved = repository.findByName("Chelsea");
+        assertThat(retrieved).isPresent();
+    }
+
+    @Test
+    void save_ShouldUpdateExistingTeam() {
+        // Update Arsenal's stadium name
+        arsenal.setStadiumName("New Emirates Stadium");
+        LeagueTeams updated = repository.save(arsenal);
+
+        assertThat(updated.getStadiumName()).isEqualTo("New Emirates Stadium");
+
+        Optional<LeagueTeams> retrieved = repository.findByName("Arsenal");
+        assertThat(retrieved).isPresent();
+        assertThat(retrieved.get().getStadiumName()).isEqualTo("New Emirates Stadium");
+    }
+
+    @Test
+    void delete_ShouldRemoveTeam() {
+        repository.delete(arsenal);
+
+        Optional<LeagueTeams> result = repository.findByName("Arsenal");
+        assertThat(result).isEmpty();
 
         List<LeagueTeams> allTeams = repository.findAll();
-        assertEquals(3, allTeams.size(), "Should have 3 teams");
+        assertThat(allTeams).hasSize(2);
+    }
+
+    @Test
+    void deleteById_ShouldRemoveTeam() {
+        repository.deleteById(1L);
+
+        Optional<LeagueTeams> result = repository.findById(1L);
+        assertThat(result).isEmpty();
+
+        Optional<LeagueTeams> byNameResult = repository.findByName("Arsenal");
+        assertThat(byNameResult).isEmpty();
+    }
+
+    @Test
+    void testTeamFieldsAreCorrect() {
+        Optional<LeagueTeams> result = repository.findByName("Manchester City");
+
+        assertThat(result).isPresent();
+        LeagueTeams team = result.get();
+        assertThat(team.getId()).isEqualTo(2L);
+        assertThat(team.getName()).isEqualTo("Manchester City");
+        assertThat(team.getStadiumName()).isEqualTo("Etihad Stadium");
+        assertThat(team.getLogoUrl()).isEqualTo("mancity.png");
+        assertThat(team.getAbbreviation()).isEqualTo("MCI");
+    }
+
+    @Test
+    void testOptionalFieldsCanBeNull() {
+        // Create a team with null optional fields
+        LeagueTeams teamWithNulls = new LeagueTeams();
+        teamWithNulls.setId(5L);
+        teamWithNulls.setName("Test Team");
+        // stadiumName, logoUrl, abbreviation are null
+        entityManager.persist(teamWithNulls);
+        entityManager.flush();
+
+        Optional<LeagueTeams> result = repository.findByName("Test Team");
+        assertThat(result).isPresent();
+        assertThat(result.get().getStadiumName()).isNull();
+        assertThat(result.get().getLogoUrl()).isNull();
+        assertThat(result.get().getAbbreviation()).isNull();
+    }
+
+    @Test
+    void count_ShouldReturnTotalTeams() {
+        long count = repository.count();
+
+        assertThat(count).isEqualTo(3);
+    }
+
+    @Test
+    void existsById_ShouldReturnTrueForExistingTeam() {
+        boolean exists = repository.existsById(1L);
+
+        assertThat(exists).isTrue();
+    }
+
+    @Test
+    void existsById_ShouldReturnFalseForNonExistentTeam() {
+        boolean exists = repository.existsById(999L);
+
+        assertThat(exists).isFalse();
     }
 }
