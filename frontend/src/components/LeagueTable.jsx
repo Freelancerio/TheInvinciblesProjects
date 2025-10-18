@@ -8,7 +8,7 @@ const LeagueTable = ({ topN = 5, season = 2025 }) => {
   const baseUrl = getBaseUrl();
 
   useEffect(() => {
-    const fetchStandings = async () => {
+    const fetchStandings = async () => { 
       try {
         const idToken = localStorage.getItem("authToken");
         const url = topN

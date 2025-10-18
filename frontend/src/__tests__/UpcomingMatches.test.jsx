@@ -7,6 +7,7 @@ global.fetch = jest.fn();
 
 beforeEach(() => {
   localStorage.setItem("authToken", "fake-token");
+  jest.clearAllMocks();
 });
 
 afterEach(() => {
@@ -16,13 +17,18 @@ afterEach(() => {
 
 describe("UpcomingMatches", () => {
   test("shows loading state initially", async () => {
-    fetch.mockImplementationOnce(() => 
-      new Promise(resolve => setTimeout(() => 
-        resolve({
-          ok: true,
-          json: async () => ({ content: [], totalPages: 0 }),
-        }), 100)
-      )
+    fetch.mockImplementationOnce(
+      () =>
+        new Promise((resolve) =>
+          setTimeout(
+            () =>
+              resolve({
+                ok: true,
+                json: async () => ({ content: [], totalPages: 0 }),
+              }),
+            100
+          )
+        )
     );
 
     await act(async () => {
@@ -34,7 +40,7 @@ describe("UpcomingMatches", () => {
     });
 
     expect(screen.getByText(/loading matches/i)).toBeInTheDocument();
-    
+
     await waitFor(() => {
       expect(screen.queryByText(/loading matches/i)).not.toBeInTheDocument();
     });
@@ -43,7 +49,7 @@ describe("UpcomingMatches", () => {
   test("shows pagination controls when paginated=true and totalPages>1", async () => {
     fetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => ({ 
+      json: async () => ({
         content: [
           {
             matchId: 1,
@@ -52,9 +58,9 @@ describe("UpcomingMatches", () => {
             homeLogo: "a.png",
             awayLogo: "b.png",
             dateTime: "2030-12-25T20:00:00Z",
-          }
-        ], 
-        totalPages: 4 
+          },
+        ],
+        totalPages: 4,
       }),
     });
 
@@ -72,7 +78,7 @@ describe("UpcomingMatches", () => {
 
     fetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => ({ 
+      json: async () => ({
         content: [
           {
             matchId: 2,
@@ -81,9 +87,9 @@ describe("UpcomingMatches", () => {
             homeLogo: "c.png",
             awayLogo: "d.png",
             dateTime: "2030-12-26T20:00:00Z",
-          }
-        ], 
-        totalPages: 4 
+          },
+        ],
+        totalPages: 4,
       }),
     });
 

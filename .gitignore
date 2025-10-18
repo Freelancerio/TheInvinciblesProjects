@@ -23,3 +23,4 @@ yarn-error.log*
 Thumbs.db
 # Ignore Firebase credentials
 Backend/src/main/resources/config/firebase-service-account.json
+firebase-service-account.json

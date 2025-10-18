@@ -16,7 +16,7 @@ const HeadToHead = () => {
 
     const fetchHeadToHead = async () => {
       try {
-        setLoading(true);
+        setLoading(true); 
         const idToken = localStorage.getItem("authToken");
         const params = new URLSearchParams({
           teamA: match.homeTeam,

@@ -4,13 +4,13 @@ import { NavLink } from "react-router-dom";
 
 const QuickActions = () => {
   const actionLinks = [
-    { to: "/deposit", icon: "fa-money-bill-wave", label: "Deposit Funds" },
+    { to: "/profile", icon: "fa-money-bill-wave", label: "Deposit Funds" },
     { to: "/comparison", icon: "fa-chart-line", label: "Stats Analysis" },
     { to: "/leaderboards", icon: "fa-trophy", label: "Leaderboard" },
     { to: "/profile", icon: "fa-history", label: "Bet History" },
   ];
-
-  return (
+ 
+  return ( 
     <div className="card-bg backdrop-blur-md rounded-[10px] p-5 mb-[25px] border border-[rgba(255,255,255,0.1)]">
       <div className="card-header flex justify-between items-center mb-5 pb-[10px] border-b border-[rgba(255,255,255,0.1)]">
         <h3 className="card-title text-[1.3rem] font-semibold text-secondary">
