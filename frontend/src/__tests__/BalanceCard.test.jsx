@@ -166,3 +166,55 @@ describe("BalanceCard", () => {
     expect(screen.queryByRole("heading", { name: /Deposit Funds/i })).not.toBeInTheDocument();
   });
 });
+
+test("successful voucher withdrawal shows success toast", async () => {
+  renderWithUser({ firebaseId: "u1", account_balance: 200 });
+
+  // Open withdrawal modal
+  fireEvent.click(screen.getByRole("button", { name: /Withdraw Money/i }));
+
+  // Enter amount
+  fireEvent.change(screen.getByPlaceholderText("0.00"), { target: { value: "50" } });
+
+  // Mock API success
+  global.fetch.mockResolvedValueOnce({
+    ok: true,
+    json: async () => ({
+      voucherCode: "ABC123",
+      updatedUser: { firebaseId: "u1", account_balance: 150 },
+    }),
+  });
+
+  // Mock toast
+  const mockToastSuccess = jest.fn();
+  jest.doMock("react-hot-toast", () => ({
+    __esModule: true,
+    default: { success: mockToastSuccess, error: jest.fn() },
+  }));
+
+  // Click withdraw
+  fireEvent.click(screen.getByRole("button", { name: /^Withdraw$/i }));
+
+  await waitFor(() => expect(global.fetch).toHaveBeenCalledTimes(1));
+
+  expect(global.fetch).toHaveBeenCalledWith(
+    "http://test-base-url/api/payment/withdraw-voucher",
+    expect.objectContaining({
+      method: "POST",
+      headers: expect.objectContaining({
+        Authorization: "Bearer fake-token",
+        "Content-Type": "application/json",
+      }),
+      body: JSON.stringify({
+        userId: "u1",
+        email: undefined, // or whatever the component sends
+        amount: 50,
+      }),
+    })
+  );
+
+  await waitFor(() => {
+  expect(screen.getByText(/Voucher withdrawn!/i)).toBeInTheDocument();
+});
+
+});
