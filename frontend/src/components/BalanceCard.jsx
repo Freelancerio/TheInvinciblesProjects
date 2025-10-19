@@ -17,8 +17,7 @@ export default function BalanceCard() {
   // Deposit handler
   const handleDeposit = async () => {
     if (!depositAmount || isNaN(depositAmount) || Number(depositAmount) <= 0) {
-      toast.error("Please enter a valid amount");
-      return;
+      return toast.error("Please enter a valid amount");
     }
 
     try {
@@ -41,9 +40,7 @@ export default function BalanceCard() {
       if (data.url) {
         toast.success("Redirecting to secure payment...");
         window.location.href = data.url;
-      } else {
-        toast.error("Something went wrong. Please try again.");
-      }
+      } else toast.error("Something went wrong. Please try again.");
     } catch (err) {
       toast.error("Network error. Please try again later.");
     }
@@ -52,13 +49,12 @@ export default function BalanceCard() {
   // Withdraw handler
   const handleWithdraw = async () => {
     if (!withdrawAmount || isNaN(withdrawAmount) || Number(withdrawAmount) <= 0) {
-      toast.error("Please enter a valid amount");
-      return;
+      return toast.error("Please enter a valid amount");
     }
 
     if (Number(withdrawAmount) > user.account_balance) {
-      toast.error("Insufficient funds");
-      return;
+     return toast.error("Insufficient funds");
+
     }
 
     try {
@@ -84,9 +80,7 @@ export default function BalanceCard() {
         setShowWithdrawModal(false);
         setWithdrawAmount("");
         setUser(data.updatedUser);
-      } else {
-        toast.error(data.error || "Withdrawal failed");
-      }
+      }  else toast.error(data.error || "Withdrawal failed");
     } catch (err) {
       toast.error("Network error. Please try again later.");
     }
