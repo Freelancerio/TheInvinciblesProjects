@@ -38,7 +38,7 @@ export default function Header() {
 
           {/* Desktop nav links */}
           {user && (
-            <div className="hidden md:flex gap-6">
+            <div data-testid="desktop-menu" className="hidden md:flex gap-6">
               {navLinks.map((link) => (
                 <NavLink
                   key={link.to}
@@ -67,6 +67,7 @@ export default function Header() {
           {user && (
             <div className="md:hidden flex items-center">
               <button
+                data-testid="mobile-menu-button"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 className="text-white focus:outline-none"
               >
@@ -90,7 +91,7 @@ export default function Header() {
 
         {/* Mobile nav menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden bg-[#38003c] w-full py-2 px-4 flex flex-col gap-2">
+          <div data-testid="mobile-menu" className="md:hidden bg-[#38003c] w-full py-2 px-4 flex flex-col gap-2">
             {navLinks.map((link) => (
               <NavLink
                 key={link.to}
