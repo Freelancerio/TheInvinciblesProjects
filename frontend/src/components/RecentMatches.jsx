@@ -71,7 +71,7 @@ const RecentMatches = ({
         <div className="text-center py-10 text-white">Loading matches...</div>
       ) : (
         <>
-          <ul className="match-list">
+          <ul className="match-list ">
             {matches.map((match) => (
                <Link
                   key={match.matchId}

@@ -89,44 +89,105 @@ const Dashboard = () => {
     }}>
       <Header />
 
-      <div className="dashboard py-[30px]">
-        <div className="container max-w-[1400px] mx-auto px-5">
-          <WelcomeBanner />
+      <div className="dashboard py-6 md:py-10">
+  <div className="container max-w-[1400px] mx-auto px-4 sm:px-6 md:px-8">
+    <WelcomeBanner />
 
-          <div className="dashboard-grid grid grid-cols-1 md:grid-cols-2 gap-[25px]">
-            <div className="left-column">
-              <UpcomingMatches paginated={false} size={5} preloadedData={dashboardData.upcomingMatches} />
-              <RecentMatches paginated={false} season={2025} preloadedData={dashboardData.recentMatches} />
-            </div>
-
-            <div className="right-column">
-              <LeagueTable topN={5} season={2025} preloadedData={dashboardData.standings} />
-              <QuickActions />
-            </div>
-          </div>
-        </div>
+    <div className="dashboard-grid grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+      <div className="left-column space-y-6">
+        <UpcomingMatches
+          paginated={false}
+          size={5}
+          preloadedData={dashboardData.upcomingMatches}
+        />
+        <RecentMatches
+          paginated={false}
+          season={2025}
+          preloadedData={dashboardData.recentMatches}
+        />
       </div>
 
+      <div className="right-column space-y-6">
+        <LeagueTable
+          topN={5}
+          season={2025}
+          preloadedData={dashboardData.standings}
+        />
+        <QuickActions />
+      </div>
+    </div>
+  </div>
+</div>
+
+
       <style>{`
-        .card-bg {
-          background: rgba(255, 255, 255, 0.05);
-        }
-        .team-logo {
-          width: 25px;
-          height: 25px;
-          font-size: 0.7rem;
-        }
-        @media (max-width: 768px) {
-          .match-teams-mobile {
-            flex-direction: column;
-            gap: 5px;
-          }
-          .team-mobile {
-            width: 100%;
-            justify-content: center;
-          }
-        }
-      `}</style>
+  .card-bg {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 16px;
+    transition: all 0.3s ease;
+  }
+  .card-bg:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .team-logo {
+    width: 25px;
+    height: 25px;
+    font-size: 0.7rem;
+  }
+
+  @media (max-width: 1024px) {
+    .dashboard-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .dashboard {
+      padding-top: 20px;
+    }
+
+    .container {
+      padding: 0 1rem;
+    }
+
+    .left-column, .right-column {
+      width: 100%;
+    }
+
+    .match-teams-mobile {
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .team-mobile {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .card-bg {
+      padding: 12px;
+    }
+  }
+
+  @media (max-width: 500px) {
+    .dashboard {
+      padding-top: 15px;
+    }
+
+    .card-bg {
+      border-radius: 10px;
+      padding: 10px;
+    }
+
+    .team-logo {
+      width: 20px;
+      height: 20px;
+    }
+  }
+`}</style>
+
     </div>
   );
 };
