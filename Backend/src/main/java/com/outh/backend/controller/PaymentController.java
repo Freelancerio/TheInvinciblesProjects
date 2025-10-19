@@ -2,6 +2,7 @@ package com.outh.backend.controller;
 
 import com.outh.backend.models.User;
 import com.outh.backend.services.UserService;
+import com.outh.backend.services.EmailService;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.checkout.Session;
@@ -38,7 +39,10 @@ public class PaymentController {
     @Autowired
     private UserService userService;
 
-    // ✅ 1. Create Checkout Session
+    @Autowired
+    private EmailService emailService;
+
+    // Create Checkout Session
     @PostMapping("/create-checkout-session")
     public ResponseEntity<Map<String, Object>> createCheckoutSession(@RequestBody Map<String, Object> request) {
         Object amountObj = request.get("amount");
@@ -104,8 +108,11 @@ public class PaymentController {
                     String amountStr = session.getMetadata().get("amount");
 
                     if (userId != null && amountStr != null) {
-                        BigDecimal amount = new BigDecimal(amountStr).divide(BigDecimal.valueOf(100)); // convert cents to Rands
-                        userService.updateUserBalance(userId, amount);
+//                        BigDecimal amount = new BigDecimal(amountStr).divide(BigDecimal.valueOf(100)); // convert cents to Rands
+//                        userService.updateUserBalance(userId, amount);
+                        BigDecimal amount = new BigDecimal(amountStr).divide(BigDecimal.valueOf(100));
+                        userService.addDeposit(userId, amount);
+
                     }
                 }
             }
@@ -143,4 +150,47 @@ public class PaymentController {
         }
     }
 
+
+
+
+
+    @PostMapping("/withdraw-voucher")
+    public ResponseEntity<Map<String, Object>> withdrawVoucher(@RequestBody Map<String, Object> request) {
+        String userId = (String) request.get("userId");
+        Object amountObj = request.get("amount");
+        String email = (String) request.get("email"); // read email from request
+
+        if (userId == null || amountObj == null || email == null) {
+            return ResponseEntity.badRequest().body(Map.of("error", "User ID, amount, and email are required"));
+        }
+
+        BigDecimal amount = new BigDecimal(amountObj.toString());
+        String voucherCode = "VCHR-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+
+        try {
+            // Withdraw and record transaction
+            userService.withdrawVoucher(userId, amount, voucherCode);
+
+            // Fetch updated user after withdrawal
+            User updatedUser = userService.findById(userId);
+
+            // Send voucher via provided email
+            emailService.sendVoucherEmail(email, voucherCode, amount.toString());
+
+            return ResponseEntity.ok(Map.of(
+                    "message", "Voucher withdrawal successful",
+                    "voucherCode", voucherCode,
+                    "amount", amount,
+                    "emailSentTo", email,
+                    "updatedUser", updatedUser
+            ));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
 }
+
+
+
+
