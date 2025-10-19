@@ -1,7 +1,10 @@
 package com.outh.backend.services;
 
+import com.outh.backend.models.Transaction;
+import com.outh.backend.models.TransactionType;
 import com.outh.backend.models.User;
 import com.outh.backend.repository.UserRepository;
+import com.outh.backend.repository.TransactionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,9 +14,12 @@ import java.math.BigDecimal;
 public class UserService {
 
     private final UserRepository repo;
+    private final TransactionRepository transactionRepository;
 
-    public UserService(UserRepository repo) {
+    public UserService(UserRepository repo, TransactionRepository transactionRepository) {
+
         this.repo = repo;
+        this.transactionRepository = transactionRepository;
     }
 
     public User createOrUpdateUser(String firebaseId, String email) {
@@ -51,6 +57,39 @@ public class UserService {
 
     public User findById(String firebaseId) {
         return repo.findById(firebaseId).orElse(null);
+    }
+
+    public void addDeposit(String userId, BigDecimal amount) {
+        User user = repo.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.setAccount_balance(user.getAccount_balance().add(amount));
+        repo.save(user);
+
+        Transaction tx = new Transaction();
+        tx.setUserId(userId);
+        tx.setTransactionType(TransactionType.DEPOSIT);
+        tx.setAmount(amount);
+        transactionRepository.save(tx);
+    }
+
+    public void withdrawVoucher(String userId, BigDecimal amount, String voucherCode) {
+        User user = repo.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (user.getAccount_balance().compareTo(amount) < 0) {
+            throw new RuntimeException("Insufficient balance");
+        }
+
+        user.setAccount_balance(user.getAccount_balance().subtract(amount));
+        repo.save(user);
+
+        Transaction tx = new Transaction();
+        tx.setUserId(userId);
+        tx.setTransactionType(TransactionType.VOUCHER_WITHDRAWAL);
+        tx.setAmount(amount.negate()); // negative for withdrawal
+        tx.setVoucherCode(voucherCode);
+        transactionRepository.save(tx);
     }
 }
 

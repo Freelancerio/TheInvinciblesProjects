@@ -26,107 +26,109 @@ description: 'The tools and platforms we chose for our project and why they work
     We deploy the backend on Render so we do not manage servers by hand. Render gives us quick deployments, logs, and simple scaling.
   </p>
 
-  <h2>Database: PostgreSQL</h2>
+    <h2>Database: Supabase (PostgreSQL-backed)</h2>
   <p>
-    PostgreSQL is a reliable relational database with good performance and strong SQL features. It works well with Spring Data and gives us room to grow.
-    We manage schema changes with migrations so every change is tracked and repeatable.
+    We use <strong>Supabase</strong> as our hosted database platform because it provides a fully-managed
+    PostgreSQL instance with built-in authentication, row-level security, and real-time capabilities.
+    Supabase offers the flexibility of SQL with the convenience of an API layer and an integrated dashboard
+    for easy data management. This setup lets us focus on building features rather than maintaining servers.
+    Schema changes and migrations remain version-controlled and transparent, while Supabase's scalability
+    ensures smooth performance as our dataset grows.
   </p>
 
-  <h2>Authentication: OAuth2 + Spring Security</h2>
+  <h2>Authentication: Firebase Authentication</h2>
   <p>
-    Users sign in with an external OAuth2 provider (for example Google or GitHub). We use Spring Security's OAuth2 Login to handle the Authorization Code flow.
-    After the provider verifies the user, Spring Security completes the callback, establishes the user session, and applies role-based access to our endpoints.
+    User authentication is handled through <strong>Firebase Authentication</strong>, allowing secure sign-in
+    via email/password, Google, or other OAuth providers. Firebase simplifies the entire login flow and token
+    lifecycle management, removing the need to handle session storage or refresh tokens manually.
+    The frontend interacts directly with Firebase's SDK to authenticate users and receive verified ID tokens,
+    which are then validated by our backend for protected API routes.
   </p>
   <ul>
-    <li>Frontend redirects to the backend's login endpoint.</li>
-    <li>Backend redirects to the OAuth2 provider and handles the callback.</li>
-    <li>On success, Spring Security creates a secure session (HttpOnly cookie) or issues a server-side token.</li>
-    <li>Subsequent API calls include the session cookie automatically; the backend enforces access rules.</li>
+    <li>Users log in through Firebase's secure, hosted authentication flow.</li>
+    <li>Firebase issues a short-lived ID token to the client.</li>
+    <li>The frontend includes this token in API requests to authorize access.</li>
+    <li>The backend verifies the token and enforces role-based permissions for endpoints.</li>
   </ul>
+
 
   <h2>How everything fits together</h2>
 
-  <!-- Responsive, accessible SVG diagram (OAuth2 + Spring Security) -->
-  <div class="not-prose mt-4 mb-8 rounded-xl border border-slate-200 bg-white/80 p-4 dark:border-slate-800 dark:bg-slate-900/60">
-    <svg viewBox="0 0 980 420" role="img" aria-label="System diagram: React client, Spring Boot API on Render with Spring Security OAuth2 Login, PostgreSQL database, and an external OAuth2 provider">
-      <defs>
-        <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
-          <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"></path>
-        </marker>
-        <style>
-          .box { fill: white; stroke: #9bb894ff; stroke-width: 2; rx: 10; }
-          .label { font: 14px system-ui, -apple-system, Segoe UI, Roboto, Arial; fill: #0f172a; }
-          .title { font-weight: 700; }
-          .note  { font: 12px system-ui, -apple-system, Segoe UI, Roboto, Arial; fill: #006c76ff;; opacity: 0.8; }
-          @media (prefers-color-scheme: dark) {
-            .box { fill: rgba(15,23,42,0.9); stroke: #ffffffff; }
-            .label { fill: #fff; }
-          }
-        </style>
-      </defs>
+  <!-- Responsive, accessible SVG diagram (Supabase + Firebase Auth) -->
+<div class="not-prose mt-4 mb-8 rounded-xl border border-slate-200 bg-white/80 p-6 dark:border-slate-800 dark:bg-slate-900/60">
+  <svg viewBox="0 0 1080 480" role="img" aria-label="System diagram: React client, Spring Boot API on Render, Supabase database, and Firebase Authentication">
+    <defs>
+      <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"></path>
+      </marker>
+      <style>
+        .box { fill: white; stroke: #9bb894ff; stroke-width: 2; rx: 10; }
+        .label { font: 15px system-ui, -apple-system, Segoe UI, Roboto, Arial; fill: #0f172a; }
+        .title { font-weight: 700; }
+        .note  { font: 13px system-ui, -apple-system, Segoe UI, Roboto, Arial; fill: #006c76ff; opacity: 0.85; }
+        @media (prefers-color-scheme: dark) {
+          .box { fill: rgba(15,23,42,0.9); stroke: #ffffff; }
+          .label { fill: #ffffff; }
+        }
+      </style>
+    </defs>
 
-      <!-- React Client -->
-      <rect x="40" y="70" width="260" height="100" class="box"></rect>
-      <text x="60" y="105" class="label title">React (Frontend)</text>
-      <text x="60" y="130" class="label">SPA, calls API, shows UI</text>
+    <!-- React Client -->
+    <rect x="40" y="80" width="280" height="110" class="box"></rect>
+    <text x="60" y="115" class="label title">React (Frontend)</text>
+    <text x="60" y="140" class="label">SPA, calls API, shows UI</text>
 
-      <!-- Spring Boot API -->
-      <rect x="360" y="70" width="260" height="100" class="box"></rect>
-      <text x="380" y="100" class="label title">Spring Boot API</text>
-      <text x="380" y="125" class="label">Spring Security, OAuth2 Login</text>
+    <!-- Spring Boot API -->
+    <rect x="370" y="80" width="280" height="110" class="box"></rect>
+    <text x="390" y="115" class="label title">Spring Boot API</text>
+    <text x="390" y="140" class="label">REST endpoints, Auth validation</text>
 
-      <!-- Render -->
-      <rect x="360" y="200" width="260" height="70" class="box"></rect>
-      <text x="380" y="240" class="label">Hosted on Render</text>
+    <!-- Render -->
+    <rect x="370" y="220" width="280" height="70" class="box"></rect>
+    <text x="390" y="260" class="label">Hosted on Render</text>
 
-      <!-- PostgreSQL -->
-      <rect x="680" y="70" width="260" height="100" class="box"></rect>
-      <text x="700" y="100" class="label title">PostgreSQL</text>
-      <text x="700" y="125" class="label">Relational data, migrations</text>
+    <!-- Supabase -->
+    <rect x="700" y="80" width="300" height="110" class="box"></rect>
+    <text x="720" y="115" class="label title">Supabase (PostgreSQL)</text>
+    <text x="720" y="140" class="label">Relational data, API, real-time</text>
 
-      <!-- OAuth2 Provider -->
-      <rect x="40" y="220" width="260" height="100" class="box"></rect>
-      <text x="60" y="255" class="label title">OAuth2 Provider</text>
-      <text x="60" y="280" class="label">Google, GitHub, etc.</text>
+    <!-- Firebase Auth -->
+    <rect x="40" y="250" width="280" height="110" class="box"></rect>
+    <text x="60" y="285" class="label title">Firebase Authentication</text>
+    <text x="60" y="310" class="label">Google, Email/Password, etc.</text>
 
-      <!-- Arrows and flow notes -->
+    <!-- Arrows and flow notes -->
 
-      <!-- React -> API normal calls -->
-      <line x1="300" y1="115" x2="360" y2="115" stroke="currentColor" stroke-width="2" marker-end="url(#arrow)"></line>
-      <text x="305" y="105" class="note">HTTPS JSON</text>
+    <!-- React -> API normal calls -->
+    <line x1="320" y1="125" x2="370" y2="125" stroke="currentColor" stroke-width="2" marker-end="url(#arrow)"></line>
+    <text x="330" y="115" class="note">HTTPS JSON</text>
 
-      <!-- API -> DB -->
-      <line x1="620" y1="115" x2="680" y2="115" stroke="currentColor" stroke-width="2" marker-end="url(#arrow)"></line>
-      <text x="625" y="105" class="note">SQL</text>
+    <!-- API -> DB -->
+    <line x1="650" y1="125" x2="700" y2="125" stroke="currentColor" stroke-width="2" marker-end="url(#arrow)"></line>
+    <text x="655" y="115" class="note">SQL / REST</text>
 
-      <!-- Login: React -> API /login -->
-      <line x1="170" y1="170" x2="170" y2="220" stroke="currentColor" stroke-width="2" marker-end=""></line>
-      <text x="70" y="195" class="note">User clicks Login</text>
-      <line x1="170" y1="170" x2="360" y2="170" stroke="currentColor" stroke-width="2" marker-end="url(#arrow)"></line>
-      <text x="230" y="160" class="note">GET /oauth2/authorization/provider</text>
+    <!-- Login: React -> Firebase -->
+    <line x1="180" y1="190" x2="180" y2="250" stroke="currentColor" stroke-width="2" marker-end="url(#arrow)"></line>
+    <text x="70" y="215" class="note">User signs in via Firebase</text>
 
-      <!-- API -> Provider redirect -->
-      <line x1="360" y1="250" x2="300" y2="250" stroke="currentColor" stroke-width="2" marker-end="url(#arrow)"></line>
-      <text x="315" y="240" class="note">Redirect to provider</text>
+    <!-- Firebase -> React -->
+    <line x1="180" y1="360" x2="180" y2="310" stroke="currentColor" stroke-width="2" marker-end="url(#arrow)"></line>
+    <text x="80" y="345" class="note">Returns ID token</text>
 
-      <!-- Provider -> API callback -->
-      <line x1="300" y1="290" x2="360" y2="290" stroke="currentColor" stroke-width="2" marker-end="url(#arrow)"></line>
-      <text x="305" y="305" class="note">Callback with code</text>
+    <!-- React -> API with token -->
+    <line x1="320" y1="145" x2="370" y2="145" stroke="currentColor" stroke-width="2" marker-end="url(#arrow)"></line>
+    <text x="230" y="155" class="note">Bearer token in header</text>
 
-      <!-- API -> React session established -->
-      <line x1="360" y1="200" x2="360" y2="170" stroke="currentColor" stroke-width="2" marker-end=""></line>
-      <line x1="360" y1="170" x2="300" y2="170" stroke="currentColor" stroke-width="2" marker-end="url(#arrow)"></line>
-      <text x="365" y="160" class="note">Sets HttpOnly session cookie</text>
+    <!-- API verifies token -->
+    <line x1="370" y1="190" x2="370" y2="220" stroke="currentColor" stroke-width="2" marker-end="url(#arrow)"></line>
+    <text x="380" y="205" class="note">CI/CD deploy</text>
 
-      <!-- Normal authenticated calls -->
-      <line x1="300" y1="135" x2="360" y2="135" stroke="currentColor" stroke-width="2" marker-end="url(#arrow)"></line>
-      <text x="230" y="150" class="note">Cookie sent automatically</text>
+    <!-- Normal authenticated flow -->
+    <line x1="650" y1="145" x2="700" y2="145" stroke="currentColor" stroke-width="2" marker-end="url(#arrow)"></line>
+    <text x="655" y="165" class="note">Authorized queries</text>
+  </svg>
+</div>
 
-      <!-- API hosted on Render (arrow down) -->
-      <line x1="490" y1="170" x2="490" y2="200" stroke="currentColor" stroke-width="2" marker-end="url(#arrow)"></line>
-      <text x="410" y="190" class="note">CI deploys image</text>
-    </svg>
-  </div>
 
   <h3>In short</h3>
   <p>

@@ -1,0 +1,14 @@
+coverage:
+  precision: 2
+  range:
+    - 60.0
+    - 80.0
+  round: down
+
+status:
+  patch:
+    default:
+      target: 70%       # Lower PR/diff coverage target
+  project:
+    default:
+      target: 80%       # Lower overall project coverage target

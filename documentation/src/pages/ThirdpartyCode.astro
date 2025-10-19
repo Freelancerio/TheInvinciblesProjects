@@ -1,13 +1,13 @@
 ---
 layout: '../layouts/Layout.astro'
-title: 'Third-Party Code: TheSportsDB API'
-description: 'Why we use TheSportsDB, how we use it, endpoints, auth, limits, risks, and replacement strategy.'
+title: 'Third-Party Code: API-Football (v3)'
+description: 'Why we use API-Football, how we use it, endpoints, authentication, limits, risks, and replacement strategy.'
 ---
 
 <section class="not-prose mb-6 px-6 max-w-4xl mx-auto">
-  <h1 class="text-3xl font-bold tracking-tight">Third-Party Code: TheSportsDB API</h1>
+  <h1 class="text-3xl font-bold tracking-tight">Third-Party Code: API-Football (v3)</h1>
   <p class="mt-2 text-slate-600 dark:text-slate-300">
-    This page documents and justifies our use of the <strong>TheSportsDB</strong> REST API in the project.
+    This page documents and justifies our use of the <strong>API-Football</strong> REST API in the project.
     It explains scope, endpoints, authentication, limits, caching, error handling, privacy considerations,
     alternatives and how we would replace the dependency if needed.
   </p>
@@ -17,134 +17,137 @@ description: 'Why we use TheSportsDB, how we use it, endpoints, auth, limits, ri
 
   <h2>What it is</h2>
   <p>
-    <a href="https://www.thesportsdb.com" target="_blank" rel="noopener">TheSportsDB</a> provides a community-maintained REST JSON API
-    for sports data (teams, leagues, fixtures/events, results, standings, players and images).
-    The public "demo" key (<code>1</code>) is available for testing, while production usage requires a personal API key.
+    <a href="https://www.api-football.com/" target="_blank" rel="noopener">API-Football</a> is a comprehensive RESTful API
+    providing real-time and historical football data across more than 1,000 leagues worldwide.
+    It includes endpoints for fixtures, standings, teams, players, statistics, odds, and live events.
+    Access is provided via the RapidAPI or API-Sports portal and requires an API key for all requests.
   </p>
 
   <h2>Why we chose it (justification)</h2>
   <ul>
-    <li><strong>Coverage vs. complexity:</strong> We primarily need league, team, fixture and result data for football. TheSportsDB's schema is simple and well suited to our MVP.</li>
-    <li><strong>Rapid prototyping:</strong> Public demo key allows the team to build and demo without immediate vendor onboarding.</li>
-    <li><strong>Cost:</strong> Lower entry cost than many enterprise feeds; upgrade path exists for higher usage tiers.</li>
-    <li><strong>JSON over HTTPS:</strong> Easy to consume from our Java (Spring Boot) backend and cache in Postgres.</li>
-    <li><strong>Community assets:</strong> Team badges and league logos enhance our UI without separate scraping.</li>
+    <li><strong>Professional data coverage:</strong> Offers extensive global football data, including live scores, stats, and detailed match events.</li>
+    <li><strong>Reliability:</strong> Backed by API-Sports, ensuring uptime, maintenance, and accurate updates every minute.</li>
+    <li><strong>Feature-rich:</strong> Covers standings, predictions, player stats, and fixture timelines beyond what TheSportsDB offered.</li>
+    <li><strong>Ease of integration:</strong> JSON responses integrate cleanly with our Spring Boot backend and Postgres data layer.</li>
+    <li><strong>Scalable pricing:</strong> Free tier for testing, with affordable paid tiers as data volume increases.</li>
   </ul>
 
   <h2>How we use it (scope)</h2>
   <ul>
-    <li><strong>Leagues &amp; teams:</strong> names, IDs, logos for navigation and team detail pages.</li>
-    <li><strong>Fixtures &amp; results:</strong> past and upcoming matches for the selected league and season.</li>
-    <li><strong>Standings:</strong> table/points for dashboards and H2H context.</li>
+    <li><strong>Leagues &amp; teams:</strong> used for populating navigation menus and team detail views (names, logos, IDs).</li>
+    <li><strong>Fixtures &amp; results:</strong> for recent and upcoming matches per league/season to populate dashboards.</li>
+    <li><strong>Standings:</strong> used for leaderboard and context-based stats within SmartBet's analytics features.</li>
   </ul>
 
   <h2>Key endpoints (read-only)</h2>
-  <p>Base URL: <code>https://www.thesportsdb.com/api/v1/json/&#123;API_KEY&#125;/</code></p>
+  <p>Base URL: <code>https://v3.football.api-sports.io/</code></p>
   <ul>
-    <li><code>all_leagues.php</code> - list leagues.</li>
-    <li><code>lookupleague.php?id=&#123;leagueId&#125;</code> - league details.</li>
-    <li><code>searchteams.php?t=&#123;teamName&#125;</code> / <code>lookupteam.php?id=&#123;teamId&#125;</code> - teams.</li>
-    <li><code>eventspastleague.php?id=&#123;leagueId&#125;</code> - recent results.</li>
-    <li><code>eventsnextleague.php?id=&#123;leagueId&#125;</code> - upcoming fixtures.</li>
-    <li><code>lookupevent.php?id=&#123;eventId&#125;</code> - single event details.</li>
-    <li><code>lookuptable.php?l=&#123;leagueId&#125;&amp;s=&#123;season&#125;</code> - standings.</li>
+    <li><code>leagues</code> - list available leagues and seasons.</li>
+    <li><code>teams?league=&#123;leagueId&#125;&amp;season=&#123;year&#125;</code> - get all teams in a league/season.</li>
+    <li><code>fixtures?league=&#123;leagueId&#125;&amp;season=&#123;year&#125;</code> - get all fixtures (past or upcoming).</li>
+    <li><code>fixtures?id=&#123;fixtureId&#125;</code> - get detailed match information.</li>
+    <li><code>standings?league=&#123;leagueId&#125;&amp;season=&#123;year&#125;</code> - get current league standings.</li>
   </ul>
 
   <h3>Example requests we call from the backend</h3>
-  <pre><code>// recent results (EPL example, using demo key 1)
-GET https://www.thesportsdb.com/api/v1/json/1/eventspastleague.php?id=4328
+  <pre><code>// Premier League fixtures (season 2024)
+GET https://v3.football.api-sports.io/fixtures?league=39&amp;season=2024
 
-// upcoming fixtures
-GET https://www.thesportsdb.com/api/v1/json/1/eventsnextleague.php?id=4328
+// Standings
+GET https://v3.football.api-sports.io/standings?league=39&amp;season=2024
 
-// standings by league + season
-GET https://www.thesportsdb.com/api/v1/json/1/lookuptable.php?l=4328&amp;s=2024-2025
+// Teams
+GET https://v3.football.api-sports.io/teams?league=39&amp;season=2024
 </code></pre>
 
   <h2>Authentication &amp; configuration</h2>
   <ul>
-    <li><strong>Local/dev:</strong> we may use the public demo key <code>1</code> for quick prototyping and screenshots.</li>
-    <li><strong>Staging/production:</strong> we use a private key stored in environment variables on Render (backend) and never expose it to the browser.</li>
-    <li><strong>Never call the API from the frontend:</strong> all requests are proxied via Spring Boot to protect the key and normalize responses.</li>
+    <li><strong>Header-based auth:</strong> API key must be passed as <code>x-apisports-key</code> in the request header.</li>
+    <li><strong>Environment configuration:</strong> Keys are stored as environment variables on Render and never exposed client-side.</li>
+    <li><strong>Local/dev:</strong> We use a free-tier key for testing and staging.</li>
+    <li><strong>Backend proxy:</strong> All API calls are routed through our Spring Boot backend to maintain consistent response formats and security.</li>
   </ul>
 
   <h2>Rate limits &amp; reliability</h2>
   <ul>
-    <li>Public demo key is for testing only and has restricted coverage/throughput; it is not suitable for production.</li>
-    <li>We implement <strong>server-side caching</strong> (short TTL for fixtures/results, longer TTL for league/team metadata) to reduce external calls.</li>
-    <li>Graceful <strong>degradation</strong>: if the provider is slow or down, we serve the last cached data with a "last updated" timestamp.</li>
+    <li>We use the Pro plan which allows up to <strong>7500  requests/day.</li>
+    <li>Higher tiers allow thousands of requests per minute and real-time updates.</li>
+    <li><strong>Server-side caching:</strong> TTL varies-5 minutes for fixtures/results, 1 hour for static data like teams/leagues.</li>
+    <li><strong>Graceful degradation:</strong> Cached data is served if the API is down or rate-limited, ensuring minimal disruption.</li>
   </ul>
 
   <h2>Backend integration details</h2>
   <ul>
-    <li><strong>Service layer:</strong> Spring components fetch and map provider JSON to our DTOs.</li>
-    <li><strong>Persistence:</strong> We store normalized snapshots in Postgres (e.g., <code>teams</code>, <code>fixtures</code>, <code>standings</code>) to power UI queries.</li>
-    <li><strong>Scheduler:</strong> periodic refresh jobs hydrate and update the cache while respecting limits.</li>
-    <li><strong>Error handling:</strong> 4xx/5xx responses are logged; the API returns an empty array or a null-wrapped object when "no data" - we guard against that.</li>
+    <li><strong>Service layer:</strong> Spring services use WebClient to query endpoints and map results to internal DTOs.</li>
+    <li><strong>Persistence:</strong> Parsed data is normalized into Postgres tables for teams, fixtures, and standings.</li>
+    <li><strong>Scheduler:</strong> Background jobs periodically update the cache to maintain fresh data without exceeding rate limits.</li>
+    <li><strong>Error handling:</strong> 429 (rate limit) and 5xx errors trigger fallback to the most recent cached snapshot.</li>
   </ul>
 
   <h2>Privacy &amp; security</h2>
   <ul>
-    <li>No user PII is sent to the provider; we only make public sports lookups.</li>
-    <li>API key is kept server-side in environment variables and never returned to the client.</li>
-    <li>All outbound requests use HTTPS.</li>
+    <li>No user-identifiable data is sent to API-Football.</li>
+    <li>All outbound traffic is over HTTPS.</li>
+    <li>Keys are stored securely and injected via server environment variables only.</li>
   </ul>
 
   <h2>Licensing &amp; usage terms</h2>
   <p>
-    Data is community-maintained; usage requires adherence to TheSportsDB's terms.
-    For non-demo usage we obtain a personal key and follow any attribution requirements on pages that display logos/badges.
+    Data and assets belong to API-Sports. Usage requires compliance with their terms and acceptable use policies.
+    Free-tier keys may not be used for commercial deployments; production requires a paid plan.
   </p>
 
   <h2>Alternatives considered</h2>
   <ul>
-    <li><strong>API-Football / RapidAPI feeds:</strong> great coverage and live odds, but higher cost and more complex schema for our timeline.</li>
-    <li><strong>Self-scraping:</strong> fragile, against many sites' terms, and high maintenance.</li>
+    <li><strong>TheSportsDB:</strong> Easier entry-level API but limited live data, statistics, and professional coverage.</li>
+    <li><strong>SportMonks:</strong> Excellent enterprise data, but higher cost and slower free-tier access.</li>
+    <li><strong>RapidAPI aggregators:</strong> Similar APIs, but we preferred direct integration for better control and limits.</li>
   </ul>
-  <p><strong>Conclusion:</strong> TheSportsDB offers the right balance for our MVP: fast to integrate, sufficient football data, and a clear path to upgrade if needed.</p>
+  <p><strong>Conclusion:</strong> API-Football provides the robust, live, and scalable dataset required for SmartBet's analytical and betting features, with manageable integration effort.</p>
 
   <h2>Risks &amp; mitigations</h2>
   <ul>
-    <li><strong>Data gaps / latency:</strong> mitigate with caching, "last updated" messaging, and the ability to refresh on demand.</li>
-    <li><strong>Schema drift:</strong> map responses via adapter DTOs; keep provider-specific fields isolated from core domain models.</li>
-    <li><strong>Vendor lock-in:</strong> our service layer isolates the provider. Swapping to another feed only requires re-implementing the adapters.</li>
+    <li><strong>Rate limiting:</strong> mitigated by caching and scheduled background refreshes.</li>
+    <li><strong>Vendor dependency:</strong> our abstraction layer allows us to swap providers easily.</li>
+    <li><strong>Data consistency:</strong> periodic verification jobs ensure database parity with API results.</li>
   </ul>
 
   <h2>Replacement strategy (how to swap providers)</h2>
   <ol>
-    <li>Introduce a new <code>SportsDataProvider</code> interface + implementation for the alternative feed.</li>
-    <li>Map the new provider&#39;s JSON to our existing DTOs (<code>TeamDto</code>, <code>FixtureDto</code>, <code>StandingDto</code>).</li>
-    <li>Run contract tests against the service layer to ensure parity.</li>
-    <li>Flip configuration (feature flag/env var) to route traffic to the new provider.</li>
+    <li>Define a <code>SportsDataProvider</code> interface with endpoints for fixtures, teams, and standings.</li>
+    <li>Implement a new provider class (e.g., <code>ApiFootballProvider</code>).</li>
+    <li>Adapt the new JSON schema to internal DTOs (<code>TeamDto</code>, <code>FixtureDto</code>, <code>StandingDto</code>).</li>
+    <li>Run integration and contract tests for equivalence, then switch via an environment variable.</li>
   </ol>
 
   <h2>Sample Spring service (abbreviated)</h2>
-  <pre><code>// Pseudocode: fetch next events for a league
+  <pre><code>// Pseudocode: fetch next fixtures for a league
 @Service
-public class SportsDbService &#123;
+public class ApiFootballService &#123;
   private final WebClient http;
-  @Value("$&#123;sportsdb.key&#125;") String apiKey;
+  @Value("$&#123;apifootball.key&#125;") String apiKey;
 
-  public Mono&lt;EventsResponse&gt; nextEvents(String leagueId) &#123;
-    String url = "https://www.thesportsdb.com/api/v1/json/"
-      + apiKey + "/eventsnextleague.php?id=" + leagueId;
-    return http.get().uri(url)
+  public Mono&lt;FixturesResponse&gt; getFixtures(int leagueId, int season) &#123;
+    String url = "https://v3.football.api-sports.io/fixtures?league=" + leagueId + "&season=" + season;
+    return http.get()
+      .uri(url)
+      .header("x-apisports-key", apiKey)
       .retrieve()
-      .bodyToMono(EventsResponse.class)
-      .onErrorResume(ex -> cacheLastGood("next:" + leagueId));
+      .bodyToMono(FixturesResponse.class)
+      .onErrorResume(ex -> cacheLastGood("fixtures:" + leagueId));
   &#125;
 &#125;
 </code></pre>
 
   <h2>Frontend usage</h2>
   <p>
-    The React app never hits TheSportsDB directly. It calls our Spring endpoints, which return normalized JSON.
-    This keeps keys secret, responses consistent, and allows us to enrich the data with our derived metrics.
+    The React app never calls API-Football directly. It communicates only with our backend endpoints.
+    This ensures key protection, uniform data formatting, and consistent enrichment of statistics before display.
   </p>
 
   <h2>Attribution</h2>
   <p class="text-sm">
-    "Sports data provided by TheSportsDB." Logos and badges remain property of their respective owners.
+    "Football data provided by API-Football (API-Sports)." Logos and data remain the property of their respective leagues and owners.
   </p>
 
 </div>

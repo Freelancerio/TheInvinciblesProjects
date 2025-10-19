@@ -1,0 +1,123 @@
+---
+layout: '../layouts/Layout.astro'
+title: 'Feature Overview & System Functionality'
+description: 'Comprehensive breakdown of EPL SmartBets main features - from match insights and betting predictions to user profiles and leaderboards.'
+---
+
+<section class="not-prose mb-6 px-6 max-w-4xl mx-auto">
+  <h1 class="text-3xl font-bold tracking-tight">EPL SmartBet - Feature Documentation</h1>
+  <p class="mt-2 text-slate-600 dark:text-slate-300">
+    This section outlines the key functionality and user experience flows across the <strong>EPL SmartBet</strong> platform.
+    Our web application integrates real-world football data with analytical modeling to deliver a complete betting and
+    prediction experience - combining statistics, betting logic, and user interactivity.
+  </p>
+</section>
+
+<div class="prose prose-slate dark:prose-invert px-6 max-w-4xl mx-auto">
+
+  <h2>1. Home Dashboard</h2>
+  <p>
+    Upon login, users are welcomed with a personalized <strong>dashboard</strong> displaying:
+  </p>
+  <ul>
+    <li><strong>Upcoming Fixtures</strong> - Lists scheduled Premier League matches with kickoff times and teams.</li>
+    <li><strong>Recent Results</strong> - Displays the latest completed matches and their outcomes.</li>
+    <li><strong>League Standings</strong> - Shows the current Premier League table for the 2025/2026 season, including points, games played, and goal difference.</li>
+  </ul>
+  <p>
+    Clicking on a fixture from the <strong>Recent Results</strong> opens the <em>Fixture Details</em> page, which contains team-specific
+    statistics and match performance data for that game.
+  </p>
+
+  <h2>2. Fixture Details</h2>
+  <p>
+    The <strong>Fixture Details</strong> page provides an analytical breakdown of match statistics - including team performance metrics,
+    goals scored, and defensive indicators. If no data is available for a given fixture, the system clearly displays a message notifying the user.
+  </p>
+
+  <h2>3. Team Strength Analysis</h2>
+  <p>
+    Clicking on any team from the <strong>Standings Table</strong> navigates to the <strong>Team Strength</strong> page.
+    This page visualizes our algorithmically derived <em>Attack</em>, <em>Midfield</em>, <em>Defense</em>, and <em>Squad Strength</em> scores.
+  </p>
+  <p>
+    Users can also toggle between past seasons - 2023, 2024, and 2025/2026 - to analyze how a team's relative strength evolved across different campaigns.
+  </p>
+
+  <h2>4. Statistical Comparison Tool</h2>
+  <p>
+    The <strong>Stats Analysis</strong> button provides access to our <em>Team Comparison</em> feature.
+    This allows users to compare two teams (even from different seasons) based on their calculated strength ratings.
+    The system computes a <strong>strength ratio</strong> and highlights which team is stronger overall, with visual
+    indicators showing the percentage difference.
+  </p>
+
+  <h2>5. Betting System</h2>
+  <p>
+    The <strong>Bets</strong> tab provides access to our dynamic betting system, which lists upcoming matches with projected win probabilities for each outcome (Home, Draw, Away).
+  </p>
+  <ul>
+    <li>Users can view odds and probability percentages per team.</li>
+    <li>Clicking on a match opens a <strong>Bet Modal</strong> where users can select an outcome and enter their bet amount.</li>
+    <li>The user's account balance (displayed in the profile) is updated accordingly after each bet placement.</li>
+  </ul>
+
+  <h2>6. Predictions Engine</h2>
+  <p>
+    The <strong>Predictions</strong> page lets users experiment with different predictive factors (e.g., previous points, goal differences, or positions) to generate season outcome predictions.
+  </p>
+  <p>
+    Users can select any combination of factors to influence the algorithm, which then produces:
+  </p>
+  <ul>
+    <li>A calculated <strong>Prediction Confidence</strong> score.</li>
+    <li>The number of <strong>Teams Analyzed</strong>.</li>
+    <li>An <strong>Algorithm Version</strong> reference.</li>
+    <li>A predicted <strong>Final League Table</strong> for the chosen season.</li>
+  </ul>
+
+  <h2>7. User Profile</h2>
+  <p>
+    The <strong>Profile</strong> page centralizes user-related actions and data. Features include:
+  </p>
+  <ul>
+    <li>Editing personal details such as username.</li>
+    <li>Viewing and managing <strong>account balance</strong> (funds available for betting and withdrawals).</li>
+    <li>Access to <strong>Deposit Funds</strong> and <strong>Withdraw Money</strong> functions.</li>
+    <li>Displaying <strong>Betting Statistics</strong> including total bets, profit, and win rate.</li>
+    <li>Viewing current standing on the <strong>Predictions Leaderboard</strong>.</li>
+  </ul>
+
+  <h2>8. Leaderboards</h2>
+  <p>
+    The <strong>Leaderboards</strong> tab showcases user rankings based on prediction and betting accuracy.
+    Users can toggle between <em>All-Time</em> and specific season leaderboards (2023, 2024, 2025).
+  </p>
+  <ul>
+    <li><strong>All-Time Leaderboard</strong> - Aggregates total points earned across all seasons.</li>
+    <li><strong>Top Performers</strong> - Displays the highest-scoring users for quick comparison.</li>
+    <li>A search bar allows filtering users by email or username.</li>
+  </ul>
+
+  <h2>9. Design Consistency</h2>
+  <p>
+    Across all pages, SmartBet maintains a cohesive UI theme - dark purple gradients with green highlights for emphasis.
+    The navigation bar remains persistent, providing quick access to all core modules: <em>Home</em>, <em>Profile</em>,
+    <em>Predictions</em>, <em>Bets</em>, and <em>Leaderboards</em>.
+  </p>
+
+  <h2>10. Summary</h2>
+  <p>
+    SmartBet merges sports analytics with interactive design - empowering users to analyze teams, make predictions,
+    and participate in simulated betting while tracking their progress through live leaderboards. 
+    Together, these features provide a dynamic and data-driven football experience.
+  </p>
+
+  <img
+  src="/deployment-diagram.svg"
+  alt="Deployment diagram: client, Vercel, Firebase, Render API, Supabase/PostgreSQL"
+  class="rounded-xl border border-slate-200 dark:border-slate-800"
+/>
+
+
+</div>
