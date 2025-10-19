@@ -1,201 +1,258 @@
-     * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+/* General reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
 
-        :root {
-            --primary: #38003c;
-            --secondary: #00ff85;
-            --accent: #e90052;
-            --light: #f5f5f5;
-            --dark: #1a1a1a;
-            --gray: #717171;
-            --error: #ff3860;
-        }
+:root {
+  --primary: #38003c;
+  --secondary: #00ff85;
+  --accent: #e90052;
+  --light: #f5f5f5;
+  --dark: #1a1a1a;
+  --gray: #717171;
+  --error: #ff3860;
+}
 
-        .login-page {
-            background: linear-gradient(rgba(56, 0, 60, 0.85), rgba(56, 0, 60, 0.95)), url('https://www.telecomasia.net/upload/iblock/0a9/0a911ac74824875515cbb1a61e92f4fa.jpg') center/cover no-repeat;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            color: white;
-        }
+/* Page background */
+.login-page {
+  background: linear-gradient(rgba(56, 0, 60, 0.85), rgba(56, 0, 60, 0.95)),
+    url('https://www.telecomasia.net/upload/iblock/0a9/0a911ac74824875515cbb1a61e92f4fa.jpg')
+      center/cover no-repeat;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  color: white;
+}
 
-        .login-container {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 40px;
-            width: 100%;
-            max-width: 450px;
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
+/* Container */
+.login-container {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  border-radius: 15px;
+  padding: 40px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
 
-        .logo {
-            text-align: center;
-            margin-bottom: 30px;
-        }
+/* Logo */
+.logo {
+  text-align: center;
+  margin-bottom: 30px;
+}
+.logo i {
+  color: var(--secondary);
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+}
+.logo h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+.logo span {
+  color: var(--secondary);
+}
 
-        .logo i {
-            color: var(--secondary);
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-        }
+/* Input fields */
+.form-group {
+  margin-bottom: 20px;
+}
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+.input-with-icon {
+  position: relative;
+}
+.input-with-icon i {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--gray);
+}
+.input-with-icon input {
+  width: 100%;
+  padding: 12px 15px 12px 45px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+.input-with-icon input:focus {
+  outline: none;
+  border-color: var(--secondary);
+  box-shadow: 0 0 0 3px rgba(0, 255, 133, 0.2);
+}
+.input-with-icon input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
 
-        .logo h1 {
-            font-size: 1.8rem;
-            font-weight: 700;
-        }
+/* Buttons */
+.login-btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--secondary);
+  color: var(--primary);
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+}
+.login-btn:hover {
+  background: #00d46e;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
 
-        .logo span {
-            color: var(--secondary);
-        }
+/* Divider */
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 25px 0;
+  color: rgba(255, 255, 255, 0.6);
+}
+.divider::before,
+.divider::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+.divider span {
+  padding: 0 15px;
+  font-size: 0.9rem;
+}
 
-        .form-group {
-            margin-bottom: 20px;
-        }
+/* Google button */
+.google-btn {
+  width: 100%;
+  padding: 12px;
+  background: white;
+  color: var(--dark);
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.google-btn:hover {
+  background: #f0f0f0;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
 
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
+/* Signup link */
+.signup-section {
+  text-align: center;
+  margin-top: 30px;
+  font-size: 0.95rem;
+}
+.signup-section p {
+  color: rgba(255, 255, 255, 0.8);
+}
+.signup-link {
+  color: var(--secondary);
+  text-decoration: none;
+  font-weight: 600;
+  margin-left: 5px;
+  transition: all 0.3s ease;
+}
+.signup-link:hover {
+  text-decoration: underline;
+}
 
-        .input-with-icon {
-            position: relative;
-        }
+/* Error message */
+.error-message {
+  color: var(--error);
+  font-size: 0.9rem;
+  margin-top: 5px;
+  display: block;
+  text-align: center;
+}
 
-        .input-with-icon i {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--gray);
-        }
+/* === MOBILE RESPONSIVENESS === */
 
-        .input-with-icon input {
-            width: 100%;
-            padding: 12px 15px 12px 45px;
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-        }
+/* For tablets and small laptops */
+@media (max-width: 768px) {
+  .login-container {
+    padding: 30px;
+    max-width: 400px;
+  }
 
-        .input-with-icon input:focus {
-            outline: none;
-            border-color: var(--secondary);
-            box-shadow: 0 0 0 3px rgba(0, 255, 133, 0.2);
-        }
+  .logo h1 {
+    font-size: 1.6rem;
+  }
+}
 
-        .input-with-icon input::placeholder {
-            color: rgba(255, 255, 255, 0.6);
-        }
+/* For phones */
+@media (max-width: 500px) {
+  .login-page {
+    padding: 0;
+    background-position: center top;
+  }
 
-        .login-btn {
-            width: 100%;
-            padding: 14px;
-            background: var(--secondary);
-            color: var(--primary);
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 10px;
-        }
+  .login-container {
+    width: 90%;
+    max-width: none;
+    padding: 35px 25px;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
 
-        .login-btn:hover {
-            background: #00d46e;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-        }
+  .logo i {
+    font-size: 2.2rem;
+  }
 
-        .divider {
-            display: flex;
-            align-items: center;
-            margin: 25px 0;
-            color: rgba(255, 255, 255, 0.6);
-        }
+  .logo h1 {
+    font-size: 1.6rem;
+  }
 
-        .divider::before,
-        .divider::after {
-            content: "";
-            flex: 1;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-        }
+  .input-with-icon input {
+    padding: 12px 12px 12px 40px;
+    font-size: 1rem;
+  }
 
-        .divider span {
-            padding: 0 15px;
-            font-size: 0.9rem;
-        }
+  .login-btn,
+  .google-btn {
+    padding: 14px;
+    font-size: 1rem;
+  }
 
-        .google-btn {
-            width: 100%;
-            padding: 12px;
-            background: white;
-            color: var(--dark);
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
+  .divider span {
+    font-size: 0.85rem;
+  }
 
-        .google-btn:hover {
-            background: #f0f0f0;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
+  .signup-section {
+    font-size: 0.9rem;
+  }
+}
 
-        .signup-section {
-            text-align: center;
-            margin-top: 30px;
-            font-size: 0.95rem;
-        }
 
-        .signup-section p {
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        .signup-link {
-            color: var(--secondary);
-            text-decoration: none;
-            font-weight: 600;
-            margin-left: 5px;
-            transition: all 0.3s ease;
-        }
-
-        .signup-link:hover {
-            text-decoration: underline;
-        }
-
-        .error-message {
-            color: var(--error);
-            font-size: 0.9rem;
-            margin-top: 5px;
-            display: none;
-        }
-
-        @media (max-width: 500px) {
-            .login-container {
-                padding: 30px 20px;
-            }
-            
-            .logo h1 {
-                font-size: 1.5rem;
-            }
-        }
+/* Prevent zooming on input focus for iOS Safari */
+input,
+button {
+  font-size: 16px;
+}
