@@ -35,3 +35,24 @@ describe("Dashboard", () => {
     expect(rootDiv).toHaveStyle("background: linear-gradient");
   });
 });
+
+describe("Other Sports section UI", () => {
+  test("renders the Other Sports section heading", async () => {
+    renderWithProviders();
+    const heading = await screen.findByText(/other sports/i);
+    expect(heading).toBeInTheDocument();
+  });
+
+  test("renders a grid layout for other sports cards", async () => {
+    const { container } = renderWithProviders();
+
+    // Wait for heading (ensures section is loaded)
+    await screen.findByText(/other sports/i);
+
+    // Look for the grid element directly by class
+    const grid = container.querySelector(".other-sports .grid");
+
+    expect(grid).toBeInTheDocument();
+    expect(grid).toHaveClass("grid");
+  });
+});
