@@ -414,6 +414,64 @@ const title = "Frontend Testing Overview";
         <span class="code">MemoryRouter</span> with optional <span class="code">useLocation</span> mocks
         to simulate navigation context without a real browser environment.
       </p>
+
+            <!-- ===================== -->
+      <!-- Backend Testing (inline) -->
+      <!-- ===================== -->
+      <section id="backend-testing" class="section">
+        <h2>Backend testing <span class="badge">unit + integration</span></h2>
+        <p class="lede" style="margin-top:.25rem">
+          This section summarizes the backend tests from our “Backend Tests” document (rebuilt from the PDF)
+          so the full content is readable directly on this page.
+        </p>
+
+        <h3>StandingsPredictionServiceTest.java</h3>
+        <p>
+          Validates our standings prediction logic using multiple factors.
+          The test <strong>mocks</strong> the standings repository and drives the service with different feature
+          <em>tags</em> to ensure correct scoring and ordering of results.
+        </p>
+        <ul>
+          <li>Features covered via tags include: <em>previous season points</em>, <em>goal differences</em>, and <em>league positions</em>.</li>
+          <li>Handles teams missing from previous seasons by <strong>defaulting values</strong> safely.</li>
+          <li>Verifies that predictions are <strong>sorted</strong> deterministically and returned as DTOs.</li>
+          <li>Asserts correct behavior when some fields are null / absent.</li>
+        </ul>
+
+        <h3>Additional tests</h3>
+
+        <h4>LeagueTeamsTest</h4>
+        <ul>
+          <li>Entity model validation: constructors, getters, and setters behave as expected.</li>
+          <li>Edge-case handling for <strong>null values</strong> and <strong>empty strings</strong>.</li>
+        </ul>
+
+        <h4>LeagueTeamRepositoryTest</h4>
+        <ul>
+          <li>CRUD operations for <code>LeagueTeams</code> (create, read, update, delete).</li>
+          <li>Unique-constraint checks (e.g., duplicate names).</li>
+          <li>Query methods: <em>find by name</em> and <em>find by ID</em> return consistent results.</li>
+        </ul>
+
+        <h4>LeagueTeamServiceTest</h4>
+        <ul>
+          <li>Service-layer workflow for team management.</li>
+          <li>API integration path: updating teams from external sources.</li>
+          <li>Robust handling of varied API responses and error conditions.</li>
+        </ul>
+
+        <h3>Related backend behaviors verified</h3>
+        <ul>
+          <li>Leaderboards logic and user-facing ordering.</li>
+          <li>Accuracy-percentage calculations per user (consistency checks on arithmetic and rounding).</li>
+        </ul>
+
+        <div class="note">
+          Source: “Backend Tests” PDF (image-only). Text was extracted and reformatted for readability.
+          If you want the original page as a downloadable image too, I can add it below.
+        </div>
+      </section>
+
     </main>
   </body>
 </html>

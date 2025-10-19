@@ -18,7 +18,7 @@ description: 'Our branching strategy and policies for day-to-day development.'
   <h2>Why we chose GitLab Flow</h2>
   <ul>
     <li><strong>Simple mental model:</strong> one primary branch (<code>main</code>) + short-lived feature branches. No complicated multi-branch release trains.</li>
-    <li><strong>Fits CI/CD and environments:</strong> changes flow from <em>feature</em> &rarr; <em>dev</em> &rarr; <em>main</em> and can be deployed to preview/staging/production easily.</li>
+    <li><strong>Fits CI/CD and environments:</strong> changes flow from <em>feature</em> &rarr; <em>auth-feature</em> &rarr; <em>main</em> and can be deployed to preview/staging/production easily.</li>
     <li><strong>Review-friendly:</strong> everything lands through Merge Requests (MRs) with checks, code review, and status badges.</li>
     <li><strong>Low overhead for a small team:</strong> fewer permanent branches than Git Flow; more structure than trunk-only.</li>
   </ul>
@@ -118,8 +118,9 @@ main -> production deploy
     </div>
   </div>
 
+  <h2>Note</h2>
+  <p>The methodology was only followed for commits and pushing of code that was not documentation as documentation was just pushed straight to the main branch in isolation where the commit only contained documentation changes</p>
+
   <h2>References</h2>
-  <p class="text-sm">
-    We used public guides on branching strategies to shape a lightweight flow suitable for our project timeline (for example, the overview on AB Tasty's blog).
-  </p>
+  <a class="text-sky-600 hover:underline" href="https://www.abtasty.com/blog/git-branching-strategies/" target="_blank" rel="noopener"> Where we found this methodology</a>
 </div>

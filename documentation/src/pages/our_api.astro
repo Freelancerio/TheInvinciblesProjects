@@ -1,0 +1,211 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const title = 'Exposed Predictions API';
+const description =
+  'Read-only football predictions API used by SmartBet: data model, endpoints, auth, formats, notes, and examples.';
+---
+
+<Layout title={title} description={description}>
+  <section class="not-prose mb-6 px-6 max-w-4xl mx-auto">
+    <h1 class="text-3xl font-bold tracking-tight">Exposed Predictions API</h1>
+    <p class="mt-2 text-slate-600 dark:text-slate-300">
+      Read-only HTTP API that exposes lightweight match prediction data for use by our frontend and partners.
+      Responses return <strong>DTOs</strong> (not full entities) to hide internal fields and reduce payload sizes.
+    </p>
+  </section>
+
+  <div class="prose prose-slate dark:prose-invert px-6 max-w-4xl mx-auto">
+    <h2>Base URL</h2>
+    <pre><code>/exposed/api/predictions</code></pre>
+
+    <h2>What it provides</h2>
+    <p>
+      Predictions and match metadata: predicted vs actual scores, teams, logos, match status, season,
+      league round, kickoff date/time, and venue.
+    </p>
+
+    <h2>Data Model — <code>ExposedApiDTO</code></h2>
+    <table>
+      <thead>
+        <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>matchId</code></td><td>Long</td><td>Unique ID of the match (API-Football fixture ID).</td></tr>
+        <tr><td><code>homeTeam</code></td><td>String</td><td>Name of the home team.</td></tr>
+        <tr><td><code>awayTeam</code></td><td>String</td><td>Name of the away team.</td></tr>
+        <tr><td><code>matchStatus</code></td><td>String</td><td>Status (e.g., <code>NS</code>, <code>LIVE</code>, <code>FT</code>).</td></tr>
+        <tr><td><code>season</code></td><td>Integer</td><td>Season year (e.g., <code>2025</code>).</td></tr>
+        <tr><td><code>leagueRound</code></td><td>String</td><td>League round label (e.g., <em>Regular Season - 12</em>).</td></tr>
+        <tr><td><code>dateTime</code></td><td>String (ISO 8601)</td><td>Match date/time in UTC.</td></tr>
+        <tr><td><code>venue</code></td><td>String</td><td>Stadium or venue name.</td></tr>
+        <tr><td><code>homeLogo</code></td><td>String (URL)</td><td>URL of the home team logo.</td></tr>
+        <tr><td><code>awayLogo</code></td><td>String (URL)</td><td>URL of the away team logo.</td></tr>
+        <tr><td><code>predHomeScore</code></td><td>Integer</td><td>Predicted home score.</td></tr>
+        <tr><td><code>predAwayScore</code></td><td>Integer</td><td>Predicted away score.</td></tr>
+        <tr><td><code>homeScore</code></td><td>Integer | null</td><td>Final home score (if finished; else <code>null</code>).</td></tr>
+        <tr><td><code>awayScore</code></td><td>Integer | null</td><td>Final away score (if finished; else <code>null</code>).</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Endpoints</h2>
+
+    <h3>1) Get All Predictions</h3>
+    <p><strong>GET</strong> <code>/exposed/api/predictions</code></p>
+    <p>Returns all available match predictions.</p>
+    <details>
+      <summary>Example Response (200)</summary>
+<pre><code class="language-json">[
+  &#123;
+    "matchId": 12345,
+    "homeTeam": "Arsenal",
+    "awayTeam": "Chelsea",
+    "matchStatus": "FT",
+    "season": 2025,
+    "leagueRound": "Regular Season - 12",
+    "dateTime": "2025-03-14T17:00:00",
+    "venue": "Emirates Stadium",
+    "homeLogo": "https://media.api-sports.io/football/teams/42.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/49.png",
+    "predHomeScore": 2,
+    "predAwayScore": 1,
+    "homeScore": 2,
+    "awayScore": 1
+  &#125;
+]</code></pre>
+    </details>
+
+    <h3>2) Get Predictions by Team</h3>
+    <p><strong>GET</strong> <code>/exposed/api/predictions/team/&#123;teamName&#125;</code></p>
+    <p>Fetch predictions for matches where the given team appears as home or away (case-insensitive).</p>
+    <table>
+      <thead><tr><th>Path Variable</th><th>Type</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>teamName</code></td><td>String</td><td>Team name (e.g., <em>Arsenal</em>).</td></tr>
+      </tbody>
+    </table>
+    <details>
+      <summary>Example Response (200)</summary>
+<pre><code class="language-json">[
+  &#123;
+    "matchId": 45321,
+    "homeTeam": "Arsenal",
+    "awayTeam": "Tottenham",
+    "matchStatus": "NS",
+    "season": 2025,
+    "leagueRound": "Regular Season - 7",
+    "dateTime": "2025-09-10T19:30:00",
+    "venue": "Emirates Stadium",
+    "homeLogo": "https://media.api-sports.io/football/teams/42.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/47.png",
+    "predHomeScore": 3,
+    "predAwayScore": 1,
+    "homeScore": null,
+    "awayScore": null
+  &#125;
+]</code></pre>
+    </details>
+
+    <h3>3) Get Predictions by Season</h3>
+    <p><strong>GET</strong> <code>/exposed/api/predictions/season/&#123;season&#125;</code></p>
+    <p>Retrieve all predictions for a specific season (e.g., <code>2024</code>, <code>2025</code>).</p>
+    <table>
+      <thead><tr><th>Path Variable</th><th>Type</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>season</code></td><td>Integer</td><td>Season year.</td></tr>
+      </tbody>
+    </table>
+    <details>
+      <summary>Example Response (200)</summary>
+<pre><code class="language-json">[
+  &#123;
+    "matchId": 48312,
+    "homeTeam": "Liverpool",
+    "awayTeam": "Manchester City",
+    "matchStatus": "FT",
+    "season": 2025,
+    "leagueRound": "Regular Season - 28",
+    "dateTime": "2025-03-12T18:00:00",
+    "venue": "Anfield",
+    "homeLogo": "https://media.api-sports.io/football/teams/40.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/50.png",
+    "predHomeScore": 2,
+    "predAwayScore": 2,
+    "homeScore": 3,
+    "awayScore": 2
+  &#125;
+]</code></pre>
+    </details>
+
+    <h3>4) Get Predictions by Match ID</h3>
+    <p><strong>GET</strong> <code>/exposed/api/predictions/match/&#123;matchId&#125;</code></p>
+    <p>Return predictions for a specific match by its unique match ID.</p>
+    <table>
+      <thead><tr><th>Path Variable</th><th>Type</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>matchId</code></td><td>Long</td><td>Unique match ID (API-Football fixture ID).</td></tr>
+      </tbody>
+    </table>
+    <details>
+      <summary>Example Response (200)</summary>
+<pre><code class="language-json">[
+  &#123;
+    "matchId": 12345,
+    "homeTeam": "Arsenal",
+    "awayTeam": "Chelsea",
+    "matchStatus": "FT",
+    "season": 2025,
+    "leagueRound": "Regular Season - 12",
+    "dateTime": "2025-03-14T17:00:00",
+    "venue": "Emirates Stadium",
+    "homeLogo": "https://media.api-sports.io/football/teams/42.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/49.png",
+    "predHomeScore": 2,
+    "predAwayScore": 1,
+    "homeScore": 2,
+    "awayScore": 1
+  &#125;
+]</code></pre>
+    </details>
+
+    <h2>Format &amp; Conventions</h2>
+    <ul>
+      <li>All endpoints return <strong>JSON</strong>.</li>
+      <li>Times are <strong>UTC</strong> in ISO-8601 (e.g., <code>YYYY-MM-DDTHH:mm:ss</code>).</li>
+      <li>Responses are <strong>DTOs</strong>; internal fields are not exposed.</li>
+    </ul>
+
+    <h2>Caching guidance</h2>
+    <ul>
+      <li>Completed matches (<code>matchStatus = FT</code>) can be safely cached; values are immutable.</li>
+      <li>Upcoming or live fixtures should have a short TTL, as predictions can change.</li>
+    </ul>
+
+    <h2>Examples by scenario</h2>
+    <table>
+      <thead><tr><th>Scenario</th><th>Endpoint</th></tr></thead>
+      <tbody>
+        <tr><td>Show all upcoming predicted matches</td><td><code>GET /exposed/api/predictions</code></td></tr>
+        <tr><td>Show Arsenal’s predicted matches</td><td><code>GET /exposed/api/predictions/team/Arsenal</code></td></tr>
+        <tr><td>View only 2025 season predictions</td><td><code>GET /exposed/api/predictions/season/2025</code></td></tr>
+        <tr><td>Fetch prediction for a specific match</td><td><code>GET /exposed/api/predictions/match/12345</code></td></tr>
+      </tbody>
+    </table>
+
+    <h2>Notes</h2>
+    <ul>
+      <li>API is read-only.</li>
+      <li>Logo URLs use API-Football media CDN.</li>
+      <li>Team name lookups are case-insensitive.</li>
+    </ul>
+
+    <p class="mt-2 text-slate-600 dark:text-slate-300">
+  This API follows the principles of a <strong>RESTful architecture</strong>. Each endpoint represents a clear
+  resource—such as a match, team, or season—and communicates exclusively using standard HTTP methods.
+  <code>GET</code> requests retrieve prediction data in lightweight JSON format without altering server state.
+  The API is stateless, cache-friendly, and designed for seamless integration with external clients or partner
+  systems that consume football prediction data.
+</p>
+
+  </div>
+</Layout>

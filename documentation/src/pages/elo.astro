@@ -1,117 +1,156 @@
 ---
 layout: '../layouts/Layout.astro'
-title: 'Elo method we are using (Pythagorean season variant)'
-description: 'Season-level Elo using GF/GA with a Pythagorean expectation, re-centered per season, plus pros/cons and a worked example.'
+title: 'Elo and Predictive Models Overview'
+description: 'Comprehensive documentation for our Elo-like strength, match prediction, and standings prediction systems.'
 ---
 
+<!-- ───────────────────────────────────────────── -->
+<!-- Section 1: Team Strength Calculation          -->
+<!-- ───────────────────────────────────────────── -->
+
 <section class="not-prose mb-6 px-6 max-w-4xl mx-auto">
-  <h1 class="text-3xl font-bold tracking-tight">Elo method we're using (with Pythagorean season variant)</h1>
+  <h1 class="text-3xl font-bold tracking-tight">Team Strength Calculation</h1>
+  <p class="mt-2 text-slate-600 dark:text-slate-300">
+    The <strong>TeamStrengthService</strong> computes per-team performance across
+    Attack, Midfield, Defense, and Squad Strength dimensions using normalized match data.
+  </p>
 </section>
 
 <div class="prose prose-slate dark:prose-invert px-6 max-w-4xl mx-auto">
+  <h2>1. Data Aggregation</h2>
+  <p>All <code>MatchStatistics</code> are grouped by team and averaged over all matches played.</p>
 
-  <h2>1 What we want</h2>
+  <h2>2. Attack Strength</h2>
+  <pre><code>Attack = 0.4 &times; Avg(Shots on Goal) + 0.6 &times; Avg(Expected Goals)</code></pre>
+
+  <h2>3. Midfield Strength</h2>
+  <pre><code>Midfield = 0.5 &times; Pass Accuracy + 0.3 &times; Ball Possession + 0.2 &times; Normalized Passes</code></pre>
+
+  <h2>4. Defense Strength</h2>
+  <pre><code>Defense = 0.5 &times; (Saves/Max Saves &times; 100)
+        + 0.3 &times; (Goals Prevented/Max Goals Prevented &times; 100)
+        − 0.2 &times; Goals Conceded</code></pre>
+
+  <h2>5. Squad Strength (Overall)</h2>
+  <pre><code>Squad = 0.4 &times; Attack + 0.3 &times; Midfield + 0.3 &times; Defense</code></pre>
+
+  <h2>6. Persistence</h2>
   <p>
-    A single <em>season-level</em> rating per team, comparable across teams <strong>within the same season</strong>,
-    using only the standings columns <strong>GF</strong> (Goals For) and <strong>GA</strong> (Goals Against)-no match-by-match loop.
+    The service saves all computed strengths to the database,
+    updating existing records when available.
+  </p>
+</div>
+
+<hr class="my-16 border-slate-300 dark:border-slate-700"/>
+
+<!-- ───────────────────────────────────────────── -->
+<!-- Section 2: Prediction Service (Poisson Model) -->
+<!-- ───────────────────────────────────────────── -->
+
+<section class="not-prose mb-6 px-6 max-w-4xl mx-auto">
+  <h1 class="text-3xl font-bold tracking-tight">Match Prediction & Odds Calculation</h1>
+  <p class="mt-2 text-slate-600 dark:text-slate-300">
+    The <strong>PredictionService</strong> predicts match outcomes using a Poisson-based expected
+    goals model incorporating seasonal performance, form, and head-to-head data.
+  </p>
+</section>
+
+<div class="prose prose-slate dark:prose-invert px-6 max-w-4xl mx-auto">
+  <h2>1. Expected Goals (&lambda;)</h2>
+  <pre><code>&lambda;_home = 0.4&times;AvgGoalsScored(home) + 0.3&times;AvgGoalsConceded(away)
+        + 0.2&times;AvgH2HGoals(home) + 0.1&times;FormScore(home)
+
+&lambda;_away = 0.4&times;AvgGoalsScored(away) + 0.3&times;AvgGoalsConceded(home)
+        + 0.2&times;AvgH2HGoals(away) + 0.1&times;FormScore(away)</code></pre>
+
+  <h2>2. Possession Adjustment</h2>
+  <pre><code>possessionFactor = (HomePossession - AwayPossession) / 100
+&lambda;_home *= (1 + possessionFactor)
+&lambda;_away *= (1 - possessionFactor)</code></pre>
+
+  <h2>3. Poisson Distribution</h2>
+  <p>
+    The Poisson distribution models the likelihood of scoring <em>k</em> goals given &lambda;:
+  </p>
+  <pre><code>P(X=k) = (e^(-&lambda;) &times; &lambda;^k) / k!</code></pre>
+
+  <h2>4. Outcome Probabilities</h2>
+  <ul>
+    <li><strong>Home Win:</strong> &Sigma; P(i>j)</li>
+    <li><strong>Draw:</strong> &Sigma; P(i=j)</li>
+    <li><strong>Away Win:</strong> &Sigma; P(i<j)</li>
+  </ul>
+
+  <h2>5. Normalization</h2>
+  <pre><code>total = homeWin + draw + awayWin
+homeWin /= total
+draw /= total
+awayWin /= total</code></pre>
+
+  <h2>6. Outputs</h2>
+  <p>
+    Returns both:
+  </p>
+  <ul>
+    <li><code>MatchPredictionDTO</code> - most likely score and expected &lambda; values</li>
+    <li><code>MatchOdds</code> - probability of Home/Draw/Away outcomes</li>
+  </ul>
+</div>
+
+<hr class="my-16 border-slate-300 dark:border-slate-700"/>
+
+<!-- ───────────────────────────────────────────── -->
+<!-- Section 3: Standings Prediction Service       -->
+<!-- ───────────────────────────────────────────── -->
+
+<section class="not-prose mb-6 px-6 max-w-4xl mx-auto">
+  <h1 class="text-3xl font-bold tracking-tight">Standings Prediction Calculation</h1>
+  <p class="mt-2 text-slate-600 dark:text-slate-300">
+    The <strong>StandingsPredictionService</strong> predicts league table outcomes
+    by combining historical standings and current season metrics using weighted tags.
+  </p>
+</section>
+
+<div class="prose prose-slate dark:prose-invert px-6 max-w-4xl mx-auto">
+  <h2>1. Input</h2>
+  <ul>
+    <li><strong>season</strong>: Current prediction year.</li>
+    <li><strong>tags</strong>: Set of performance factors to include (e.g., <code>goalDifferenceCurrent</code>).</li>
+  </ul>
+
+  <h2>2. Components and Weights</h2>
+  <table>
+    <thead>
+      <tr><th>Category</th><th>Tag</th><th>Weight</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Previous Points</td><td>previousPoints2024 / previousPoints2023</td><td>0.6 / 0.4</td></tr>
+      <tr><td>Goal Difference</td><td>goalDifference2024 / goalDifference2023 / goalDifferenceCurrent</td><td>0.5 / 0.3 / 0.7</td></tr>
+      <tr><td>League Position</td><td>leaguePosition2024 / leaguePosition2023</td><td>(21 - rank) &times; 0.5</td></tr>
+      <tr><td>Goals For/Against</td><td>goalsForCurrent / goalsAgainstCurrent</td><td>+0.2 &divide -0.2</td></tr>
+    </tbody>
+  </table>
+
+  <h2>3. Aggregation</h2>
+  <pre><code>Predicted Score =
+(Points_2024&times;0.6) + (Points_2023&times;0.4)
++ (GoalDiff_2024&times;0.5) + (GoalDiff_2023&times;0.3) + (GoalDiff_Current&times;0.7)
++ PositionWeight(2024) + PositionWeight(2023)
++ (GoalsFor&times;0.2) − (GoalsAgainst&times;0.2)</code></pre>
+
+  <h2>4. Ranking</h2>
+  <p>
+    Teams are sorted by descending predicted score and ranked from 1 to N.
   </p>
 
-  <hr />
-
-  <h2>2 Classic Elo (quick recap)</h2>
- <p>  Classical Elo gives every team a single number that represents its strength. 
- Before a match, those numbers are compared to figure out how much each side is expected 
- to get from the game (wins are expected for big favorites, draws or losses are more likely for underdogs).
-  After the match, both teams' ratings are updated: the team that did better than expected gains 
-  points, the other loses the same amount, and a draw sits in between. 
-  Upsets trigger larger swings because the result deviates more from expectation. 
-  A tuning constant ("K-factor") controls how fast ratings move-higher K means more volatile ratings. 
-  Many football variants also add small tweaks like a home-advantage bump before computing expectations, 
-  slightly larger changes for bigger goal margins, or different K values for friendlies versus high-stakes matches. Over time, these incremental updates settle on ratings that best reflect and predict teams' true level. </p>
-
-  <hr />
-
-  <h2>3 Our season-level (Pythagorean) Elo</h2>
-
-  <h3>3.1 Convert GF/GA -> implied strength share</h3>
-  <p>Use a football "Pythagorean" expectation with exponent γ (we use γ = 1.7):</p>
-  <figure class="my-4">
-    <img
-      src="p_formula.png"
-      alt="p = GF^γ / (GF^γ + GA^γ)"
-      class="mx-auto block max-w-full h-auto rounded"
-    />
-    <figcaption class="text-sm text-slate-500 dark:text-slate-400">Implied strength share from GF/GA with exponent γ.</figcaption>
-  </figure>
-  <p><strong>Intuition:</strong> if you score much more than you concede, <em>p -> 1</em>; if you concede more than you score, <em>p -> 0</em>.</p>
-
-  <h3>3.2 Map share p -> Elo offset</h3>
-  <p>Invert Elo's logistic curve to express "how many Elo points above/below average" a team projects:</p>
-  <figure class="my-4">
-    <img
-      src="delta.png"
-      alt="Δ = 400 · log10(p / (1 - p))"
-      class="mx-auto block max-w-full h-auto rounded"
-    />
-  </figure>
-  <p><em>Δ</em> is a <strong>relative</strong> strength vs an average opponent.</p>
-
-  <h3>3.3 Re-center within the season</h3>
-  <p>Make ratings comparable <strong>within the league/season</strong> by setting the season average to 1500:</p>
-  <figure class="my-4">
-    <img
-      src="re_center.png"
-      alt="Elo_season = 1500 + (Δ − mean(Δ))"
-      class="mx-auto block max-w-full h-auto rounded"
-    />
-  </figure>
-  
-
-  <hr />
-
-  <h2>5 Worked micro-example (season snapshot)</h2>
-  
-      <figure class="my-3">
-        <img
-          src="example.png"
-          alt="p = 66^{1.7} / (66^{1.7} + 36^{1.7}) ≈ 0.737"
-          class="mx-auto block max-w-full h-auto rounded"
-        />
-      </figure>
-    
-    
-
-  <hr />
-
- 
-
-  <h2>6 Pros &amp; cons of this method</h2>
-
-  <h3>Pros</h3>
+  <h2>5. Output</h2>
   <ul>
-    <li><strong>Data-light:</strong> needs only season GF/GA (easy to scrape or pull from an API).</li>
-    <li><strong>Fast &amp; simple:</strong> no match loop, no opponent graphs, scales instantly across leagues/seasons.</li>
-    <li><strong>Predictive signal:</strong> goal difference (via Pythagorean <em>p</em>) is a strong indicator of team quality.</li>
-    <li><strong>Comparable within a season:</strong> re-centering at 1500 prevents drift and makes tables easy to read.</li>
-    <li><strong>Extensible:</strong> can add home/away correction, smoothing, and shrinkage <em>without</em> changing the core idea.</li>
+    <li>Team Name and Logo</li>
+    <li>Predicted Score</li>
+    <li>Predicted Rank</li>
   </ul>
 
-  <h3>Cons</h3>
-  <ul>
-    <li><strong>No opponent strength adjustment:</strong> doesn't know if GF/GA came vs strong or weak schedules.</li>
-    <li><strong>Single-season snapshot:</strong> not a rolling, match-by-match "live" Elo-use classic Elo if you need that.</li>
-    <li><strong>Sensitive early in season:</strong> GA=0 or tiny samples can produce extreme Δ (we mitigate with +1 and shrinkage).</li>
-    <li><strong>Cross-league comparability requires care:</strong> absolute values differ by league scoring environments; use separate re-centering per league.</li>
-  </ul>
-
-  <hr />
-
-  <h2>8 Why we chose this approach</h2>
-  <ul>
-    <li>We often only have standings (GF/GA) for historical leagues and want a consistent metric <em>now</em>, not after building a full fixture pipeline.</li>
-    <li>It gives a clean, monotonic mapping from season scoring to Elo scale, which stakeholders already understand.</li>
-    <li>It's <strong>transparent:</strong> one exponent (γ), one logit mapping, and a simple re-center-easy to document, audit, and reproduce.</li>
-    <li>It's practical for databases: a single pass per league-season produces complete, comparable ratings we can store and query.</li>
-  </ul>
-
+  <p>
+    Returned as a list of <code>PredictedStandingDTO</code> objects.
+  </p>
 </div>
