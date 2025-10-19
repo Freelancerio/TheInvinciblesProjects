@@ -263,28 +263,10 @@ description: 'How we plan, track, and review work using a simple Jira workflow.'
 
     <h2>6. Sprint Retrospective</h2>
     <p><strong>What went well:</strong> Consistent Scrum ceremonies; transparent issue tracking and releases; productive stakeholder sessions; docs advanced (DB, third-party, testing).</p>
-    <p><strong>What didn’t go well:</strong> API externalization slipped; test coverage behind target; formal user-testing cadence not set.</p>
+    <p><strong>What didn't go well:</strong> API externalization slipped; test coverage behind target; formal user-testing cadence not set.</p>
     <p><strong>Actions for Sprint 3:</strong> Make the <em>project API externally consumable</em>; expand automated tests and deflake CI; establish a formal user-feedback process; continue documentation hardening.</p>
 
-    <h2>7. Rubric-Aligned Self-Assessment (Sprint 2)</h2>
-    <table>
-      <thead>
-        <tr><th>Criterion</th><th style="text-align:right">Weight</th><th>Status (evidence)</th></tr>
-      </thead>
-      <tbody>
-        <tr><td>Core Features</td><td style="text-align:right">25%</td><td>Implemented with minor issues (landing page, auth fixes in progress, backend fixes; releases & deploy attempts).</td></tr>
-        <tr><td>Automated Testing</td><td style="text-align:right">10%</td><td>Some UI/API tests implemented; basic flows only; some flakiness remains.</td></tr>
-        <tr><td>Stakeholder Reviews</td><td style="text-align:right">10%</td><td>Regular session held; feedback captured and reflected in backlog.</td></tr>
-        <tr><td><strong>API Integration</strong></td><td style="text-align:right">15%</td><td>External API usage started; <strong>project API not externally available</strong> by sprint end.</td></tr>
-        <tr><td>User Feedback</td><td style="text-align:right">10%</td><td>Informal sessions completed; formal process planned for Sprint 3.</td></tr>
-        <tr><td>Project Management Methodology</td><td style="text-align:right">10%</td><td>Scrum followed (planning, dailies, review, retro).</td></tr>
-        <tr><td>Bug Tracker</td><td style="text-align:right">5%</td><td>Active Jira usage (board, statuses, owners, due dates).</td></tr>
-        <tr><td>Database Documentation</td><td style="text-align:right">5%</td><td>Schema & deployment info updated; rationale captured.</td></tr>
-        <tr><td>Third-Party Code Documentation</td><td style="text-align:right">5%</td><td>Most important third-party code documented & justified.</td></tr>
-        <tr><td>Testing Documentation</td><td style="text-align:right">5%</td><td>How-to for running tests drafted; user-feedback process to be formalized in Sprint 3.</td></tr>
-      </tbody>
-    </table>
-  </div>
+   
 
   <!-- ───────────────────────────────────────────── -->
   <!-- Sprint 3 - Scrum Documentation (APPENDED)     -->
@@ -363,7 +345,7 @@ description: 'How we plan, track, and review work using a simple Jira workflow.'
 
     <h2>6. Sprint Retrospective</h2>
     <p><strong>What went well:</strong> API made externally consumable; test coverage increased; clear feedback loop with stakeholders.</p>
-    <p><strong>What didn’t go well:</strong> Some API hardening slipped; several edge-case tests still outstanding.</p>
+    <p><strong>What didn't go well:</strong> Some API hardening slipped; several edge-case tests still outstanding.</p>
     <p><strong>Actions for next sprint:</strong> Complete rate-limit/caching/error-message work; expand edge-case tests; batch small UX polish tasks.</p>
 
   
@@ -377,5 +359,104 @@ description: 'How we plan, track, and review work using a simple Jira workflow.'
       <li><a class="text-sky-600 hover:underline" href="https://drive.google.com/file/d/1osNB_xnAhPF6wtY0zCbSPaCGiCRCavbo/view?usp=sharing" target="_blank" rel="noopener">Wednesday, 27 September</a></li>
     </ul>
   </div>
+
+<!-- ───────────────────────────────────────────── -->
+<!-- Sprint 4 - Scrum Documentation (APPENDED)     -->
+<!-- ───────────────────────────────────────────── -->
+
+<section class="not-prose mb-6 px-6 max-w-4xl mx-auto">
+  <h1 class="text-3xl font-bold tracking-tight">Sprint 4 - Scrum Documentation (1 October - 19 October)</h1>
+  <p class="mt-2 text-slate-600 dark:text-slate-300">
+    Final sprint before project submission. Primary focus: <strong>finish front &amp; backend testing</strong>, 
+    implement <strong>Upload Funds</strong> (wallet top-ups to bet), complete <strong>Teams Comparison</strong> 
+    across seasons, and deliver the <strong>tag-based filtering system</strong>. Also close out polish, docs, and deployment details.
+  </p>
+</section>
+
+<div class="prose prose-slate dark:prose-invert px-6 max-w-4xl mx-auto">
+
+  <h2>1. Sprint Goal</h2>
+  <ul>
+    <li>Achieve <strong>green test suites</strong> on frontend and backend with meaningful coverage &amp; CI stability.</li>
+    <li>Ship <strong>Upload Funds</strong> flow (wallet top-up) and ensure bets deduct funds &amp; update balances.</li>
+    <li>Release <strong>Teams Comparison</strong> (cross-season stats, side-by-side metrics, trend views).</li>
+    <li>Deliver <strong>tag system</strong> to filter teams/matches/insights by multiple tags.</li>
+    <li>Finalize user-facing polish, docs, and deployment readiness for submission.</li>
+  </ul>
+
+  <h2>2. Sprint Backlog (Planned)</h2>
+  <ul>
+    <li><strong>Testing (Frontend)</strong>: expand Jest/RTL suites; fix flaky tests; coverage reporting in CI.</li>
+    <li><strong>Testing (Backend)</strong>: unit + integration tests, test containers, seed data for repeatable runs.</li>
+    <li><strong>Upload Funds</strong>: wallet model, deposit UI, validation, success/failure states, balance refresh.</li>
+    <li><strong>Bets <--> Wallet linkage</strong>: place bet deducts funds; settle bet credits/adjusts balance.</li>
+    <li><strong>Teams Comparison</strong>: select 2+ teams, pick seasons, compare KPIs (form, goals, xG, clean sheets, etc.).</li>
+    <li><strong>Tag System</strong>: define tag taxonomy, create/apply tags, multi-select filter UI, URL/query sync.</li>
+    <li><strong>Docs &amp; Diagrams</strong>: update schema page, API docs, testing guide, deployment steps.</li>
+    <li><strong>Perf &amp; UX polish</strong>: loading states, empty/error views, accessibility pass.</li>
+  </ul>
+
+  <figure class="my-6 rounded-xl border border-slate-200 bg-white/70 p-3 dark:border-slate-700 dark:bg-slate-900/60">
+    <img
+      src="sprint4_jira.png"
+      alt="Jira Sprint 4 backlog screenshot"
+      class="mx-auto block max-w-full h-auto rounded-lg shadow"
+    />
+    <figcaption class="mt-2 text-center text-sm text-slate-500 dark:text-slate-400">
+      Sprint 4 backlog items and statuses (Done / In Progress / In Review / To Do).
+    </figcaption>
+  </figure>
+
+  <h2>3. Work Completed</h2>
+  <ul>
+    <li><strong>Frontend testing</strong>: added unit/integration tests for critical pages &amp; components; CI badge green.</li>
+    <li><strong>Backend testing</strong>: service/repository tests with seeded data; API contract tests for key endpoints.</li>
+    <li><strong>Upload Funds</strong>: deposit flow end-to-end (UI --> API --> wallet); form validations; success/error UX.</li>
+    <li><strong>Bets wallet linkage</strong>: placing a bet deducts funds; settlements update wallet correctly.</li>
+    <li><strong>Teams Comparison</strong>: cross-season compare view (metrics, charts, and season selector).</li>
+    <li><strong>Tag filtering</strong>: multi-tag filter bar; applied to lists and comparison views; persistent via URL params.</li>
+    <li><strong>Docs</strong>: updated API &amp; schema pages; testing how-to; deployment steps.</li>
+  </ul>
+
+  <h2>4. Work Not Completed / Variances</h2>
+  <ul>
+    <li>Minor <strong>edge-case tests</strong> (rare API failures, extreme pagination) deferred to post-submission tidy-up.</li>
+    <li>Additional <strong>comparison KPIs</strong> (advanced xA/xGA breakdowns) parked for backlog.</li>
+  </ul>
+
+  <h2>5. Sprint Review (Outcomes)</h2>
+  <ul>
+    <li><strong>Demo:</strong> Showed Upload Funds &amp; betting balance updates; teams comparison across seasons; tag filters in action.</li>
+    <li><strong>Stakeholder feedback:</strong> prioritize clarity on balance changes after bets; add quick "clear tags" control; ensure comparison KPIs are explained with tooltips.</li>
+    <li><strong>Backlog updates:</strong> add tooltip copy tasks, extra edge-case tests, and advanced KPI backlog items.</li>
+  </ul>
+
+  <h2>6. Sprint Retrospective</h2>
+  <p><strong>What went well:</strong> Clear focus on finish-lines; test stability improved; wallet &amp; betting flows feel cohesive; comparison view is useful.</p>
+  <p><strong>What didn't go well:</strong> A few flaky tests early in the sprint; advanced KPIs took longer than expected.</p>
+  <p><strong>Actions:</strong> Document flaky test patterns; add contract tests for wallet/bets; schedule post-submission KPI enhancements.</p>
+
+  <h2>Meeting Proof Links</h2>
+  <ul>
+    <li><a class="text-sky-600 hover:underline" href="https://drive.google.com/file/d/1L_J4i4C3R9PRgVJ7sZOVPq4aVXPFov9y/view?usp=sharing" target="_blank" rel="noopener"> 4 October</a></li>
+    <li><a class="text-sky-600 hover:underline" href="https://drive.google.com/file/d/1KhKXed1h5_M_Ecj1RF1tuwEbn2TKp6yB/view?usp=sharing" target="_blank" rel="noopener">  7 October</a></li>
+    <li><a class="text-sky-600 hover:underline" href="https://drive.google.com/file/d/1Tlm6EarKVHODiAxionzNM0lv90YDJPE6/view?usp=sharing" target="_blank" rel="noopener">  10 October</a></li>
+    <li> 12 October <img
+        src="12_Oct.png"
+        alt="12 October sprint 4 meeting"
+        class="mx-auto block max-w-full h-auto rounded-lg shadow"
+      /></li>
+    <li><a class="text-sky-600 hover:underline" href="https://drive.google.com/file/d/1kl75cZf5p1bR-771ah3C9kqAzd-jlgfh/view?usp=sharing" target="_blank" rel="noopener">15 October</a></li>
+    <li> 16 October<img
+        src="16_Oct.png"
+        alt="16 October sprint 4 meeting"
+        class="mx-auto block max-w-full h-auto rounded-lg shadow"
+      /></li>
+  </ul>
+</div>
+
+
+
+
 
 </div>
