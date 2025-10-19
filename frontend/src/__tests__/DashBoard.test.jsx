@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor  } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
 import { UserContext } from "../UserContext";
 import Dashboard from "../components/DashBoard.jsx";
@@ -54,5 +54,79 @@ describe("Other Sports section UI", () => {
 
     expect(grid).toBeInTheDocument();
     expect(grid).toHaveClass("grid");
+  });
+});
+
+
+
+describe("Dashboard data loading", () => {
+  beforeEach(() => {
+    global.fetch = jest.fn((url) => {
+      if (url.includes("/matches/upcoming")) {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({ content: [] }),
+        });
+      }
+      if (url.includes("/matches/recent")) {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({ content: [] }),
+        });
+      }
+      if (url.includes("/standings/top5")) {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve([]),
+        });
+      }
+      if (url.includes("viewMatches")) {
+        // triggers the otherSports branch
+        return Promise.resolve({
+          ok: true,
+          json: () =>
+            Promise.resolve([
+              {
+                id: 1,
+                sportType: "Rugby",
+                homeTeam: "Sharks",
+                awayTeam: "Stormers",
+                startTime: "2025-10-20T15:00:00Z",
+                venue: "Kings Park",
+                status: "Upcoming",
+              },
+            ]),
+        });
+      }
+      return Promise.reject(new Error("Unknown URL"));
+    });
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  test("loads and renders other sports data inside the Other Sports section", async () => {
+    renderWithProviders();
+
+    // Wait for the 'Other Sports' heading to appear
+    const heading = await screen.findByText(/other sports/i);
+    expect(heading).toBeInTheDocument();
+
+    // Scope queries to the Other Sports section
+    const otherSportsSection = heading.closest(".other-sports");
+    expect(otherSportsSection).toBeInTheDocument();
+
+    // Verify that fetched data is rendered in the section
+    expect(otherSportsSection).toHaveTextContent(/rugby/i);
+    expect(otherSportsSection).toHaveTextContent(/Sharks/i);
+    expect(otherSportsSection).toHaveTextContent(/Stormers/i);
+    expect(otherSportsSection).toHaveTextContent(/Kings Park/i);
+    expect(otherSportsSection).toHaveTextContent(/Upcoming/i);
+
+    // Optional: ensure fetch for viewMatches was called
+    expect(global.fetch).toHaveBeenCalledWith(
+      expect.stringContaining("viewMatches")
+    );
   });
 });
