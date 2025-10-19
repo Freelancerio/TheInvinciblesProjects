@@ -3,6 +3,7 @@ import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { UserContext } from "../UserContext";
 
+
 jest.mock("../api.js", () => ({
   __esModule: true,
   default: () => "http://test-base-url"
@@ -132,6 +133,10 @@ describe("BalanceCard", () => {
     await waitFor(() => expect(global.fetch).toHaveBeenCalled());
   });
 
+
+
+ 
+
   test("API failure triggers error handling", async () => {
     renderWithUser({ firebaseId: "u1", account_balance: 1000 });
 
@@ -217,4 +222,9 @@ test("successful voucher withdrawal shows success toast", async () => {
   expect(screen.getByText(/Voucher withdrawn!/i)).toBeInTheDocument();
 });
 
+
+
+
 });
+
+
