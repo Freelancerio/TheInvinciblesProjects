@@ -20,6 +20,7 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const sendTokenToBackend = async (idToken) => {
     try {
@@ -133,15 +134,21 @@ const handleEmailLogin = async (e) => {
             <div className="input-with-icon">
               <i className="fas fa-lock"></i>
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 id="password"
                 placeholder="Enter your password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
+              <i
+                className={`fas ${showPassword ? "fa-eye-slash" : "fa-eye"} password-toggle`}
+                onClick={() => setShowPassword(!showPassword)}
+                style={{ cursor: "pointer" }}
+              ></i>
             </div>
           </div>
+
 
           <button type="submit" className="login-btn">
             Login

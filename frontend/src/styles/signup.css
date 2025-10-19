@@ -99,12 +99,20 @@
             color: rgba(255, 255, 255, 0.6);
         }
 
-        .password-toggle {
+        .input-with-icon .password-toggle {
             position: absolute;
             right: 15px;
-            left: auto;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
             cursor: pointer;
+            transition: color 0.2s ease;
         }
+
+        .input-with-icon .password-toggle:hover {
+            color: var(--secondary);
+        }
+
 
         .terms {
             display: flex;

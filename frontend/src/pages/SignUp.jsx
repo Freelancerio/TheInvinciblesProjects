@@ -20,6 +20,9 @@ export default function Signup() {
   const [confirm, setConfirm] = useState("");
   const [terms, setTerms] = useState(false);
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+
 
   const handleSignup = async (e) => {
   e.preventDefault();
@@ -148,28 +151,40 @@ export default function Signup() {
           <div className="input-with-icon">
             <i className="fas fa-lock"></i>
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               placeholder="Create a password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
+            <i
+              className={`fas ${showPassword ? "fa-eye-slash" : "fa-eye"} password-toggle`}
+              onClick={() => setShowPassword(!showPassword)}
+              style={{ cursor: "pointer" }}
+            ></i>
           </div>
         </div>
+
 
         <div className="form-group">
           <label>Confirm Password</label>
           <div className="input-with-icon">
             <i className="fas fa-lock"></i>
             <input
-              type="password"
+              type={showConfirm ? "text" : "password"}
               placeholder="Confirm your password"
               value={confirm}
               onChange={(e) => setConfirm(e.target.value)}
               required
             />
+            <i
+              className={`fas ${showConfirm ? "fa-eye-slash" : "fa-eye"} password-toggle`}
+              onClick={() => setShowConfirm(!showConfirm)}
+              style={{ cursor: "pointer" }}
+            ></i>
           </div>
         </div>
+
 
         <div className="terms">
           <input
