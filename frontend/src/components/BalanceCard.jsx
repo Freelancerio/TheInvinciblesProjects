@@ -45,7 +45,6 @@ export default function BalanceCard() {
         toast.error("Something went wrong. Please try again.");
       }
     } catch (err) {
-      console.error(err);
       toast.error("Network error. Please try again later.");
     }
   };
@@ -89,7 +88,6 @@ export default function BalanceCard() {
         toast.error(data.error || "Withdrawal failed");
       }
     } catch (err) {
-      console.error(err);
       toast.error("Network error. Please try again later.");
     }
   };
